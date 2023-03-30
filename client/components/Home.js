@@ -6,11 +6,9 @@ import style from './Home.module.css';
  * COMPONENT
  */
 export const Home = (props) => {
-  const { username } = props;
-
   return (
     <div>
-      <h3>Welcome, {username}</h3>
+      <h3>hello</h3>
     </div>
   );
 };
