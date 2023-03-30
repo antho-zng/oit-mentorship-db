@@ -1,6 +1,4 @@
-##########
 adapted FSA boilerplate to include updated dependencies (as of March 2023) and support for CSS Modules
-##########
 
 # FS-App-Template
 
