@@ -8,7 +8,7 @@ import style from './Home.module.css';
 export const Home = (props) => {
   return (
     <div>
-      <h3>hello</h3>
+      <h3>hello!</h3>
     </div>
   );
 };
