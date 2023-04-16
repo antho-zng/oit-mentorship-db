@@ -1,5 +1,5 @@
 {
-  "name": "boilerplate",
+  "name": "oit-mentorship-db",
   "version": "2.0.0",
   "description": "boilerplate code (no auth)",
   "main": "index.js",
