@@ -5,15 +5,15 @@ const { google } = require('googleapis');
 const service = google.sheets('v4');
 const credentials = require('./googleCredentials.json');
 
-// Configure auth client
-const authClient = new google.auth.JWT(
-  credentials.client_email,
-  null,
-  credentials.private_key.replace(/\\n/g, '\n'),
-  ['https://www.googleapis.com/auth/spreadsheets']
-);
+(async function formsSync() {
+  // Configure auth client
+  const authClient = new google.auth.JWT(
+    credentials.client_email,
+    null,
+    credentials.private_key.replace(/\\n/g, '\n'),
+    ['https://www.googleapis.com/auth/spreadsheets']
+  );
 
-(async function () {
   try {
     // Authorize the client
     const token = await authClient.authorize();
@@ -24,8 +24,8 @@ const authClient = new google.auth.JWT(
     // Get the rows
     const res = await service.spreadsheets.values.get({
       auth: authClient,
-      spreadsheetId: '1dEJxKAX0ei3koDW6xpiEjLrld9hYscjHVMTTPgt0ytY',
-      range: 'A:N',
+      spreadsheetId: '1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII',
+      range: 'A:AK',
     });
 
     // All of the answers
@@ -36,35 +36,63 @@ const authClient = new google.auth.JWT(
 
     // Check if we have any data and if we do add it to our answers array
     if (rows.length) {
+      // save headers as keys
+      const questions = rows[0];
+
       // Remove the headers
       rows.shift();
 
       // For each row
       for (const row of rows) {
         answers.push({
-          timeStamp: row[0],
-          email: row[1],
-          cashZelle: row[2],
-          recipient: row[3],
-          zelleName: row[4],
-          amt: row[5],
-          row1: row[6],
-          row2: row[7],
-          row3: row[8],
-          row4: row[9],
-          misc1: row[10],
-          misc2: row[11],
-          moneyReceived: row[12],
-          ticketSent: row[13],
+          [questions[0]]: row[0],
+          [questions[1]]: row[1],
+          [questions[2]]: row[2],
+          [questions[3]]: row[3],
+          [questions[4]]: row[4],
+          [questions[5]]: row[5],
+          [questions[6]]: row[6],
+          [questions[7]]: row[7],
+          [questions[8]]: row[8],
+          [questions[9]]: row[9],
+          [questions[10]]: row[10],
+          [questions[11]]: row[11],
+          [questions[12]]: row[12],
+          [questions[13]]: row[13],
+          [questions[14]]: row[14],
+          [questions[15]]: row[15],
+          [questions[16]]: row[16],
+          [questions[17]]: row[17],
+          [questions[18]]: row[18],
+          [questions[19]]: row[19],
+          [questions[20]]: row[20],
+          [questions[21]]: row[21],
+          [questions[22]]: row[22],
+          [questions[23]]: row[23],
+          [questions[24]]: row[24],
+          [questions[25]]: row[25],
+          [questions[26]]: row[26],
+          [questions[27]]: row[27],
+          [questions[28]]: row[28],
+          [questions[29]]: row[29],
+          [questions[30]]: row[30],
+          [questions[31]]: row[31],
+          [questions[32]]: row[32],
+          [questions[33]]: row[33],
+          [questions[34]]: row[34],
+          [questions[35]]: row[35],
+          [questions[36]]: row[36],
+          [questions[37]]: row[37],
         });
       }
+      console.log('Synced with Google Sheets!');
     } else {
       console.log('No data found.');
     }
 
     // Saved the answers
     fs.writeFileSync(
-      'answers.json',
+      'formsResponses.json',
       JSON.stringify(answers),
       function (err, file) {
         if (err) throw err;
