@@ -2,7 +2,7 @@
 
 const {
   db,
-  models: { User, Mentee },
+  models: { User, Mentee, Focus },
 } = require('../server/db');
 
 /**
@@ -13,12 +13,21 @@ async function seed() {
   await db.sync({ force: true }); // clears db and matches models to tables
   console.log('db synced!');
 
-  // Creating Users
+  /**
+   *
+   * CREATING USERS
+   *
+   */
   const users = await Promise.all([
     User.create({ username: 'cody', password: '123' }),
     User.create({ username: 'murphy', password: '123' }),
   ]);
 
+  /**
+   *
+   * CREATING MENTEES
+   *
+   */
   const mentees = await Promise.all([
     Mentee.create({
       firstName: 'Anthony',
@@ -37,6 +46,39 @@ async function seed() {
       lastName: 'Mentee',
       email: 'other-mentee@gmail.com',
       candidateID: 'mentee-f23-4567',
+    }),
+  ]);
+
+  /**
+   *
+   * CREATING FOCUSES
+   *
+   */
+
+  const focuses = await Promise.all([
+    Focus.create({
+      name: 'Frontend Engineering',
+      priority: 'Primary',
+    }),
+    Focus.create({
+      name: 'Backend Engineering',
+      priority: 'Secondary',
+    }),
+    Focus.create({
+      name: 'Product Management',
+      priority: 'Primary',
+    }),
+    Focus.create({
+      name: 'Frontend Engineering',
+      priority: 'Secondary',
+    }),
+    Focus.create({
+      name: 'Marketing',
+      priority: 'Primary',
+    }),
+    Focus.create({
+      name: 'UI/UX',
+      priority: 'Secondary',
     }),
   ]);
 

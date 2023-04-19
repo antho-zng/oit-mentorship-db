@@ -4,13 +4,17 @@ const db = require('./db');
 
 const User = require('./models/User');
 const Mentee = require('./models/Mentee');
+const Focus = require('./models/Focus');
 
-//associations could go here!
+// ASSOCIATIONS
+Mentee.hasMany(Focus);
+Focus.belongsTo(Mentee);
 
 module.exports = {
   db,
   models: {
     User,
     Mentee,
+    Focus,
   },
 };

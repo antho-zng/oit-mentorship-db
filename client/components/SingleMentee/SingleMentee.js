@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import style from './SingleMentee.module.css';
 import { getMentee } from '../../store/mentee';
 
@@ -11,11 +11,19 @@ function SingleMentee(props) {
     props.getMentee(props.match.params.id);
   }, []);
 
-  console.log(props.match.params.id);
+  const mentee = useSelector((state) => state.mentee);
+  console.log(mentee);
 
   return (
     <div>
       <h3>hello! </h3>
+      <p>
+        Name: {mentee.firstName} {mentee.lastName}
+      </p>
+      <p>Email: {mentee.email}</p>
+      <p>Candidate ID: {mentee.candidateID}</p>
+      <p>Primary Focus: </p>
+      <p>Secondary Focus: </p>
     </div>
   );
 }
@@ -23,11 +31,6 @@ function SingleMentee(props) {
 /**
  * CONTAINER
  */
-const mapState = (state) => {
-  return {
-    username: state.auth.username,
-  };
-};
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -37,4 +40,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapState, mapDispatchToProps)(SingleMentee);
+export default connect(null, mapDispatchToProps)(SingleMentee);
