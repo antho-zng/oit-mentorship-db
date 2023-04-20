@@ -1,16 +1,22 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { logout } from '../store';
+import { logout } from '../../store';
+import cornerLogo from '../../../public/OIT-Logo-Black-1.png';
 
 const Navbar = ({ handleClick, isLoggedIn }) => (
   <div>
-    <h1>FS-App-Template</h1>
+    <img className={style.logo} src={cornerLogo} alt='lastword logo' />
+
     <nav>
       {isLoggedIn ? (
         <div>
           {/* The navbar will show these links after you log in */}
           <Link to='/home'>Home</Link>
+          <Link to='/applications'>Applications</Link>
+          <Link to='/Interviews'>Interviews</Link>
+          <Link to='/Matching'>Matching</Link>
+
           <a href='#' onClick={handleClick}>
             Logout
           </a>
