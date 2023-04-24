@@ -9,9 +9,11 @@ const {
 const service = google.sheets('v4');
 const credentials = require('./googleCredentials.json');
 
-const Mentees = [];
-
+// take data from Google Forms and push to Mentees array
 async function readGoogleFormsMenteesData() {
+  // array for all mentees
+  const mentees = [];
+
   // Configure auth client
   const authClient = new google.auth.JWT(
     credentials.client_email,
@@ -33,9 +35,6 @@ async function readGoogleFormsMenteesData() {
       range: 'A:AK',
     });
 
-    // All of the answers
-    const answers = [];
-
     // Set rows to equal the rows
     const rows = res.data.values;
 
@@ -49,20 +48,20 @@ async function readGoogleFormsMenteesData() {
 
       // For each row
       for (const row of rows) {
-        Mentees.push({
-          candidateID: row[0],
-          firstName: row[0],
-          lastName: row[0],
-          pronouns: row[0],
-          email: row[0],
-          phoneNum: row[0],
-          dateOfBirth: row[0],
-          location: row[0],
-          genSexID: row[0],
-          raceEthnicity: row[0],
+        mentees.push({
+          firstName: row[2],
+          lastName: row[3],
+          pronouns: row[6],
+          email: row[1],
+          phoneNum: row[5],
+          dateOfBirth: row[4],
+          location: row[7],
+          genSexID: row[8],
+          raceEthnicity: row[9],
         });
       }
-      console.log('Synced with Google Sheets!');
+      console.log('Mentees added to array!');
+      return mentees;
     } else {
       console.log('No data found.');
     }
@@ -74,9 +73,15 @@ async function readGoogleFormsMenteesData() {
     process.exit(1);
   }
 }
+
 async function cleanGoogleFormsData() {}
+
+// take Mentees array and write Mentees into DB
 async function bulkCreateMentees() {
-  Mentee.bulkCreate([{}]);
+  const mentees = await readGoogleFormsMenteesData();
+  Mentee.bulkCreate(mentees, { ignoreDuplicates: true }).then(() =>
+    console.log(`${mentees.length} mentees have been written into DB!`, mentees)
+  );
 }
 
 // TO-DO: rewrite formsSync to bring together above three functions
@@ -161,6 +166,8 @@ async function bulkCreateMentees() {
         });
       }
       console.log('Synced with Google Sheets!');
+      readGoogleFormsMenteesData();
+      bulkCreateMentees();
     } else {
       console.log('No data found.');
     }
