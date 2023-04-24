@@ -1,13 +1,83 @@
 // Import dependencies
 const fs = require('fs');
 const { google } = require('googleapis');
+const {
+  db,
+  models: { User, Mentee, Focus },
+} = require('../db');
 
 const service = google.sheets('v4');
 const credentials = require('./googleCredentials.json');
 
-async function readGoogleFormsData() {}
+const Mentees = [];
+
+async function readGoogleFormsMenteesData() {
+  // Configure auth client
+  const authClient = new google.auth.JWT(
+    credentials.client_email,
+    null,
+    credentials.private_key.replace(/\\n/g, '\n'),
+    ['https://www.googleapis.com/auth/spreadsheets']
+  );
+  try {
+    // Authorize the client
+    const token = await authClient.authorize();
+
+    // Set the client credentials
+    authClient.setCredentials(token);
+
+    // Get the rows
+    const res = await service.spreadsheets.values.get({
+      auth: authClient,
+      spreadsheetId: '1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII',
+      range: 'A:AK',
+    });
+
+    // All of the answers
+    const answers = [];
+
+    // Set rows to equal the rows
+    const rows = res.data.values;
+
+    // Check if we have any data and if we do add it to our answers array
+    if (rows.length) {
+      // save headers as keys
+      const questions = rows[0];
+
+      // Remove the headers
+      rows.shift();
+
+      // For each row
+      for (const row of rows) {
+        Mentees.push({
+          candidateID: row[0],
+          firstName: row[0],
+          lastName: row[0],
+          pronouns: row[0],
+          email: row[0],
+          phoneNum: row[0],
+          dateOfBirth: row[0],
+          location: row[0],
+          genSexID: row[0],
+          raceEthnicity: row[0],
+        });
+      }
+      console.log('Synced with Google Sheets!');
+    } else {
+      console.log('No data found.');
+    }
+  } catch (error) {
+    // Log the error
+    console.log(error);
+
+    // Exit the process with error
+    process.exit(1);
+  }
+}
 async function cleanGoogleFormsData() {}
-async function bulkCreateMentees() {}
+async function bulkCreateMentees() {
+  Mentee.bulkCreate([{}]);
+}
 
 // TO-DO: rewrite formsSync to bring together above three functions
 (async function formsSync() {
