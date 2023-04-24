@@ -8,11 +8,11 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx|ts|tsx|png)$/,
+        test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
         options: {
-          presets: ['@babel/preset-react'],
+          presets: ['@babel/preset-env', '@babel/preset-react'],
         },
       },
       {
@@ -36,12 +36,8 @@ module.exports = {
         exclude: /\.module\.css$/,
       },
       {
-        test: /\.(png|jpe?g|gif)$/i,
-        use: [
-          {
-            loader: 'file-loader',
-          },
-        ],
+        test: /\.(png)$/i,
+        loader: 'file-loader',
       },
     ],
   },

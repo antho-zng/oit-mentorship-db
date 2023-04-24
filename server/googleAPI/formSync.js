@@ -107,3 +107,11 @@ const credentials = require('./googleCredentials.json');
     process.exit(1);
   }
 })();
+
+// pull out biographical info (e.g. name dob location, etc)
+// pull out long questions + answers and create Question and Answer tables
+
+// save mentee + Q/A (check transitional boundary)
+
+// (google batch save)
+// (google transaction boundary / transitional bounadry)

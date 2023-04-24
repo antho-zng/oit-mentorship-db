@@ -2,20 +2,20 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { logout } from '../../store';
-import cornerLogo from '../../../public/OIT-Logo-Black-1.png';
+import style from './Navbar.module.css';
+import cornerLogo from './OIT-Logo-Black-1.png';
 
 const Navbar = ({ handleClick, isLoggedIn }) => (
   <div>
-    <img className={style.logo} src={cornerLogo} alt='lastword logo' />
-
+    {/* <img src={cornerLogo} alt='OiT logo' /> */}
     <nav>
       {isLoggedIn ? (
         <div>
           {/* The navbar will show these links after you log in */}
           <Link to='/home'>Home</Link>
           <Link to='/applications'>Applications</Link>
-          <Link to='/Interviews'>Interviews</Link>
-          <Link to='/Matching'>Matching</Link>
+          <Link to='/interviews'>Interviews</Link>
+          <Link to='/matching'>Matching</Link>
 
           <a href='#' onClick={handleClick}>
             Logout
