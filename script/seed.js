@@ -84,33 +84,6 @@ async function seed() {
    *
    */
 
-  const focuses = await Promise.all([
-    Focus.create({
-      name: 'Frontend Engineering',
-      priority: 'Primary',
-    }),
-    Focus.create({
-      name: 'Backend Engineering',
-      priority: 'Secondary',
-    }),
-    Focus.create({
-      name: 'Product Management',
-      priority: 'Primary',
-    }),
-    Focus.create({
-      name: 'Frontend Engineering',
-      priority: 'Secondary',
-    }),
-    Focus.create({
-      name: 'Marketing',
-      priority: 'Primary',
-    }),
-    Focus.create({
-      name: 'UI/UX',
-      priority: 'Secondary',
-    }),
-  ]);
-
   console.log(`seeded ${users.length} users`);
   console.log(`seeded ${mentees.length} mentees`);
   console.log(`seeded successfully`);
