@@ -6,6 +6,8 @@ const {
   models: { User, Mentee, Focus },
 } = require('../db');
 
+const menteeAppSpreadsheetID = '1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII';
+const cohort = 'fall2023';
 const service = google.sheets('v4');
 const credentials = require('./googleCredentials.json');
 
@@ -31,12 +33,14 @@ async function readGoogleFormsMenteesData() {
     // Get the rows
     const res = await service.spreadsheets.values.get({
       auth: authClient,
-      spreadsheetId: '1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII',
+      spreadsheetId: menteeAppSpreadsheetID,
       range: 'A:AK',
     });
 
     // Set rows to equal the rows
     const rows = res.data.values;
+    const resData = res.data;
+    console.log(resData);
 
     // Check if we have any data and if we do add it to our answers array
     if (rows.length) {
@@ -58,6 +62,7 @@ async function readGoogleFormsMenteesData() {
           location: row[7],
           genSexID: row[8],
           raceEthnicity: row[9],
+          cohort: cohort,
         });
       }
       console.log('Mentees added to array!');
