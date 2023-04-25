@@ -3,6 +3,7 @@ const db = require('../db');
 module.exports = db.define(
   'mentees',
   {
+    // TO-DO: add ID
     firstName: {
       type: Sequelize.STRING,
       allowNull: false,
@@ -17,6 +18,7 @@ module.exports = db.define(
         notEmpty: true,
       },
     },
+    // TO-DO: store as JSON array
     pronouns: {
       type: Sequelize.STRING,
       allowNull: false,
@@ -25,7 +27,7 @@ module.exports = db.define(
       },
     },
     email: {
-      type: Sequelize.TEXT,
+      type: Sequelize.STRING,
       allowNull: false,
       validate: {
         notEmpty: true,
@@ -40,7 +42,7 @@ module.exports = db.define(
       },
     },
     dateOfBirth: {
-      type: Sequelize.STRING,
+      type: Sequelize.DATEONLY,
       allowNull: false,
       validate: {
         notEmpty: true,
@@ -53,13 +55,15 @@ module.exports = db.define(
         notEmpty: true,
       },
     },
-    genSexID: {
-      type: Sequelize.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
-    },
+    // TO-DO: JSON column
+    // gendersAndSexualities: {
+    //   type: Sequelize.STRING,
+    //   allowNull: false,
+    //   validate: {
+    //     notEmpty: true,
+    //   },
+    // },
+    // TO-DO: JSON column with list of all options
     raceEthnicity: {
       type: Sequelize.STRING,
       allowNull: false,

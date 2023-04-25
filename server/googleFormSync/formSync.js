@@ -3,8 +3,20 @@ const fs = require('fs');
 const { google } = require('googleapis');
 const {
   db,
-  models: { User, Mentee, Focus },
+  models: { Mentee, Question, Answer },
 } = require('../db');
+
+const {
+  firstNameIndex,
+  lastNameIndex,
+  pronounsIndex,
+  emailIndex,
+  phoneNumIndex,
+  dobIndex,
+  locationIndex,
+  gendersAndSexualitiesIndex,
+  raceEthnicityIndex,
+} = require('./menteeInfoIndexes');
 
 const menteeAppSpreadsheetID = '1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII';
 const cohort = 'fall2023';
@@ -42,6 +54,12 @@ async function readGoogleFormsMenteesData() {
     const resData = res.data;
     console.log(resData);
 
+    /**
+     * look for exact match for now
+     * const firstNameInx --> if (key == 'First Name') return i;
+     *
+     */
+
     // Check if we have any data and if we do add it to our answers array
     if (rows.length) {
       // save headers as keys
@@ -53,15 +71,15 @@ async function readGoogleFormsMenteesData() {
       // For each row
       for (const row of rows) {
         mentees.push({
-          firstName: row[2],
-          lastName: row[3],
-          pronouns: row[6],
-          email: row[1],
-          phoneNum: row[5],
-          dateOfBirth: row[4],
-          location: row[7],
-          genSexID: row[8],
-          raceEthnicity: row[9],
+          firstName: row[firstNameIndex],
+          lastName: row[lastNameIndex],
+          pronouns: row[pronounsIndex],
+          email: row[emailIndex],
+          phoneNum: row[phoneNumIndex],
+          dateOfBirth: row[dobIndex],
+          location: row[locationIndex],
+          genSexID: row[gendersAndSexualitiesIndex],
+          raceEthnicity: row[raceEthnicityIndex],
           cohort: cohort,
         });
       }
