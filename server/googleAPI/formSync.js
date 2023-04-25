@@ -1,10 +1,95 @@
 // Import dependencies
 const fs = require('fs');
 const { google } = require('googleapis');
+const {
+  db,
+  models: { User, Mentee, Focus },
+} = require('../db');
 
+const menteeAppSpreadsheetID = '1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII';
+const cohort = 'fall2023';
 const service = google.sheets('v4');
 const credentials = require('./googleCredentials.json');
 
+// take data from Google Forms and push to Mentees array
+async function readGoogleFormsMenteesData() {
+  // array for all mentees
+  const mentees = [];
+
+  // Configure auth client
+  const authClient = new google.auth.JWT(
+    credentials.client_email,
+    null,
+    credentials.private_key.replace(/\\n/g, '\n'),
+    ['https://www.googleapis.com/auth/spreadsheets']
+  );
+  try {
+    // Authorize the client
+    const token = await authClient.authorize();
+
+    // Set the client credentials
+    authClient.setCredentials(token);
+
+    // Get the rows
+    const res = await service.spreadsheets.values.get({
+      auth: authClient,
+      spreadsheetId: menteeAppSpreadsheetID,
+      range: 'A:AK',
+    });
+
+    // Set rows to equal the rows
+    const rows = res.data.values;
+    const resData = res.data;
+    console.log(resData);
+
+    // Check if we have any data and if we do add it to our answers array
+    if (rows.length) {
+      // save headers as keys
+      const questions = rows[0];
+
+      // Remove the headers
+      rows.shift();
+
+      // For each row
+      for (const row of rows) {
+        mentees.push({
+          firstName: row[2],
+          lastName: row[3],
+          pronouns: row[6],
+          email: row[1],
+          phoneNum: row[5],
+          dateOfBirth: row[4],
+          location: row[7],
+          genSexID: row[8],
+          raceEthnicity: row[9],
+          cohort: cohort,
+        });
+      }
+      console.log('Mentees added to array!');
+      return mentees;
+    } else {
+      console.log('No data found.');
+    }
+  } catch (error) {
+    // Log the error
+    console.log(error);
+
+    // Exit the process with error
+    process.exit(1);
+  }
+}
+
+async function cleanGoogleFormsData() {}
+
+// take Mentees array and write Mentees into DB
+async function bulkCreateMentees() {
+  const mentees = await readGoogleFormsMenteesData();
+  Mentee.bulkCreate(mentees, { ignoreDuplicates: true }).then(() =>
+    console.log(`${mentees.length} mentees have been written into DB!`, mentees)
+  );
+}
+
+// TO-DO: rewrite formsSync to bring together above three functions
 (async function formsSync() {
   // Configure auth client
   const authClient = new google.auth.JWT(
@@ -86,6 +171,8 @@ const credentials = require('./googleCredentials.json');
         });
       }
       console.log('Synced with Google Sheets!');
+      readGoogleFormsMenteesData();
+      bulkCreateMentees();
     } else {
       console.log('No data found.');
     }

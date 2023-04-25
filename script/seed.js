@@ -28,26 +28,55 @@ async function seed() {
    * CREATING MENTEES
    *
    */
-  const mentees = await Promise.all([
-    Mentee.create({
-      firstName: 'Anthony',
-      lastName: 'Zhang',
-      email: 'zhang.anthony97@gmail.com',
-      candidateID: 'mentee-f23-2940',
-    }),
-    Mentee.create({
-      firstName: 'OIT',
-      lastName: 'Mentee',
-      email: 'oit-mentee@gmail.com',
-      candidateID: 'mentee-f23-3932',
-    }),
-    Mentee.create({
-      firstName: 'Other',
-      lastName: 'Mentee',
-      email: 'other-mentee@gmail.com',
-      candidateID: 'mentee-f23-4567',
-    }),
-  ]);
+  const mentees = await Promise.all(
+    [
+      Mentee.create({
+        firstName: 'Anthony',
+        lastName: 'Zhang',
+        email: 'zhang.anthony97@gmail.com',
+        pronouns: 'he/him',
+        phoneNum: '(294)203-2934',
+        location: 'Brooklyn, NY',
+        genSexID: 'PoC, male, immigrant',
+        raceEthnicity: "I'd rather not say",
+        dateOfBirth: '06/01/1923',
+      }),
+      // Mentee.create({
+      //   firstName: 'Anthony',
+      //   lastName: 'Zhang',
+      //   email: 'zhang.anthony97@gmail.com',
+      //   pronouns: 'he/him',
+      //   phoneNum: '(294)203-2934',
+      //   location: 'Brooklyn, NY',
+      //   genSexID: 'PoC, male, immigrant',
+      //   raceEthnicity: "I'd rather not say",
+      //   dateOfBirth: '06/01/1923',
+      // }),
+      Mentee.create({
+        firstName: 'OIT',
+        lastName: 'Mentee',
+        email: 'oit-mentee@gmail.com',
+        pronouns: 'she/her',
+        phoneNum: '(123)203-4444',
+        location: 'Rochester, NY',
+        genSexID: 'n/a',
+        raceEthnicity: "I'd rather not say",
+        dateOfBirth: '05/21/1972',
+      }),
+      Mentee.create({
+        firstName: 'Other',
+        lastName: 'Mentee',
+        email: 'other-mentee@gmail.com',
+        pronouns: 'they/them',
+        phoneNum: '(456)232-8888',
+        location: 'Maspeth, NY',
+        genSexID: 'test',
+        raceEthnicity: "I'd rather not say",
+        dateOfBirth: '10/11/2022',
+      }),
+    ],
+    { ignoreDuplicates: true }
+  );
 
   /**
    *
