@@ -41,8 +41,9 @@ module.exports = db.define(
         notEmpty: true,
       },
     },
+    // TO-DO change data type to DATEONLY
     dateOfBirth: {
-      type: Sequelize.DATEONLY,
+      type: Sequelize.STRING,
       allowNull: false,
       validate: {
         notEmpty: true,
@@ -71,20 +72,20 @@ module.exports = db.define(
         notEmpty: true,
       },
     },
-    cohort: {
-      type: Sequelize.STRING,
-      allowNull: true,
-      validate: {
-        notEmpty: true,
-      },
-    },
-  },
-  {
-    indexes: [
-      {
-        unique: true,
-        fields: ['email'],
-      },
-    ],
+    // cohort: {
+    //   type: Sequelize.STRING,
+    //   allowNull: true,
+    //   validate: {
+    //     notEmpty: true,
+    //   },
+    // },
   }
+  // {
+  //   indexes: [
+  //     {
+  //       unique: true,
+  //       fields: ['email'],
+  //     },
+  //   ],
+  // }
 );
