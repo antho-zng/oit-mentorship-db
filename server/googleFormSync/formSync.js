@@ -46,12 +46,6 @@ async function readGoogleFormsMenteesData() {
   const mentees = [];
 
   try {
-    // // Authorize the client
-    // const token = await authClient.authorize();
-
-    // // Set the client credentials
-    // authClient.setCredentials(token);
-
     // Get the rows
     const res = await service.spreadsheets.values.get({
       auth: authClient,
@@ -153,12 +147,45 @@ async function readGoogleFormsQAData() {
 }
 
 async function bulkCreateQuestions() {
-  Question.bulkCreate(questions, { ignoreDuplicates: true }).then(() =>
-    console.log(
-      `${questions.length} questions have been written into DB!`,
-      questions
-    )
-  );
+  try {
+    // Get the rows
+    const res = await service.spreadsheets.values.get({
+      auth: authClient,
+      spreadsheetId: menteeAppSpreadsheetID,
+      range: 'A:AK',
+    });
+
+    // Set rows to equal the rows
+    const rows = res.data.values;
+
+    // Check if we have any data and if we do add it to our answers array
+    if (rows.length) {
+      // save headers as questions
+      const headers = rows[0];
+      console.log('Questions retrieved');
+
+      const questions = [];
+
+      for (const question of headers) {
+        questions.push({ text: question });
+      }
+
+      Question.bulkCreate(questions, { ignoreDuplicates: true }).then(() =>
+        console.log(
+          `${questions.length} questions have been written into DB!`,
+          questions
+        )
+      );
+    } else {
+      console.log('No data found.');
+    }
+  } catch (error) {
+    // Log the error
+    console.log(error);
+
+    // Exit the process with error
+    process.exit(1);
+  }
 }
 
 // take Mentees array and write Mentees into DB
@@ -300,4 +327,5 @@ async function bulkCreateMentees() {
 // (google batch save)
 // (google transaction boundary / transitional bounadry)
 
-readGoogleFormsQAData();
+// readGoogleFormsQAData();
+bulkCreateQuestions();
