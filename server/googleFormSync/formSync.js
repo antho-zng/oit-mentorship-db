@@ -32,17 +32,25 @@ const authClient = new google.auth.JWT(
   ['https://www.googleapis.com/auth/spreadsheets']
 );
 
+async function googleAuth() {
+  // Authorize the client
+  const token = await authClient.authorize();
+
+  // Set the client credentials
+  authClient.setCredentials(token);
+}
+
 // take data from Google Forms and push to Mentees array
 async function readGoogleFormsMenteesData() {
   // array for all mentees
   const mentees = [];
 
   try {
-    // Authorize the client
-    const token = await authClient.authorize();
+    // // Authorize the client
+    // const token = await authClient.authorize();
 
-    // Set the client credentials
-    authClient.setCredentials(token);
+    // // Set the client credentials
+    // authClient.setCredentials(token);
 
     // Get the rows
     const res = await service.spreadsheets.values.get({
@@ -99,12 +107,6 @@ async function readGoogleFormsQAData() {
   const answers = [];
 
   try {
-    // Authorize the client
-    const token = await authClient.authorize();
-
-    // Set the client credentials
-    authClient.setCredentials(token);
-
     // Get the rows
     const res = await service.spreadsheets.values.get({
       auth: authClient,
@@ -114,8 +116,6 @@ async function readGoogleFormsQAData() {
 
     // Set rows to equal the rows
     const rows = res.data.values;
-    const resData = res.data;
-    // console.log(resData);
 
     // Check if we have any data and if we do add it to our answers array
     if (rows.length) {
@@ -150,6 +150,15 @@ async function readGoogleFormsQAData() {
     // Exit the process with error
     process.exit(1);
   }
+}
+
+async function bulkCreateQuestions() {
+  Question.bulkCreate(questions, { ignoreDuplicates: true }).then(() =>
+    console.log(
+      `${questions.length} questions have been written into DB!`,
+      questions
+    )
+  );
 }
 
 // take Mentees array and write Mentees into DB
