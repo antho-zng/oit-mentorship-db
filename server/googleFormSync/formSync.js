@@ -1,40 +1,42 @@
 // Import dependencies
 const fs = require('fs');
 const { google } = require('googleapis');
+const Sequelize = require('sequelize');
 const {
   db,
   models: { Mentee, Question, Answer },
 } = require('../db');
 
-const {
-  firstNameIndex,
-  lastNameIndex,
-  pronounsIndex,
-  emailIndex,
-  phoneNumIndex,
-  dobIndex,
-  locationIndex,
-  gendersAndSexualitiesIndex,
-  raceEthnicityIndex,
-} = require('./menteeInfoIndexes');
+const menteeInfoIndexes = {
+  firstNameIndex: 2,
+  lastNameIndex: 3,
+  pronounsIndex: 6,
+  emailIndex: 1,
+  phoneNumIndex: 5,
+  dobIndex: 4,
+  locationIndex: 7,
+  gendersAndSexualitiesIndex: 8,
+  raceEthnicityIndex: 9,
+};
 
 const menteeAppSpreadsheetID = '1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII';
 const cohort = 'fall2023';
 const service = google.sheets('v4');
 const credentials = require('./googleCredentials.json');
 
+// Configure auth client
+const authClient = new google.auth.JWT(
+  credentials.client_email,
+  null,
+  credentials.private_key.replace(/\\n/g, '\n'),
+  ['https://www.googleapis.com/auth/spreadsheets']
+);
+
 // take data from Google Forms and push to Mentees array
 async function readGoogleFormsMenteesData() {
   // array for all mentees
   const mentees = [];
 
-  // Configure auth client
-  const authClient = new google.auth.JWT(
-    credentials.client_email,
-    null,
-    credentials.private_key.replace(/\\n/g, '\n'),
-    ['https://www.googleapis.com/auth/spreadsheets']
-  );
   try {
     // Authorize the client
     const token = await authClient.authorize();
@@ -52,13 +54,7 @@ async function readGoogleFormsMenteesData() {
     // Set rows to equal the rows
     const rows = res.data.values;
     const resData = res.data;
-    console.log(resData);
-
-    /**
-     * look for exact match for now
-     * const firstNameInx --> if (key == 'First Name') return i;
-     *
-     */
+    // console.log(resData);
 
     // Check if we have any data and if we do add it to our answers array
     if (rows.length) {
@@ -69,18 +65,20 @@ async function readGoogleFormsMenteesData() {
       rows.shift();
 
       // For each row
+      // TO-DO: make less ugly
       for (const row of rows) {
         mentees.push({
-          firstName: row[firstNameIndex],
-          lastName: row[lastNameIndex],
-          pronouns: row[pronounsIndex],
-          email: row[emailIndex],
-          phoneNum: row[phoneNumIndex],
-          dateOfBirth: row[dobIndex],
-          location: row[locationIndex],
-          genSexID: row[gendersAndSexualitiesIndex],
-          raceEthnicity: row[raceEthnicityIndex],
-          cohort: cohort,
+          firstName: row[menteeInfoIndexes[`firstNameIndex`]],
+          lastName: row[menteeInfoIndexes['lastNameIndex']],
+          pronouns: row[menteeInfoIndexes['pronounsIndex']],
+          email: row[menteeInfoIndexes['emailIndex']],
+          phoneNum: row[menteeInfoIndexes['phoneNumIndex']],
+          dateOfBirth: row[menteeInfoIndexes['dobIndex']],
+          location: row[menteeInfoIndexes['locationIndex']],
+          gendersAndSexualities:
+            row[menteeInfoIndexes['gendersAndSexualitiesIndex']],
+          raceEthnicity: row[menteeInfoIndexes['raceEthnicityIndex']],
+          // cohort: cohort,
         });
       }
       console.log('Mentees added to array!');
@@ -97,7 +95,62 @@ async function readGoogleFormsMenteesData() {
   }
 }
 
-async function cleanGoogleFormsData() {}
+async function readGoogleFormsQAData() {
+  const answers = [];
+
+  try {
+    // Authorize the client
+    const token = await authClient.authorize();
+
+    // Set the client credentials
+    authClient.setCredentials(token);
+
+    // Get the rows
+    const res = await service.spreadsheets.values.get({
+      auth: authClient,
+      spreadsheetId: menteeAppSpreadsheetID,
+      range: 'A:AK',
+    });
+
+    // Set rows to equal the rows
+    const rows = res.data.values;
+    const resData = res.data;
+    // console.log(resData);
+
+    // Check if we have any data and if we do add it to our answers array
+    if (rows.length) {
+      // save headers as keys
+      const questions = rows[0];
+
+      // Remove the headers
+      rows.shift();
+
+      // For each row
+      for (const row of rows) {
+        const menteeResponses = {};
+
+        for (const responseNum in row) {
+          menteeResponses[questions[responseNum]] = row[responseNum];
+        }
+
+        answers.push(menteeResponses);
+        // console.log('menteeResponses');
+        // console.log(menteeResponses);
+      }
+      // console.log('answers: ');
+      // console.log(answers);
+      return answers;
+    } else {
+      console.log('No data found.');
+    }
+  } catch (error) {
+    // Log the error
+    console.log(error);
+
+    // Exit the process with error
+    process.exit(1);
+  }
+}
 
 // take Mentees array and write Mentees into DB
 async function bulkCreateMentees() {
@@ -105,6 +158,23 @@ async function bulkCreateMentees() {
   Mentee.bulkCreate(mentees, { ignoreDuplicates: true }).then(() =>
     console.log(`${mentees.length} mentees have been written into DB!`, mentees)
   );
+
+  const trx = await db.transaction();
+
+  try {
+    // CREATE MENTEE
+    const currentMentee = mentees[0];
+    const mentee = await Mentee.create(
+      currentMentee,
+      { transaction: trx },
+      { ignoreDuplicates: true }
+    );
+    // CREATE Q AND As
+
+    await trx.commit();
+  } catch (error) {
+    await trx.rollback();
+  }
 }
 
 // TO-DO: rewrite formsSync to bring together above three functions
@@ -220,3 +290,5 @@ async function bulkCreateMentees() {
 
 // (google batch save)
 // (google transaction boundary / transitional bounadry)
+
+readGoogleFormsQAData();
