@@ -7,13 +7,13 @@ module.exports = db.define(
       type: Sequelize.TEXT,
       allowNull: true,
     },
+  },
+  {
+    indexes: [
+      {
+        unique: true,
+        fields: ['menteeId', 'questionId'],
+      },
+    ],
   }
-  // {
-  //   indexes: [
-  //     {
-  //       unique: true,
-  //       fields: ['menteeId', 'questionId'],
-  //     },
-  //   ],
-  // }
 );
