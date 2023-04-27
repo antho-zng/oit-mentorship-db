@@ -211,6 +211,7 @@ async function createMenteeQATransactions() {
     try {
       // CREATE MENTEE
       const currentMentee = mentees[menteeIndex];
+      console.log(`current mentee index is ${menteeIndex}`);
       const mentee = await Mentee.create(
         currentMentee,
         { transaction: trx },
@@ -223,7 +224,6 @@ async function createMenteeQATransactions() {
        * currentAnswerSet is object with key value pairs;
        * questions are keys and applicant responses are values
        */
-      console.log('yay');
       for (const answerIndex in currentQuestionSet) {
         // console.log(answerIndex);
         const currentQuestion = await Question.findOne({
@@ -233,7 +233,6 @@ async function createMenteeQATransactions() {
         });
 
         const questionId = currentQuestion.dataValues.id;
-        console.log(`questionId, ${questionId}`);
         const answer = await Answer.create(
           {
             text: `${currentAnswerSet[currentQuestion.dataValues.text]}`,
@@ -244,7 +243,9 @@ async function createMenteeQATransactions() {
           { ignoreDuplicates: true }
         );
       }
-      console.log('transaction successful!');
+      console.log(
+        `transaction successful! Tables for Mentee #${mentee.dataValues.id} created`
+      );
       await trx.commit();
     } catch (error) {
       console.log(`error: ${error}`);
