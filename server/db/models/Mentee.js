@@ -79,13 +79,13 @@ module.exports = db.define(
     //     notEmpty: true,
     //   },
     // },
+  },
+  {
+    indexes: [
+      {
+        unique: true,
+        fields: ['email'],
+      },
+    ],
   }
-  // {
-  //   indexes: [
-  //     {
-  //       unique: true,
-  //       fields: ['email'],
-  //     },
-  //   ],
-  // }
 );
