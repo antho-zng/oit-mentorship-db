@@ -217,13 +217,26 @@ async function createMenteeQATransactions() {
     );
     console.log('mentee created');
     console.log(mentee);
+
     // CREATE ANSWERS
+
+    /**
+     * currentAnswerSet is object with key value pairs;
+     * questions are keys and applicant responses are values
+     */
     const currentAnswerSet = answers[0];
+
+    const currentQuestion = await Question.findOne({
+      where: {
+        text: `${Object.keys(currentAnswerSet)[1]}`,
+      },
+    });
+    const questionId = currentQuestion.dataValues.id;
     const answer = await Answer.create(
       {
-        text: 'abc',
-        menteeId: `1`,
-        questionId: `2`,
+        text: `${currentAnswerSet[currentQuestion.dataValues.text]}`,
+        menteeId: `${mentee.dataValues.id}`,
+        questionId: questionId,
       },
       { transaction: trx },
       { ignoreDuplicates: true }
