@@ -199,6 +199,8 @@ async function createMenteeQATransactions() {
 
   // get array of all Answers
   const answers = await readGoogleFormsQAData();
+  // console.log('answers retreived');
+  // console.log(answers);
 
   // write Questions into DB
   bulkCreateQuestions();
@@ -207,16 +209,16 @@ async function createMenteeQATransactions() {
 
   try {
     // CREATE MENTEE
-    const currentMentee = mentees[0];
-    console.log('current mentee');
-    console.log(currentMentee);
+    const currentMentee = mentees[1];
+    // console.log('current mentee');
+    // console.log(currentMentee);
     const mentee = await Mentee.create(
       currentMentee,
       { transaction: trx },
       { ignoreDuplicates: true }
     );
     console.log('mentee created');
-    console.log(mentee);
+    // console.log(mentee);
 
     // CREATE ANSWERS
 
@@ -224,25 +226,34 @@ async function createMenteeQATransactions() {
      * currentAnswerSet is object with key value pairs;
      * questions are keys and applicant responses are values
      */
-    const currentAnswerSet = answers[0];
 
-    const currentQuestion = await Question.findOne({
-      where: {
-        text: `${Object.keys(currentAnswerSet)[1]}`,
-      },
-    });
-    const questionId = currentQuestion.dataValues.id;
-    const answer = await Answer.create(
-      {
-        text: `${currentAnswerSet[currentQuestion.dataValues.text]}`,
-        menteeId: `${mentee.dataValues.id}`,
-        questionId: questionId,
-      },
-      { transaction: trx },
-      { ignoreDuplicates: true }
-    );
-    console.log('answer created');
-    console.log(answer);
+    /**
+     * TO-DO : WRAP THIS IN A FOR LOOP
+     *
+     */
+    const currentAnswerSet = answers[0];
+    const currentQuestionSet = Object.keys(currentAnswerSet); // array with all questions
+
+    for (const answerIndex in currentQuestionSet) {
+      console.log(answerIndex);
+      const currentQuestion = await Question.findOne({
+        where: {
+          text: `${currentQuestionSet[answerIndex]}`,
+        },
+      });
+
+      const questionId = currentQuestion.dataValues.id;
+      const answer = await Answer.create(
+        {
+          text: `${currentAnswerSet[currentQuestion.dataValues.text]}`,
+          menteeId: `${mentee.dataValues.id}`,
+          questionId: questionId,
+        },
+        { transaction: trx },
+        { ignoreDuplicates: true }
+      );
+    }
+    console.log('transaction successful!');
     await trx.commit();
   } catch (error) {
     console.log(`error: ${error}`);
@@ -332,8 +343,8 @@ async function createMenteeQATransactions() {
         });
       }
       console.log('Synced with Google Sheets!');
-      readGoogleFormsMenteesData();
-      bulkCreateMentees();
+      // readGoogleFormsMenteesData();
+      // bulkCreateMentees();
     } else {
       console.log('No data found.');
     }
