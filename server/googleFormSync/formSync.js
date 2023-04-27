@@ -202,62 +202,54 @@ async function createMenteeQATransactions() {
   // console.log('answers retreived');
   // console.log(answers);
 
-  // write Questions into DB
-  bulkCreateQuestions();
+  for (const menteeIndex in mentees) {
+    const trx = await db.transaction();
 
-  const trx = await db.transaction();
-
-  try {
-    // CREATE MENTEE
-    const currentMentee = mentees[1];
-    // console.log('current mentee');
-    // console.log(currentMentee);
-    const mentee = await Mentee.create(
-      currentMentee,
-      { transaction: trx },
-      { ignoreDuplicates: true }
-    );
-    console.log('mentee created');
-    // console.log(mentee);
-
-    // CREATE ANSWERS
-
-    /**
-     * currentAnswerSet is object with key value pairs;
-     * questions are keys and applicant responses are values
-     */
-
-    /**
-     * TO-DO : WRAP THIS IN A FOR LOOP
-     *
-     */
-    const currentAnswerSet = answers[0];
+    const currentAnswerSet = answers[menteeIndex];
     const currentQuestionSet = Object.keys(currentAnswerSet); // array with all questions
 
-    for (const answerIndex in currentQuestionSet) {
-      console.log(answerIndex);
-      const currentQuestion = await Question.findOne({
-        where: {
-          text: `${currentQuestionSet[answerIndex]}`,
-        },
-      });
-
-      const questionId = currentQuestion.dataValues.id;
-      const answer = await Answer.create(
-        {
-          text: `${currentAnswerSet[currentQuestion.dataValues.text]}`,
-          menteeId: `${mentee.dataValues.id}`,
-          questionId: questionId,
-        },
+    try {
+      // CREATE MENTEE
+      const currentMentee = mentees[menteeIndex];
+      const mentee = await Mentee.create(
+        currentMentee,
         { transaction: trx },
         { ignoreDuplicates: true }
       );
+
+      // CREATE ANSWERS
+
+      /**
+       * currentAnswerSet is object with key value pairs;
+       * questions are keys and applicant responses are values
+       */
+      console.log('yay');
+      for (const answerIndex in currentQuestionSet) {
+        // console.log(answerIndex);
+        const currentQuestion = await Question.findOne({
+          where: {
+            text: `${currentQuestionSet[answerIndex]}`,
+          },
+        });
+
+        const questionId = currentQuestion.dataValues.id;
+        console.log(`questionId, ${questionId}`);
+        const answer = await Answer.create(
+          {
+            text: `${currentAnswerSet[currentQuestion.dataValues.text]}`,
+            menteeId: `${mentee.dataValues.id}`,
+            questionId: questionId,
+          },
+          { transaction: trx },
+          { ignoreDuplicates: true }
+        );
+      }
+      console.log('transaction successful!');
+      await trx.commit();
+    } catch (error) {
+      console.log(`error: ${error}`);
+      await trx.rollback();
     }
-    console.log('transaction successful!');
-    await trx.commit();
-  } catch (error) {
-    console.log(`error: ${error}`);
-    await trx.rollback();
   }
 }
 
@@ -377,6 +369,7 @@ async function createMenteeQATransactions() {
 
 // readGoogleFormsQAData();
 // bulkCreateQuestions();
+bulkCreateQuestions();
 createMenteeQATransactions();
 
 /*
