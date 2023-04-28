@@ -42,11 +42,8 @@ async function googleAuth() {
 
 // take data from Google Forms and push to Mentees array
 async function getMenteeData(rows) {
-  // array for all mentees
   const mentees = [];
 
-  // For each row
-  // TO-DO: split for all the JSONB attributes to store as array
   for (const row of rows) {
     mentees.push({
       firstName: row[menteeInfoIndexes[`firstNameIndex`]],
@@ -70,41 +67,33 @@ async function getMenteeData(rows) {
 async function getResponseData(rows) {
   const answers = [];
 
-  if (rows.length) {
-    const questions = rows[0];
-    rows.shift();
+  const questions = rows[0];
+  rows.shift();
 
-    for (const row of rows) {
-      const menteeResponses = {};
+  for (const row of rows) {
+    const menteeResponses = {};
 
-      for (const responseNum in row) {
-        menteeResponses[questions[responseNum]] = row[responseNum];
-      }
-
-      answers.push(menteeResponses);
+    for (const responseNum in row) {
+      menteeResponses[questions[responseNum]] = row[responseNum];
     }
-    return answers;
-  } else {
-    console.log('No data found.');
+
+    answers.push(menteeResponses);
   }
+  return answers;
 }
 
 async function bulkCreateQuestions(rows) {
-  if (rows.length) {
-    // save headers as questions
-    const headers = rows[0];
-    const questions = [];
+  // save headers as questions
+  const headers = rows[0];
+  const questions = [];
 
-    for (const question of headers) {
-      questions.push({ text: question });
-    }
-
-    Question.bulkCreate(questions, { ignoreDuplicates: true }).then(() =>
-      console.log(`${questions.length} questions have been written into DB!`)
-    );
-  } else {
-    console.log('No data found.');
+  for (const question of headers) {
+    questions.push({ text: question });
   }
+
+  Question.bulkCreate(questions, { ignoreDuplicates: true }).then(() =>
+    console.log(`${questions.length} questions have been written into DB!`)
+  );
 }
 
 async function createMenteeQATransactions() {
@@ -121,6 +110,7 @@ async function createMenteeQATransactions() {
     rows = res?.data?.values;
 
     if (!rows || rows.length === 0) {
+      console.log('No data returned from Google Sheets! :(');
       return;
     }
   } catch (error) {

@@ -18,7 +18,6 @@ module.exports = db.define(
         notEmpty: true,
       },
     },
-    // TO-DO: store as JSON array
     pronouns: {
       type: Sequelize.JSONB,
       allowNull: false,
@@ -56,7 +55,6 @@ module.exports = db.define(
         notEmpty: true,
       },
     },
-    // TO-DO: store as JSON array
     gendersAndSexualities: {
       type: Sequelize.JSONB,
       allowNull: false,
@@ -64,7 +62,6 @@ module.exports = db.define(
         notEmpty: true,
       },
     },
-    // TO-DO: JSON column with list of all options
     raceEthnicity: {
       type: Sequelize.JSONB,
       allowNull: false,
