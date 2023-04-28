@@ -41,174 +41,135 @@ async function googleAuth() {
 }
 
 // take data from Google Forms and push to Mentees array
-async function readGoogleFormsMenteesData() {
+async function getMenteeData(rows) {
   // array for all mentees
   const mentees = [];
 
-  try {
-    // Get the rows
-    const res = await service.spreadsheets.values.get({
-      auth: authClient,
-      spreadsheetId: menteeAppSpreadsheetID,
-      range: 'A:AK',
+  // For each row
+  // TO-DO: split for all the JSONB attributes to store as array
+  for (const row of rows) {
+    mentees.push({
+      firstName: row[menteeInfoIndexes[`firstNameIndex`]],
+      lastName: row[menteeInfoIndexes['lastNameIndex']],
+      pronouns: row[menteeInfoIndexes['pronounsIndex']],
+      email: row[menteeInfoIndexes['emailIndex']],
+      phoneNum: row[menteeInfoIndexes['phoneNumIndex']],
+      dateOfBirth: row[menteeInfoIndexes['dobIndex']],
+      location: row[menteeInfoIndexes['locationIndex']],
+      gendersAndSexualities:
+        row[menteeInfoIndexes['gendersAndSexualitiesIndex']].split(','),
+      raceEthnicity: row[menteeInfoIndexes['raceEthnicityIndex']],
+      // cohort: cohort,
+      // answers: {q:a, q:a, ...}
     });
-
-    // Set rows to equal the rows
-    const rows = res.data.values;
-    const resData = res.data;
-    // console.log(resData);
-
-    // Check if we have any data and if we do add it to our answers array
-    if (rows.length) {
-      // save headers as keys
-      const questions = rows[0];
-
-      // Remove the headers
-      rows.shift();
-
-      // For each row
-      // TO-DO: make less ugly
-      for (const row of rows) {
-        mentees.push({
-          firstName: row[menteeInfoIndexes[`firstNameIndex`]],
-          lastName: row[menteeInfoIndexes['lastNameIndex']],
-          pronouns: row[menteeInfoIndexes['pronounsIndex']],
-          email: row[menteeInfoIndexes['emailIndex']],
-          phoneNum: row[menteeInfoIndexes['phoneNumIndex']],
-          dateOfBirth: row[menteeInfoIndexes['dobIndex']],
-          location: row[menteeInfoIndexes['locationIndex']],
-          gendersAndSexualities:
-            row[menteeInfoIndexes['gendersAndSexualitiesIndex']],
-          raceEthnicity: row[menteeInfoIndexes['raceEthnicityIndex']],
-          // cohort: cohort,
-        });
-      }
-      console.log(`${mentees.length} Mentees added to array!`);
-      return mentees;
-    } else {
-      console.log('No data found.');
-    }
-  } catch (error) {
-    // Log the error
-    console.log(error);
-
-    // Exit the process with error
-    process.exit(1);
   }
+  console.log(`${mentees.length} Mentees added to array!`);
+  return mentees;
 }
 
-async function readGoogleFormsQAData() {
+async function getResponseData(rows) {
   const answers = [];
 
-  try {
-    // Get the rows
-    const res = await service.spreadsheets.values.get({
-      auth: authClient,
-      spreadsheetId: menteeAppSpreadsheetID,
-      range: 'A:AK',
-    });
+  if (rows.length) {
+    const questions = rows[0];
+    rows.shift();
 
-    // Set rows to equal the rows
-    const rows = res.data.values;
+    for (const row of rows) {
+      const menteeResponses = {};
 
-    // Check if we have any data and if we do add it to our answers array
-    if (rows.length) {
-      // save headers as keys
-      const questions = rows[0];
-
-      // Remove the headers
-      rows.shift();
-
-      // For each row
-      for (const row of rows) {
-        const menteeResponses = {};
-
-        for (const responseNum in row) {
-          menteeResponses[questions[responseNum]] = row[responseNum];
-        }
-
-        answers.push(menteeResponses);
-        // console.log('menteeResponses');
-        // console.log(menteeResponses);
+      for (const responseNum in row) {
+        menteeResponses[questions[responseNum]] = row[responseNum];
       }
-      // console.log('answers: ');
-      // console.log(answers);
-      return answers;
-    } else {
-      console.log('No data found.');
-    }
-  } catch (error) {
-    // Log the error
-    console.log(error);
 
-    // Exit the process with error
-    process.exit(1);
+      answers.push(menteeResponses);
+      // console.log('menteeResponses');
+      // console.log(menteeResponses);
+    }
+    // console.log('answers: ');
+    // console.log(answers);
+    return answers;
+  } else {
+    console.log('No data found.');
   }
 }
 
-async function bulkCreateQuestions() {
-  try {
-    // Get the rows
-    const res = await service.spreadsheets.values.get({
-      auth: authClient,
-      spreadsheetId: menteeAppSpreadsheetID,
-      range: 'A:AK',
-    });
+async function bulkCreateQuestions(rows) {
+  if (rows.length) {
+    // save headers as questions
+    const headers = rows[0];
+    console.log('Questions retrieved');
 
-    // Set rows to equal the rows
-    const rows = res.data.values;
+    const questions = [];
 
-    // Check if we have any data and if we do add it to our answers array
-    if (rows.length) {
-      // save headers as questions
-      const headers = rows[0];
-      console.log('Questions retrieved');
-
-      const questions = [];
-
-      for (const question of headers) {
-        questions.push({ text: question });
-      }
-
-      Question.bulkCreate(questions, { ignoreDuplicates: true }).then(() =>
-        console.log(`${questions.length} questions have been written into DB!`)
-      );
-    } else {
-      console.log('No data found.');
+    for (const question of headers) {
+      questions.push({ text: question });
     }
-  } catch (error) {
-    // Log the error
-    console.log(error);
 
-    // Exit the process with error
-    process.exit(1);
+    Question.bulkCreate(questions, { ignoreDuplicates: true }).then(() =>
+      console.log(`${questions.length} questions have been written into DB!`)
+    );
+  } else {
+    console.log('No data found.');
   }
 }
 
 // take Mentees array and write Mentees into DB
 async function bulkCreateMentees() {
-  const mentees = await readGoogleFormsMenteesData();
+  const mentees = await getMenteeData();
   Mentee.bulkCreate(mentees, { ignoreDuplicates: true }).then(() =>
     console.log(`${mentees.length} mentees have been written into DB!`)
   );
 }
 
 async function createMenteeQATransactions() {
-  // get array of all Mentees
-  const mentees = await readGoogleFormsMenteesData();
+  // Get the rows
+  // TO-DO: try/catch for google api call ? read google api docs to see how google handles errors
+  const res = await service.spreadsheets.values.get({
+    auth: authClient,
+    spreadsheetId: menteeAppSpreadsheetID,
+    range: 'A:AK',
+  });
 
-  // get array of all Answers
-  const answers = await readGoogleFormsQAData();
-  // console.log('answers retreived');
+  // Set rows to equal the rows
+  const rows = res?.data?.values;
+
+  if (!rows || rows.length === 0) {
+    return;
+  }
+
+  // write all questions into DB
+  bulkCreateQuestions(rows);
+
+  /**
+   * read question table
+   * create questions/id map —
+   */
+
+  // console.log('rows going into getresponsedata');
+  // console.log(rows);
+  const answers = await getResponseData(rows);
+  // console.log('answers');
   // console.log(answers);
+
+  // console.log('rows going into getmenteedata');
+  // console.log(rows);
+  const mentees = await getMenteeData(rows);
 
   for (const menteeIndex in mentees) {
     const trx = await db.transaction();
 
-    const currentAnswerSet = answers[menteeIndex];
-    const currentQuestionSet = Object.keys(currentAnswerSet); // array with all questions
+    /**
+     * currentAnswerSet is object with key value pairs;
+     * questions are keys and applicant responses are values
+     */
 
     try {
+      const currentAnswerSet = answers[menteeIndex];
+      // console.log('currentanswerset');
+      // console.log(currentAnswerSet);
+      const currentQuestionSet = Object.keys(currentAnswerSet);
+      // console.log('currentquestionset');
+      // console.log(currentQuestionSet);
       // CREATE MENTEE
       const currentMentee = mentees[menteeIndex];
       console.log(`current mentee index is ${menteeIndex}`);
@@ -219,20 +180,20 @@ async function createMenteeQATransactions() {
       );
 
       // CREATE ANSWERS
-
-      /**
-       * currentAnswerSet is object with key value pairs;
-       * questions are keys and applicant responses are values
-       */
       for (const answerIndex in currentQuestionSet) {
-        // console.log(answerIndex);
+        // console.log(`answerIndex is ${answerIndex}`);
         const currentQuestion = await Question.findOne({
           where: {
             text: `${currentQuestionSet[answerIndex]}`,
           },
         });
 
+        // console.log(`question found`);
+        // console.log(currentQuestion);
         const questionId = currentQuestion.dataValues.id;
+
+        // TO-DO: create question map, const questionId = questionMap[currentQuestionSet[answerIndex]]
+
         const answer = await Answer.create(
           {
             text: `${currentAnswerSet[currentQuestion.dataValues.text]}`,
@@ -336,7 +297,7 @@ async function createMenteeQATransactions() {
         });
       }
       console.log('Synced with Google Sheets!');
-      // readGoogleFormsMenteesData();
+      // getMenteeData();
       // bulkCreateMentees();
     } else {
       console.log('No data found.');
@@ -368,9 +329,8 @@ async function createMenteeQATransactions() {
 // (google batch save)
 // (google transaction boundary / transitional bounadry)
 
-// readGoogleFormsQAData();
+// getResponseData();
 // bulkCreateQuestions();
-bulkCreateQuestions();
 createMenteeQATransactions();
 
 /*
