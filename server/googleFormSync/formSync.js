@@ -19,8 +19,6 @@ const menteeInfoIndexes = {
   raceEthnicityIndex: 9,
 };
 
-// const menteeAppSpreadsheetID = '1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII';
-const cohort = 'fall2023';
 const service = google.sheets('v4');
 const credentials = require('./googleCredentials.json');
 
