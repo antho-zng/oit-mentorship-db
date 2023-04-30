@@ -2,7 +2,7 @@
 
 const {
   db,
-  models: { User, Mentee, Focus },
+  models: { User, Mentee, Focus, Cohort },
 } = require('../server/db');
 
 /**
@@ -13,14 +13,17 @@ async function seed() {
   await db.sync({ force: true }); // clears db and matches models to tables
   console.log('db synced!');
 
-  /**
-   *
-   * CREATING USERS
-   *
-   */
   const users = await Promise.all([
     User.create({ username: 'cody', password: '123' }),
     User.create({ username: 'murphy', password: '123' }),
+  ]);
+
+  const cohorts = await Promise.all([
+    Cohort.create({
+      name: 'Spring 2023',
+      menteeApplicationFormID: '1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII',
+      isCurrent: true,
+    }),
   ]);
 
   /**
@@ -78,12 +81,6 @@ async function seed() {
   //   { ignoreDuplicates: true }
   // );
 
-  /**
-   *
-   * CREATING FOCUSES
-   *
-   */
-
   console.log(`seeded ${users.length} users`);
   console.log(`seeded successfully`);
   return {
@@ -91,6 +88,7 @@ async function seed() {
       cody: users[0],
       murphy: users[1],
     },
+    cohorts,
   };
 }
 

@@ -6,6 +6,7 @@ const User = require('./models/User');
 const Mentee = require('./models/Mentee');
 const Question = require('./models/Question');
 const Answer = require('./models/Answer');
+const Cohort = require('./models/Cohort');
 
 // ASSOCIATIONS
 Mentee.belongsToMany(Question, { through: Answer });
@@ -18,5 +19,6 @@ module.exports = {
     Mentee,
     Question,
     Answer,
+    Cohort,
   },
 };
