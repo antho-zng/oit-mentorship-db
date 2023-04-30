@@ -18,9 +18,8 @@ module.exports = db.define(
         notEmpty: true,
       },
     },
-    // TO-DO: store as JSON array
     pronouns: {
-      type: Sequelize.STRING,
+      type: Sequelize.JSONB,
       allowNull: false,
       validate: {
         notEmpty: true,
@@ -41,8 +40,9 @@ module.exports = db.define(
         notEmpty: true,
       },
     },
+    // TO-DO change data type to DATEONLY
     dateOfBirth: {
-      type: Sequelize.DATEONLY,
+      type: Sequelize.STRING,
       allowNull: false,
       validate: {
         notEmpty: true,
@@ -55,22 +55,27 @@ module.exports = db.define(
         notEmpty: true,
       },
     },
-    // TO-DO: JSON column
-    // gendersAndSexualities: {
-    //   type: Sequelize.STRING,
-    //   allowNull: false,
-    //   validate: {
-    //     notEmpty: true,
-    //   },
-    // },
-    // TO-DO: JSON column with list of all options
-    raceEthnicity: {
-      type: Sequelize.STRING,
+    gendersAndSexualities: {
+      type: Sequelize.JSONB,
       allowNull: false,
       validate: {
         notEmpty: true,
       },
     },
+    raceEthnicity: {
+      type: Sequelize.JSONB,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
+    // cohort: {
+    //   type: Sequelize.STRING,
+    //   allowNull: true,
+    //   validate: {
+    //     notEmpty: true,
+    //   },
+    // },
   },
   {
     indexes: [

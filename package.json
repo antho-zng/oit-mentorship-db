@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack",
     "build:dev": "npm run build -- --watch --mode=development",
-    "formSync": "node server/googleAPI/formSync.js",
+    "formSync": "node server/googleFormSync/formSync.js",
     "seed": "node script/seed.js",
     "start": "node server",
     "start:dev": "npm run build:dev & npm run start-server",
@@ -18,7 +18,7 @@
     "test:dev:models": "npm run test:dev -- --grep=model",
     "test:dev:routes": "npm run test:dev -- --grep=route"
   },
-  "author": "Fullstack Academy of Code",
+  "author": "Anthony Zhang",
   "license": "MIT",
   "dependencies": {
     "@babel/preset-env": "^7.20.2",
