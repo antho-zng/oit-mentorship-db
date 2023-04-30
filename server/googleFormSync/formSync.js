@@ -165,10 +165,6 @@ async function createMenteeQATransactions() {
           { transaction: trx },
           { ignoreDuplicates: true }
         );
-        console
-          .log
-          // `Question ID: ${questionId}, Mentee ID: ${mentee.dataValues.id}`
-          ();
       }
       console.log(
         `Transaction successful! Tables for Mentee #${mentee.dataValues.id} created`
