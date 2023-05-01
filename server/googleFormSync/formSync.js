@@ -57,7 +57,7 @@ async function getMenteeData(rows) {
       // answers: {q:a, q:a, ...}
     });
   }
-  console.log(`${mentees.length} mentees found!`);
+  console.log(`${mentees.length} mentees found... writing to database!`);
   return mentees;
 }
 
