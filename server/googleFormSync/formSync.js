@@ -82,16 +82,28 @@ async function getResponseData(rows) {
 
 async function bulkCreateQuestions(rows) {
   // save headers as questions
-  const headers = rows[0];
+  const questionsRow = rows[0];
   const questions = [];
 
-  for (const question of headers) {
-    questions.push({ text: question });
+  for (const question of questionsRow) {
+    questions.push({ text: question.toString() });
   }
 
   Question.bulkCreate(questions, { ignoreDuplicates: true }).then(() =>
     console.log(`${questions.length} questions have been written into DB!`)
   );
+}
+
+async function createQuestionsMap(rows) {
+  const questionsMap = {};
+  const allQuestions = await Question.findAll();
+
+  allQuestions.map(
+    (question) =>
+      (questionsMap[question.dataValues.text] = question.dataValues.id)
+  );
+
+  return questionsMap;
 }
 
 async function createMenteeQATransactions(spreadsheetID) {
@@ -117,6 +129,7 @@ async function createMenteeQATransactions(spreadsheetID) {
   }
 
   bulkCreateQuestions(rows);
+  const questionsMap = await createQuestionsMap(rows);
 
   const answers = await getResponseData(rows);
   const mentees = await getMenteeData(rows);
@@ -144,19 +157,12 @@ async function createMenteeQATransactions(spreadsheetID) {
       // CREATE ANSWERS
       // TO-DO : This loop will run one too many loops at the end and return a Sequelize validation error
       for (const answerIndex in currentQuestionSet) {
-        const currentQuestion = await Question.findOne({
-          where: {
-            text: `${currentQuestionSet[answerIndex]}`,
-          },
-        });
-
-        const questionId = currentQuestion.dataValues.id;
-
-        // TO-DO: create question map, const questionId = questionMap[currentQuestionSet[answerIndex]]
+        const currentQuestion = currentQuestionSet[answerIndex];
+        const questionId = questionsMap[currentQuestion];
 
         const answer = await Answer.create(
           {
-            text: `${currentAnswerSet[currentQuestion.dataValues.text]}`,
+            text: `${currentAnswerSet[currentQuestion]}`,
             menteeId: `${mentee.dataValues.id}`,
             questionId: questionId,
           },
