@@ -16,14 +16,13 @@ function SingleMentee(props) {
 
   return (
     <div>
-      <h3>hello! </h3>
-      <p>
-        Name: {mentee.firstName} {mentee.lastName}
-      </p>
+      <p>Mentee</p>
+      <h3>
+        {mentee.firstName} {mentee.lastName}
+      </h3>
+      <p>Pronouns: {mentee.pronouns}</p>
       <p>Email: {mentee.email}</p>
-      <p>Candidate ID: {mentee.candidateID}</p>
-      <p>Primary Focus: </p>
-      <p>Secondary Focus: </p>
+      <p>Phone Number: {mentee.phoneNum}</p>
     </div>
   );
 }

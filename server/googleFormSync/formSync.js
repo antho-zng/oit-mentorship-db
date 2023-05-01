@@ -53,8 +53,6 @@ async function getMenteeData(rows) {
       gendersAndSexualities:
         row[menteeInfoIndexes['gendersAndSexualitiesIndex']].split(','),
       raceEthnicity: row[menteeInfoIndexes['raceEthnicityIndex']].split(','),
-      // cohort: cohort,
-      // answers: {q:a, q:a, ...}
     });
   }
   console.log(`${mentees.length} mentees found... writing to database!`);
@@ -105,8 +103,10 @@ async function createQuestionsMap(rows) {
   return questionsMap;
 }
 
-async function createMenteeQATransactions(spreadsheetID) {
+async function createMenteeQATransactions(cohort) {
   let rows = {};
+  const spreadsheetID = cohort.menteeApplicationFormID;
+  const cohortId = cohort.cohortId;
 
   try {
     const res = await service.spreadsheets.values.get({
@@ -147,6 +147,10 @@ async function createMenteeQATransactions(spreadsheetID) {
 
       // CREATE MENTEE
       const currentMentee = mentees[menteeIndex];
+      currentMentee[`cohortId`] = cohortId;
+      console.log(`currentMentee`);
+      console.log(currentMentee);
+
       const mentee = await Mentee.create(
         currentMentee,
         { transaction: trx },
@@ -205,8 +209,7 @@ async function runFormSync() {
     `Syncing with Google Forms for the ${currentCohort.name} mentee cohort!
     Spreadsheet ID is ${currentCohort.menteeApplicationFormID}`
   );
-  const currentCohortSpreadSheetID = currentCohort.menteeApplicationFormID;
-  await createMenteeQATransactions(currentCohortSpreadSheetID);
+  await createMenteeQATransactions(currentCohort);
   console.log(`Finished syncing ${currentCohort.name} mentee applications!`);
 }
 

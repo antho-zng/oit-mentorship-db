@@ -69,13 +69,6 @@ module.exports = db.define(
         notEmpty: true,
       },
     },
-    // cohort: {
-    //   type: Sequelize.STRING,
-    //   allowNull: true,
-    //   validate: {
-    //     notEmpty: true,
-    //   },
-    // },
   },
   {
     indexes: [

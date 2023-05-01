@@ -20,6 +20,7 @@ async function seed() {
 
   const cohorts = await Promise.all([
     Cohort.create({
+      cohortId: 'SPRING2023',
       name: 'Spring 2023',
       menteeApplicationFormID: '1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII',
       isCurrent: true,

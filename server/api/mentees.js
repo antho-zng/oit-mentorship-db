@@ -18,7 +18,7 @@ router.get('/:id', async (req, res, next) => {
   try {
     const mentee = await Mentees.findOne({
       where: {
-        candidateID: `mentee-${req.params.id}`,
+        id: req.params.id,
       },
     });
 
