@@ -1,11 +1,13 @@
 // Import dependencies
 const fs = require('fs');
 const { google } = require('googleapis');
+const service = google.sheets('v4');
 const Sequelize = require('sequelize');
 const {
   db,
   models: { Mentee, Question, Answer, Cohort },
 } = require('../db');
+require('dotenv').config();
 
 const menteeInfoIndexes = {
   firstNameIndex: 2,
@@ -19,14 +21,11 @@ const menteeInfoIndexes = {
   raceEthnicityIndex: 9,
 };
 
-const service = google.sheets('v4');
-const credentials = require('./googleCredentials.json');
-
 // Configure auth client
 const authClient = new google.auth.JWT(
-  credentials.client_email,
+  process.env.CLIENT_EMAIL,
   null,
-  credentials.private_key.replace(/\\n/g, '\n'),
+  process.env.PRIVATE_KEY.replace(/\\n/g, '\n'),
   ['https://www.googleapis.com/auth/spreadsheets']
 );
 
