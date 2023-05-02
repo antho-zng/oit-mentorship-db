@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const router = require('express').Router();
 const Mentees = require('../db/models/Mentee');
+const Cohort = require('../db/models/Cohort');
 
 // GET /api/mentees
 router.get('/', async (req, res, next) => {
@@ -20,6 +21,7 @@ router.get('/:id', async (req, res, next) => {
       where: {
         id: req.params.id,
       },
+      include: Cohort,
     });
 
     if (mentee === null) {

@@ -1,3 +1,15 @@
 .logo{
   height: 60px;
 }
+nav {
+  font-weight: bold;
+  color: black;
+  justify-content: right;
+  align-items: center;
+  display: flex;
+  min-height: 75px;
+}
+a {
+  color: black;
+  font-size: 14px;
+}
