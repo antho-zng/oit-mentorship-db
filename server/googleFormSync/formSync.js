@@ -38,11 +38,14 @@ async function googleAuth() {
 }
 
 // take data from Google Forms and push to Mentees array
-async function getMenteeData(rows) {
+async function getMenteeData(rows, cohortId) {
   const mentees = [];
 
-  for (const row of rows) {
+  for (const rowIdx in rows) {
+    const row = rows[rowIdx];
+
     mentees.push({
+      id: `mentee-${cohortId}-${rowIdx}`,
       firstName: row[menteeInfoIndexes[`firstNameIndex`]],
       lastName: row[menteeInfoIndexes['lastNameIndex']],
       pronouns: row[menteeInfoIndexes['pronounsIndex']].split(','),
@@ -69,6 +72,9 @@ async function getResponseData(rows) {
     const menteeResponses = {};
 
     for (const responseNum in row) {
+      if (row[responseNum] === '') {
+        row[responseNum] = 'n/a';
+      }
       menteeResponses[questions[responseNum]] = row[responseNum];
     }
 
@@ -131,7 +137,7 @@ async function createMenteeQATransactions(cohort) {
   const questionsMap = await createQuestionsMap(rows);
 
   const answers = await getResponseData(rows);
-  const mentees = await getMenteeData(rows);
+  const mentees = await getMenteeData(rows, cohortId);
 
   for (const menteeIndex in mentees) {
     const trx = await db.transaction();
@@ -148,8 +154,6 @@ async function createMenteeQATransactions(cohort) {
       // CREATE MENTEE
       const currentMentee = mentees[menteeIndex];
       currentMentee[`cohortId`] = cohortId;
-      console.log(`currentMentee`);
-      console.log(currentMentee);
 
       const mentee = await Mentee.create(
         currentMentee,

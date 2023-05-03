@@ -3,7 +3,10 @@ const db = require('../db');
 module.exports = db.define(
   'mentees',
   {
-    // TO-DO: add ID
+    id: {
+      type: Sequelize.STRING,
+      primaryKey: true,
+    },
     firstName: {
       type: Sequelize.STRING,
       allowNull: false,
