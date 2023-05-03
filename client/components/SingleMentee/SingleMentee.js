@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 import style from './SingleMentee.module.css';
 import { getMentee } from '../../store/mentee';
+import Box from '@mui/material/Box';
 
 function SingleMentee(props) {
   useEffect(() => {
@@ -13,9 +14,6 @@ function SingleMentee(props) {
   const pronouns = useSelector((state) => state.mentee.pronouns || []);
   const firstName = useSelector((state) => state.mentee.firstName || []);
   const lastName = useSelector((state) => state.mentee.lastName || []);
-
-  console.log('mentee');
-  console.log(mentee);
 
   // TO-DO : display mentee cohort
 
@@ -52,6 +50,18 @@ function SingleMentee(props) {
         </p>
         {/* <p>Cohort: {cohort} </p> */}
       </div>
+      <Box
+        className={style.questionsContainer}
+        sx={{
+          width: 300,
+          height: 300,
+          backgroundColor: 'primary.dark',
+          '&:hover': {
+            backgroundColor: 'primary.main',
+            opacity: [0.9, 0.8, 0.7],
+          },
+        }}
+      />
     </div>
   );
 }

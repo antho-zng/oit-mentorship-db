@@ -12,3 +12,7 @@ h2{
 p{
   font-size: smaller;
 }
+.questionsContainer{
+  justify-content: center;
+  display: flex;
+}
