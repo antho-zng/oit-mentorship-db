@@ -5,11 +5,13 @@ import history from '../history';
  * ACTION TYPES
  */
 const GET_MENTEE = 'GET_MENTEE';
+const GET_ALL_MENTEES = 'GET_ALL_MENTEES';
 
 /**
  * ACTION CREATORS
  */
 const _getMentee = (mentee) => ({ type: GET_MENTEE, mentee });
+const _getAllMentees = (mentees) => ({ type: GET_ALL_MENTEES, mentees });
 
 /**
  * THUNK CREATORS
@@ -27,6 +29,18 @@ export const getMentee = (id) => {
   };
 };
 
+export function getAllMentees() {
+  return async (dispatch) => {
+    try {
+      const { data } = await axios.get(`/api/mentees`);
+      dispatch(_getAllMentees(data));
+    } catch (error) {
+      console.log('Mentees not found!');
+      throw error;
+    }
+  };
+}
+
 // INITIAL STATE
 const initialState = {};
 
@@ -37,19 +51,9 @@ export default function (state = initialState, action) {
   switch (action.type) {
     case GET_MENTEE:
       return action.mentee;
+    case GET_ALL_MENTEES:
+      return action.mentees;
     default:
       return state;
   }
 }
-
-// export const getMentee = (id) => async (dispatch) => {
-//   console.log(`thunk is getting this id..: ${id}`);
-//   const res = await axios.get(`/api/mentees/${id}`);
-//   return dispatch(_getMentee(res.data));
-// };
-
-// export const getPrompt = (id) => async (dispatch) => {
-//   const res = await axios.get(`/api/prompts/${id}`);
-//   // history.push("/prompts");
-//   return dispatch(setPrompt(res.data));
-// };

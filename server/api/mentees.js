@@ -7,7 +7,9 @@ const Question = require('../db/models/Question');
 // GET /api/mentees
 router.get('/', async (req, res, next) => {
   try {
-    const mentees = await Mentees.findAll();
+    const mentees = await Mentees.findAll({
+      include: [Cohort],
+    });
     res.send(mentees);
   } catch (error) {
     next(error);
@@ -21,8 +23,7 @@ router.get('/:id', async (req, res, next) => {
       where: {
         id: req.params.id,
       },
-      include: Cohort,
-      include: Question,
+      include: [Cohort, Question],
     });
 
     if (mentee === null) {

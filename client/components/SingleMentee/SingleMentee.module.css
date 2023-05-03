@@ -7,13 +7,14 @@
   margin-left: 60px;
   flex-direction: column;
   grid-column-start: sidebar;
-  position:fixed;
+  /* position:fixed; */
 }
 .sidearSubhead{
   font-weight:bold;
 }
 .qaBlock{
 padding-bottom: 15px;
+font-size: 14px;
 }
 .question{
   font-weight:bold;
@@ -26,11 +27,23 @@ h2{
 p{
   font-size: smaller;
 }
+.sidebar p{
+  padding-top:5px;
+  padding-bottom:5px;
+}
 .questionsContainer{
   margin-top: 40px;
   margin-right: 60px;
   grid-column-start: questions;
-  background-color: azure;
   overflow-x: scroll;
   height: 100vh;
+}
+.questionsHeading{
+  position: sticky;
+  top: 0;
+  background-color: white;
+  font-size:20px;
+  text-transform: uppercase;
+  padding-bottom: 30px
+
 }

@@ -45,7 +45,7 @@ module.exports = db.define(
     },
     // TO-DO change data type to DATEONLY
     dateOfBirth: {
-      type: Sequelize.STRING,
+      type: Sequelize.DATEONLY,
       allowNull: false,
       validate: {
         notEmpty: true,
@@ -71,6 +71,20 @@ module.exports = db.define(
       validate: {
         notEmpty: true,
       },
+    },
+    acceptedStatus: {
+      type: Sequelize.ENUM(
+        'PENDING',
+        'ACCEPTED',
+        'NOT ACCEPTED',
+        'HIGHLY ACCEPTED',
+        'ACCEPTED LOW PRIORITY'
+      ),
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+      defaultValue: 'PENDING',
     },
   },
   {
