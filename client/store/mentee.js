@@ -16,7 +16,6 @@ const _getMentee = (mentee) => ({ type: GET_MENTEE, mentee });
  */
 
 export const getMentee = (id) => {
-  console.log(`thunk is getting this id: ${id}`);
   return async (dispatch) => {
     try {
       const { data } = await axios.get(`/api/mentees/${id}`);

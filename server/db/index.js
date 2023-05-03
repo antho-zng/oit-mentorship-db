@@ -11,6 +11,7 @@ const Cohort = require('./models/Cohort');
 // ASSOCIATIONS
 Mentee.belongsToMany(Question, { through: Answer });
 Question.belongsToMany(Mentee, { through: Answer });
+
 Mentee.belongsTo(Cohort, { foreignKey: 'cohortId' });
 Cohort.hasMany(Mentee, { foreignKey: 'cohortId' });
 

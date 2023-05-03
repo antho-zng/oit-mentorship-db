@@ -14,6 +14,11 @@ function SingleMentee(props) {
   const pronouns = useSelector((state) => state.mentee.pronouns || []);
   const firstName = useSelector((state) => state.mentee.firstName || []);
   const lastName = useSelector((state) => state.mentee.lastName || []);
+  const questionsAndAnswers = useSelector(
+    (state) => state.mentee.questions || []
+  );
+
+  console.log(questionsAndAnswers);
 
   // TO-DO : display mentee cohort
 
@@ -50,7 +55,22 @@ function SingleMentee(props) {
         </p>
         {/* <p>Cohort: {cohort} </p> */}
       </div>
-      <div className={style.questionsContainer}></div>
+      <div className={style.questionsContainer}>
+        <h3>Application Responses</h3>
+        <div>
+          {questionsAndAnswers.map((qaPair, idx) => {
+            return (
+              <div key={idx}>
+                <p className={style.qaBlock}>
+                  <span className={style.question}>{qaPair.text}</span>
+                  <br></br>
+                  {qaPair.answer.text}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

@@ -12,6 +12,13 @@
 .sidearSubhead{
   font-weight:bold;
 }
+.qaBlock{
+padding-bottom: 15px;
+}
+.question{
+  font-weight:bold;
+  font-style: italic;
+}
 h2{
   text-transform: uppercase;
   padding-bottom:60px
