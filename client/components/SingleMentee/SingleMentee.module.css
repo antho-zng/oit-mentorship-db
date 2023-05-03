@@ -1,6 +1,13 @@
+.menteeProfile{
+  display: grid;
+  grid-template-columns: [sidebar] 30% [questions] 70%;
+  overflow:hidden;
+}
 .sidebar{
-margin-left: 20px;
-flex-direction: column;
+  margin-left: 60px;
+  flex-direction: column;
+  grid-column-start: sidebar;
+  position:fixed;
 }
 .sidearSubhead{
   font-weight:bold;
@@ -13,6 +20,10 @@ p{
   font-size: smaller;
 }
 .questionsContainer{
-  justify-content: center;
-  display: flex;
+  margin-top: 40px;
+  margin-right: 60px;
+  grid-column-start: questions;
+  background-color: azure;
+  overflow-x: scroll;
+  height: 100vh;
 }

@@ -18,7 +18,7 @@ function SingleMentee(props) {
   // TO-DO : display mentee cohort
 
   return (
-    <div>
+    <div className={style.menteeProfile}>
       <div className={style.sidebar} side='right'>
         <p>Mentee</p>
 
@@ -50,18 +50,7 @@ function SingleMentee(props) {
         </p>
         {/* <p>Cohort: {cohort} </p> */}
       </div>
-      <Box
-        className={style.questionsContainer}
-        sx={{
-          width: 300,
-          height: 300,
-          backgroundColor: 'primary.dark',
-          '&:hover': {
-            backgroundColor: 'primary.main',
-            opacity: [0.9, 0.8, 0.7],
-          },
-        }}
-      />
+      <div className={style.questionsContainer}></div>
     </div>
   );
 }
