@@ -3,6 +3,11 @@ import { connect, useSelector } from 'react-redux';
 import style from './SingleMentee.module.css';
 import { getMentee } from '../../store/mentee';
 
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Button from '@mui/material/Button';
+
 const questionCutoff = 8;
 
 function SingleMentee(props) {
@@ -27,7 +32,7 @@ function SingleMentee(props) {
   return (
     <div className={style.menteeProfile}>
       <div className={style.sidebar} side='right'>
-        <p>Mentee &gt; {mentee.acceptedStatus}</p>
+        <p>Mentee ({mentee.acceptedStatus})</p>
 
         <h2>
           {firstName} <br></br>
