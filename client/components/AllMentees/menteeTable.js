@@ -48,6 +48,11 @@ const rows = [
   createData('Oreo', 437, 18.0, 63, 4.0),
 ];
 
+function createRows(mentees) {
+  console.log(`mentees from props`);
+  console.log(mentees);
+}
+
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -208,7 +213,7 @@ function EnhancedTableToolbar(props) {
           id='tableTitle'
           component='div'
         >
-          Nutrition
+          ALL MENTEES
         </Typography>
       )}
 
@@ -233,13 +238,16 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function MenteeTable() {
+export default function MenteeTable(props) {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const mentees = props.mentees;
+  createRows(mentees);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';

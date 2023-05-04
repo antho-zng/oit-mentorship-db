@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
-import { getMentee, getAllMentees } from '../../store/mentee';
+import { getAllMentees } from '../../store/allMentees';
 import MenteeTable from './menteeTable';
 
 function AllMentees(props) {
-  // useEffect(() => {
-  //   props.getAllMentees();
-  // }, []);
+  const mentees = useSelector((state) => state.allMentees || []);
+  useEffect(() => {
+    props.getAllMentees();
+  }, []);
 
-  const mentees = useSelector((state) => state.mentees);
-
+  // console.log('mentees');
+  // console.log(mentees);
   return (
     <div>
-      <MenteeTable />
+      <MenteeTable mentees={mentees} />
     </div>
   );
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getAllMentees: dispatch(getAllMentees()),
+    getAllMentees: () => {
+      dispatch(getAllMentees());
+    },
   };
 };
 

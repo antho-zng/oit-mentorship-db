@@ -43,7 +43,6 @@ module.exports = db.define(
         notEmpty: true,
       },
     },
-    // TO-DO change data type to DATEONLY
     dateOfBirth: {
       type: Sequelize.DATEONLY,
       allowNull: false,
@@ -91,7 +90,7 @@ module.exports = db.define(
     indexes: [
       {
         unique: true,
-        fields: ['email'],
+        fields: ['email', 'cohortId'],
       },
     ],
   }

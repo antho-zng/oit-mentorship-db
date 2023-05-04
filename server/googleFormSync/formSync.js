@@ -45,7 +45,7 @@ async function getMenteeData(rows, cohortId) {
     const row = rows[rowIdx];
 
     mentees.push({
-      id: `mentee-${cohortId}-${rowIdx}`,
+      id: `MENTEE-${cohortId}-${rowIdx}`,
       firstName: row[menteeInfoIndexes[`firstNameIndex`]],
       lastName: row[menteeInfoIndexes['lastNameIndex']],
       pronouns: row[menteeInfoIndexes['pronounsIndex']].split(','),
@@ -155,6 +155,7 @@ async function createMenteeQATransactions(cohort) {
       const currentMentee = mentees[menteeIndex];
       currentMentee[`cohortId`] = cohortId;
 
+      // TO-DO : create or update
       const mentee = await Mentee.create(
         currentMentee,
         { transaction: trx },
