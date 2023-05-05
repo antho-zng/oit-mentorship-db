@@ -59,7 +59,7 @@
   font-weight:bold;
   font-style: italic;
 }
-h2{
+.menteeName{
   text-transform: uppercase;
   padding-bottom:60px
 }
@@ -83,4 +83,25 @@ p{
   font-size:20px;
   text-transform: uppercase;
   padding-bottom: 30px
+}
+.scoreContainer{
+  display:flex;
+padding-top:40px;
+min-height:80px;
+}
+.scoreIcons{
+  padding-top:20px;
+}
+.scoreLabels{
+  font-size:smaller;
+  font-style: italic;
+  color:darkgrey;
+}
+.submitReviewButton{
+  display:flex;
+  justify-content:center;
+  padding-bottom: 20px;
+}
+.textFieldInput{
+  font-size:14px;
 }

@@ -17,6 +17,7 @@ nav {
   align-items: flex-end;
   width:100%;
   backdrop-filter: blur(8px);
+  z-index:1000;
 }
 
 a {

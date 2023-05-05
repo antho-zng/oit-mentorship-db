@@ -4,6 +4,7 @@ import style from './SingleMentee.module.css';
 import { getMentee } from '../../store/mentee';
 
 import Card from '@mui/material/Card';
+import Box from '@mui/material/Box';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
@@ -12,18 +13,47 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import TextField from '@mui/material/TextField';
+import { Rating, StyledRating } from '@mui/material';
+import { Recommend, RecommendOutlined } from '@mui/icons-material';
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 
 const questionCutoff = 8;
+
+function getLabelText(score) {
+  return `${score} Star${score !== 1 ? 's' : ''}, ${scoreLabels[score]}`;
+}
 
 function SingleMentee(props) {
   useEffect(() => {
     props.getMentee(props.match.params.id);
   }, []);
 
+  const [score, setScore] = React.useState(2);
+  const [hover, setHover] = React.useState(-1);
+  const [textFieldInput, setTextFieldInput] = React.useState('');
+
   const [expanded, setExpanded] = React.useState(false);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
+  };
+
+  const handleTextFieldChange = (event) => {
+    event.preventDefault();
+    setTextFieldInput(event.target.value);
+  };
+
+  const saveReviewInput = (event) => {
+    event.preventDefault();
+    console.log(textFieldInput);
+    console.log(score);
+  };
+  const scoreLabels = {
+    1: 'Do not recommend',
+    2: 'Recommend with reservations',
+    3: 'Recommend',
+    4: 'Strongly recommend',
   };
 
   const mentee = useSelector((state) => state.mentee);
@@ -47,7 +77,7 @@ function SingleMentee(props) {
           <CardContent>
             <p>Mentee ({mentee.acceptedStatus})</p>
 
-            <h2>
+            <h2 className={style.menteeName}>
               {firstName} <br></br>
               {lastName}
             </h2>
@@ -92,6 +122,7 @@ function SingleMentee(props) {
         </Card>
       </div>
       <div className={style.questionsContainer}>
+        <h2>APPLICATION RESPONSES</h2>
         <div>
           {questionsAndAnswers.map((qaPair, idx) => {
             return (
@@ -122,14 +153,58 @@ function SingleMentee(props) {
             }}
           >
             <h4>REVIEW</h4>
-            <p>Leave applicant rating and comments here</p>
+            <p>Leave applicant score and comments here</p>
           </AccordionSummary>
           <AccordionDetails>
-            <p>
-              Nulla facilisi. Phasellus sollicitudin nulla et quam mattis
-              feugiat. Aliquam eget maximus est, id dignissim quam.
-            </p>
+            <TextField
+              id='outlined-multiline-static'
+              label='Comments'
+              multiline
+              rows={4}
+              placeholder='Your comments here...'
+              InputProps={{
+                classes: {
+                  input: style.textFieldInput,
+                },
+              }}
+              onChange={(event) => handleTextFieldChange(event)}
+            />
+            <div className={style.scoreContainer}>
+              <Rating
+                name='customized-color'
+                defaultValue={0}
+                max={4}
+                getLabelText={(score) =>
+                  `${score} Heart${score !== 1 ? 's' : ''}`
+                }
+                onChange={(event, newScore) => {
+                  setScore(newScore);
+                }}
+                onChangeActive={(event, newHover) => {
+                  setHover(newHover);
+                }}
+                precision={1}
+                icon={<Recommend fontSize='inherit' />}
+                emptyIcon={<RecommendOutlined fontSize='inherit' />}
+                className={style.scoreIcons}
+              />
+              {score !== null && (
+                <Box sx={{ ml: 3 }}>
+                  <p className={style.scoreLabels}>
+                    {scoreLabels[hover !== -1 ? hover : score]}
+                  </p>
+                </Box>
+              )}
+            </div>
           </AccordionDetails>
+          <div className={style.submitReviewButton}>
+            <Button
+              startIcon={<AddCircleOutlineOutlinedIcon />}
+              onClick={(event) => saveReviewInput(event)}
+            >
+              SUBMIT REVIEW
+            </Button>
+          </div>
         </Accordion>
       </div>
     </div>
