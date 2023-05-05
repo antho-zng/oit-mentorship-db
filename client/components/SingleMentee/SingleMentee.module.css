@@ -1,6 +1,6 @@
 .menteeProfile{
   display: grid;
-  grid-template-columns: [sidebar] 240px [questions] 1fr [ratings] 240px;
+  grid-template-columns: [sidebar] 240px [questions] 1fr [ratings] 260px;
   /* overflow:hidden; */
 }
 .sidebarCard{
@@ -27,12 +27,27 @@
   display:block;
   position:sticky;
   position: -webkit-sticky;
-  top:0;
+  top:65px;
   height:100vh;
   overflow-y:auto;
+  margin-top:65px;
 }
 .reviewAccordion{
+  margin:15px;
+}
+.reviewAccordionSummary{
+  flex-direction: column;
+  display:grid;
+  margin:15px;
+
+}
+.expandedAccordion{
   margin-top:65px;
+  margin:15px;
+}
+.expandMoreIcon{
+  align-self: end;
+  justify-self: center;
 }
 .qaCard{
   padding: 10px;

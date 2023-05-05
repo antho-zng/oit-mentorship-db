@@ -110,23 +110,25 @@ function SingleMentee(props) {
           expanded={expanded === 'panel1'}
           onChange={handleChange('panel1')}
           className={style.reviewAccordion}
-          position='sticky'
         >
           <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<ExpandMoreIcon className={style.expandMoreIcon} />}
             aria-controls='panel1bh-content'
             id='panel1bh-header'
+            classes={{
+              content: style.reviewAccordionSummary,
+              expanded: style.expandedAccordion,
+              root: style.reviewAccordionSummary,
+            }}
           >
-            <Typography sx={{ width: '33%', flexShrink: 0 }}>Rating</Typography>
-            <Typography sx={{ color: 'text.secondary' }}>
-              Leave applicant rating and comments here
-            </Typography>
+            <h4>REVIEW</h4>
+            <p>Leave applicant rating and comments here</p>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>
+            <p>
               Nulla facilisi. Phasellus sollicitudin nulla et quam mattis
               feugiat. Aliquam eget maximus est, id dignissim quam.
-            </Typography>
+            </p>
           </AccordionDetails>
         </Accordion>
       </div>
