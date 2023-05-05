@@ -1,20 +1,24 @@
 .menteeProfile{
   display: grid;
   grid-template-columns: [sidebar] 30% [questions] 70%;
-  overflow:hidden;
+  /* overflow:hidden; */
 }
-.sidebar{
+.sidebarCard{
   margin-left: 60px;
   flex-direction: column;
   grid-column-start: sidebar;
+  height:fit-content;
+  width:fit-content;
   /* position:fixed; */
 }
 .sidearSubhead{
   font-weight:bold;
 }
-.qaBlock{
-padding-bottom: 15px;
-font-size: 14px;
+.qaCard{
+  padding: 20px;
+  font-size: 14px;
+  margin-bottom:15px;
+  margin-top:15px;
 }
 .question{
   font-weight:bold;
@@ -32,18 +36,20 @@ p{
   padding-bottom:5px;
 }
 .questionsContainer{
-  margin-top: 40px;
   margin-right: 60px;
   grid-column-start: questions;
-  overflow-x: scroll;
-  height: 100vh;
 }
 .questionsHeading{
-  position: sticky;
+  /* position: sticky; */
   top: 0;
   background-color: white;
   font-size:20px;
   text-transform: uppercase;
   padding-bottom: 30px
-
+}
+.ratingAccordion{
+  position:sticky;
+  position:-webkit-sticky;
+  z-index: 10;
+  top:0;
 }
