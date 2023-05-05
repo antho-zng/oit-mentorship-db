@@ -28,6 +28,9 @@ function SingleMentee(props) {
   useEffect(() => {
     props.getMentee(props.match.params.id);
   }, []);
+  useEffect(() => {
+    setTextFieldInput(localStorage.getItem('textFieldInputValue'));
+  }, []);
 
   const [score, setScore] = React.useState(2);
   const [hover, setHover] = React.useState(-1);
@@ -42,6 +45,7 @@ function SingleMentee(props) {
   const handleTextFieldChange = (event) => {
     event.preventDefault();
     setTextFieldInput(event.target.value);
+    localStorage.setItem('textFieldInputValue', event.target.value);
   };
 
   const saveReviewInput = (event) => {
@@ -162,6 +166,7 @@ function SingleMentee(props) {
               multiline
               rows={4}
               placeholder='Your comments here...'
+              value={textFieldInput}
               InputProps={{
                 classes: {
                   input: style.textFieldInput,
