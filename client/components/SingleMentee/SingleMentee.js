@@ -42,55 +42,114 @@ function SingleMentee(props) {
 
   return (
     <div className={style.menteeProfile}>
-      <Card className={style.sidebarCard}>
-        <CardContent>
-          <p>Mentee ({mentee.acceptedStatus})</p>
+      <div className={style.leftSidebar}>
+        <Card className={style.sidebarCard}>
+          <CardContent>
+            <p>Mentee ({mentee.acceptedStatus})</p>
 
-          <h2>
-            {firstName} <br></br>
-            {lastName}
-          </h2>
-          <p>
-            <span className={style.sidearSubhead}>PRONOUNS</span>
-            <br></br>
-            {pronouns.map((pronoun, idx) => {
-              return (
-                <span key={idx}>
-                  {pronoun}
-                  <br></br>
-                </span>
-              );
-            })}
-          </p>
-          <p>
-            <span className={style.sidearSubhead}>DATE OF BIRTH</span>
-            <br></br>
-            {mentee.dateOfBirth}
-          </p>
-          <p>
-            <span className={style.sidearSubhead}>EMAIL</span>
-            <br></br>
-            {mentee.email}
-          </p>
-          <p>
-            <span className={style.sidearSubhead}>PHONE</span>
-            <br></br>
-            {mentee.phoneNum}
-          </p>
-          <p>
-            <span className={style.sidearSubhead}>LOCATION</span>
-            <br></br>
-            {mentee.location}
-          </p>
-          <p>
-            <span className={style.sidearSubhead}>COHORT</span>
-            <br></br>
-            {cohort.name}
-          </p>
-        </CardContent>
-      </Card>
+            <h2>
+              {firstName} <br></br>
+              {lastName}
+            </h2>
+            <p>
+              <span className={style.sidearSubhead}>PRONOUNS</span>
+              <br></br>
+              {pronouns.map((pronoun, idx) => {
+                return (
+                  <span key={idx}>
+                    {pronoun}
+                    <br></br>
+                  </span>
+                );
+              })}
+            </p>
+            <p>
+              <span className={style.sidearSubhead}>DATE OF BIRTH</span>
+              <br></br>
+              {mentee.dateOfBirth}
+            </p>
+            <p>
+              <span className={style.sidearSubhead}>EMAIL</span>
+              <br></br>
+              {mentee.email}
+            </p>
+            <p>
+              <span className={style.sidearSubhead}>PHONE</span>
+              <br></br>
+              {mentee.phoneNum}
+            </p>
+            <p>
+              <span className={style.sidearSubhead}>LOCATION</span>
+              <br></br>
+              {mentee.location}
+            </p>
+            <p>
+              <span className={style.sidearSubhead}>COHORT</span>
+              <br></br>
+              {cohort.name}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
       <div className={style.questionsContainer}>
+        <div>
+          {questionsAndAnswers.map((qaPair, idx) => {
+            return (
+              <div key={idx} className={style.qaCard}>
+                <span className={style.question}>{qaPair.text}</span>
+                <br></br>
+                <br></br>
+                {qaPair.answer.text}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      <div className={style.reviewContainer}>
         <Accordion
+          expanded={expanded === 'panel1'}
+          onChange={handleChange('panel1')}
+          className={style.reviewAccordion}
+          position='sticky'
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls='panel1bh-content'
+            id='panel1bh-header'
+          >
+            <Typography sx={{ width: '33%', flexShrink: 0 }}>Rating</Typography>
+            <Typography sx={{ color: 'text.secondary' }}>
+              Leave applicant rating and comments here
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              Nulla facilisi. Phasellus sollicitudin nulla et quam mattis
+              feugiat. Aliquam eget maximus est, id dignissim quam.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * CONTAINER
+ */
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getMentee: (id) => {
+      dispatch(getMentee(id));
+    },
+  };
+};
+
+export default connect(null, mapDispatchToProps)(SingleMentee);
+
+/**
+ *          <Accordion
           className={style.ratingAccordion}
           expanded={expanded === 'panel1'}
           onChange={handleChange('panel1')}
@@ -112,34 +171,5 @@ function SingleMentee(props) {
               feugiat. Aliquam eget maximus est, id dignissim quam.
             </Typography>
           </AccordionDetails>
-        </Accordion>
-        <div>
-          {questionsAndAnswers.map((qaPair, idx) => {
-            return (
-              <Card key={idx} className={style.qaCard}>
-                <span className={style.question}>{qaPair.text}</span>
-                <br></br>
-                <br></br>
-                {qaPair.answer.text}
-              </Card>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/**
- * CONTAINER
+        </Accordion> 
  */
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getMentee: (id) => {
-      dispatch(getMentee(id));
-    },
-  };
-};
-
-export default connect(null, mapDispatchToProps)(SingleMentee);
