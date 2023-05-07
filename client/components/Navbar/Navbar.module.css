@@ -1,3 +1,74 @@
 .logo{
   height: 60px;
 }
+nav {
+  font-weight: medium;
+  color: black;
+  justify-content: right;
+  align-items: center;
+  display: flex;
+  min-height: 75px;
+  position: fixed;
+  flex-direction: column;
+  right:0;
+  box-sizing:border-box;
+  background-color:rgba(255,255,255,0.9);
+  top:0;
+  align-items: flex-end;
+  width:100%;
+  backdrop-filter: blur(8px);
+  z-index:1000;
+}
+
+a {
+  color: black;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+a {
+
+  background-image: linear-gradient(
+    to right,
+    rgba(255, 0, 0, 1),
+    rgba(255, 0, 180, 1),
+    rgba(0, 100, 200, 1),
+    black,
+    black,
+    black
+
+);
+  background-size: 200% 100%;
+  background-position: -100%;
+  display: inline-block;
+  padding: 5px 0;
+  position: relative;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: all 0.3s ease-in-out;
+}
+
+a:before {
+  content: '';
+  background-image: linear-gradient(
+    to right,
+    rgba(255, 0, 0, 1),
+    rgba(255, 0, 180, 1),
+    rgba(0, 100, 200, 1)
+);
+  display: block;
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 0;
+  height: 3px;
+  transition: all 0.3s ease-in-out;
+}
+
+a:hover {
+ background-position: 0;
+}
+
+a:hover::before {
+  width:100%;
+}

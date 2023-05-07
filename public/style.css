@@ -1,5 +1,10 @@
 body {
-  font-family: sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+h2,h3{
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
 }
 
 a {
@@ -19,3 +24,7 @@ form div {
   margin: 1em;
   display: inline-block;
 }
+
+/* .MuiAccordionSummary-content{
+  flex-direction: column;
+} */

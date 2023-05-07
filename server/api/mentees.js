@@ -1,11 +1,15 @@
 const Sequelize = require('sequelize');
 const router = require('express').Router();
 const Mentees = require('../db/models/Mentee');
+const Cohort = require('../db/models/Cohort');
+const Question = require('../db/models/Question');
 
 // GET /api/mentees
 router.get('/', async (req, res, next) => {
   try {
-    const mentees = await Mentees.findAll();
+    const mentees = await Mentees.findAll({
+      include: [Cohort],
+    });
     res.send(mentees);
   } catch (error) {
     next(error);
@@ -14,12 +18,12 @@ router.get('/', async (req, res, next) => {
 
 // GET mentees/:id
 router.get('/:id', async (req, res, next) => {
-  console.log(`api req is getting ${req.params.id}`);
   try {
     const mentee = await Mentees.findOne({
       where: {
-        candidateID: `mentee-${req.params.id}`,
+        id: req.params.id,
       },
+      include: [Cohort, Question],
     });
 
     if (mentee === null) {

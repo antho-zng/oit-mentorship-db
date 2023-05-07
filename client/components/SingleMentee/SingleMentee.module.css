@@ -1,0 +1,107 @@
+.menteeProfile{
+  display: grid;
+  grid-template-columns: [sidebar] 240px [questions] 1fr [ratings] 260px;
+  /* overflow:hidden; */
+}
+.sidebarCard{
+  margin-left: 15px;
+  flex-direction: column;
+  grid-column-start: sidebar;
+  height:fit-content;
+  width:fit-content;
+  margin-top:60px;
+
+}
+.sidearSubhead{
+  font-weight:bold;
+}
+.leftSidebar{
+  display: block;
+  position:sticky;
+  position: -webkit-sticky;
+  top:0;
+  height: 100vh;
+  overflow-y:auto;
+}
+.reviewContainer{
+  display:block;
+  position:sticky;
+  position: -webkit-sticky;
+  top:65px;
+  height:100vh;
+  overflow-y:auto;
+  margin-top:65px;
+}
+.reviewAccordion{
+  margin:15px;
+}
+.reviewAccordionSummary{
+  flex-direction: column;
+  display:grid;
+  margin:15px;
+
+}
+.expandedAccordion{
+  margin-top:65px;
+  margin:15px;
+}
+.expandMoreIcon{
+  align-self: end;
+  justify-self: center;
+}
+.qaCard{
+  padding: 10px;
+  font-size: 14px;
+  margin-bottom:15px;
+  margin-top:15px;
+}
+.question{
+  font-weight:bold;
+  font-style: italic;
+}
+.menteeName{
+  text-transform: uppercase;
+  padding-bottom:60px
+}
+p{
+  font-size: smaller;
+}
+.sidebar p{
+  padding-top:5px;
+  padding-bottom:5px;
+}
+.questionsContainer{
+  margin-right: 30px;
+  margin-left: 30px;
+  grid-column-start: questions;
+  margin-top:60px;
+}
+.questionsHeading{
+  /* position: sticky; */
+  top: 0;
+  background-color: white;
+  font-size:20px;
+  text-transform: uppercase;
+  padding-bottom: 30px
+}
+.scoreContainer{
+  display:flex;
+padding-top:40px;
+min-height:80px;
+}
+.scoreIcons{
+  padding-top:20px;
+}
+.scoreLabels{
+  font-size:smaller;
+  font-style: italic;
+  color:darkgrey;
+}
+.submitReviewButton{
+  display:flex;
+  justify-content:center;
+  padding-bottom: 20px;
+}
+.textFieldInput{
+  font-size:14px;
+}

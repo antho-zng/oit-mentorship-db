@@ -1,10 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { withRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { me } from './store';
+
 import { Login, Signup } from './components/AuthForm';
 import Home from './components/Home';
 import SingleMentee from './components/SingleMentee/SingleMentee';
-import { me } from './store';
+import AllMentees from './components/AllMentees/AllMentees';
 
 /**
  * COMPONENT
@@ -22,6 +24,7 @@ class Routes extends Component {
         {isLoggedIn ? (
           <Switch>
             <Route path='/home' component={Home} />
+            <Route exact path='/mentees' component={AllMentees} />
             <Route exact path='/mentees/:id' component={SingleMentee} />
           </Switch>
         ) : (

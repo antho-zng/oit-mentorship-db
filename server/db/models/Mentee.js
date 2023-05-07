@@ -3,7 +3,10 @@ const db = require('../db');
 module.exports = db.define(
   'mentees',
   {
-    // TO-DO: add ID
+    id: {
+      type: Sequelize.STRING,
+      primaryKey: true,
+    },
     firstName: {
       type: Sequelize.STRING,
       allowNull: false,
@@ -40,9 +43,8 @@ module.exports = db.define(
         notEmpty: true,
       },
     },
-    // TO-DO change data type to DATEONLY
     dateOfBirth: {
-      type: Sequelize.STRING,
+      type: Sequelize.DATEONLY,
       allowNull: false,
       validate: {
         notEmpty: true,
@@ -69,19 +71,26 @@ module.exports = db.define(
         notEmpty: true,
       },
     },
-    // cohort: {
-    //   type: Sequelize.STRING,
-    //   allowNull: true,
-    //   validate: {
-    //     notEmpty: true,
-    //   },
-    // },
+    acceptedStatus: {
+      type: Sequelize.ENUM(
+        'PENDING',
+        'ACCEPTED',
+        'NOT ACCEPTED',
+        'HIGHLY ACCEPTED',
+        'ACCEPTED LOW PRIORITY'
+      ),
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+      defaultValue: 'PENDING',
+    },
   },
   {
     indexes: [
       {
         unique: true,
-        fields: ['email'],
+        fields: ['email', 'cohortId'],
       },
     ],
   }
