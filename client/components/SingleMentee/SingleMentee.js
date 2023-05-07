@@ -32,7 +32,7 @@ function SingleMentee(props) {
     setTextFieldInput(localStorage.getItem('textFieldInputValue'));
   }, []);
 
-  const [score, setScore] = React.useState(2);
+  const [score, setScore] = React.useState(3);
   const [hover, setHover] = React.useState(-1);
   const [textFieldInput, setTextFieldInput] = React.useState('');
 
