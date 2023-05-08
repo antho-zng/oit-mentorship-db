@@ -7,7 +7,6 @@ import cornerLogo from './OIT-Logo-Black-1.png';
 
 const Navbar = ({ handleClick, isLoggedIn }) => (
   <div>
-    {/* <img src={cornerLogo} alt='OiT logo' /> */}
     <nav>
       {isLoggedIn ? (
         <div>

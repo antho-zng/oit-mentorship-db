@@ -16,12 +16,3 @@ root.render(
     </Router>
   </Provider>
 );
-
-// ReactDOM.render(
-//   <Provider store={store}>
-//     <Router history={history}>
-//       <App />
-//     </Router>
-//   </Provider>,
-//   document.getElementById('app')
-// );
