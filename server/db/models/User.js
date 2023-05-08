@@ -11,7 +11,7 @@ const User = db.define('user', {
     type: Sequelize.STRING,
     unique: true,
     allowNull: false,
-    primaryKey: true,
+    // primaryKey: true,
   },
   firstName: {
     type: Sequelize.STRING,
