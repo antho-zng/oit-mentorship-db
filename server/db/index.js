@@ -1,5 +1,5 @@
 //this is the access point for all things database related!
-
+const Sequelize = require('sequelize');
 const db = require('./db');
 
 const User = require('./models/User');
@@ -13,8 +13,8 @@ const Review = require('./models/Review');
 Mentee.belongsToMany(Question, { through: Answer });
 Question.belongsToMany(Mentee, { through: Answer });
 
-Mentee.belongsToMany(User, { through: Review });
-User.belongsToMany(Mentee, { through: Review, foreignKey: 'reviewerId' });
+Mentee.belongsToMany(User, { through: Review }, { foreignKey: 'menteeId' });
+User.belongsToMany(Mentee, { through: Review }, { foreignKey: 'userId' });
 
 // Review.belongsTo(User, { foreignKey: 'reviewerId' });
 // User.hasMany(Review, { foreignKey: 'reviewerId' });

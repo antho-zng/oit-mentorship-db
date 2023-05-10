@@ -92,7 +92,7 @@ async function bulkCreateQuestions(rows) {
     questions.push({ text: question.toString() });
   }
 
-  Question.bulkCreate(questions, { ignoreDuplicates: true }).then(() =>
+  await Question.bulkCreate(questions, { ignoreDuplicates: true }).then(() =>
     console.log(`${questions.length} questions have been written into DB!`)
   );
 }

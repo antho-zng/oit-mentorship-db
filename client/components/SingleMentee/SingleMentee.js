@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 import style from './SingleMentee.module.css';
 import { getMentee } from '../../store/mentee';
+import { addReview } from '../../store/reviews';
 
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
@@ -51,8 +52,21 @@ function SingleMentee(props) {
 
   const saveReviewInput = (event) => {
     event.preventDefault();
-    console.log(textFieldInput);
-    console.log(score);
+
+    const reviewerComments = textFieldInput;
+    const reviewerScore = score;
+
+    const review = {
+      menteeId: menteeId,
+      userId: userId,
+      reviewerComments: reviewerComments,
+      reviewerScore: reviewerScore,
+    };
+
+    const token = window.localStorage.getItem('token');
+    console.log('Trying to save review to DB');
+    console.log(review, token);
+    addReview(review, token);
   };
   const scoreLabels = {
     1: 'Do not recommend',
@@ -62,10 +76,12 @@ function SingleMentee(props) {
   };
 
   const mentee = useSelector((state) => state.mentee);
+  const menteeId = useSelector((state) => state.mentee.id || []);
   const pronouns = useSelector((state) => state.mentee.pronouns || []);
   const firstName = useSelector((state) => state.mentee.firstName || []);
   const lastName = useSelector((state) => state.mentee.lastName || []);
   const cohort = useSelector((state) => state.mentee.cohort || []);
+  const userId = useSelector((state) => state.auth.id || []);
 
   const allQuestionsAndAnswers = useSelector(
     (state) => state.mentee.questions || []
@@ -226,33 +242,11 @@ const mapDispatchToProps = (dispatch) => {
     getMentee: (id) => {
       dispatch(getMentee(id));
     },
+    addReview: (menteeId, userId, reviewerComments, reviewerScore) => {
+      console.log('addReview dispatch');
+      dispatch(addReview(menteeId, userId, reviewerComments, reviewerScore));
+    },
   };
 };
 
 export default connect(null, mapDispatchToProps)(SingleMentee);
-
-/**
- *          <Accordion
-          className={style.ratingAccordion}
-          expanded={expanded === 'panel1'}
-          onChange={handleChange('panel1')}
-          position='sticky'
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls='panel1bh-content'
-            id='panel1bh-header'
-          >
-            <Typography sx={{ width: '33%', flexShrink: 0 }}>Rating</Typography>
-            <Typography sx={{ color: 'text.secondary' }}>
-              Leave applicant rating and comments here
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography>
-              Nulla facilisi. Phasellus sollicitudin nulla et quam mattis
-              feugiat. Aliquam eget maximus est, id dignissim quam.
-            </Typography>
-          </AccordionDetails>
-        </Accordion> 
- */
