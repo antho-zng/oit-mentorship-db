@@ -38,10 +38,15 @@ function SingleMentee(props) {
     setScore(localStorage.getItem('score'));
   }, []);
 
+  useEffect(() => {
+    setReviewDisabled(document.cookie.split('=')[1] === 'true');
+  }, []);
+
   const [score, setScore] = React.useState(3);
   const [hover, setHover] = React.useState(-1);
   const [textFieldInput, setTextFieldInput] = React.useState('');
   const [expanded, setExpanded] = React.useState(false);
+  const [reviewDisabled, setReviewDisabled] = React.useState(false);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -74,6 +79,8 @@ function SingleMentee(props) {
 
     const token = window.localStorage.getItem('token');
     addReview(review, token);
+
+    document.cookie = `reviewDisabled=true;Secure`;
   };
 
   const scoreLabels = {
@@ -192,6 +199,7 @@ function SingleMentee(props) {
               rows={4}
               placeholder='Your comments here...'
               value={textFieldInput}
+              disabled={reviewDisabled}
               InputProps={{
                 classes: {
                   input: style.textFieldInput,
@@ -207,6 +215,7 @@ function SingleMentee(props) {
                 getLabelText={(score) =>
                   `${score} Heart${score !== 1 ? 's' : ''}`
                 }
+                disabled={reviewDisabled}
                 onChange={(event, newScore) => {
                   handleScoreChange(event, newScore);
                 }}
@@ -250,9 +259,8 @@ const mapDispatchToProps = (dispatch) => {
     getMentee: (id) => {
       dispatch(getMentee(id));
     },
-    addReview: (menteeId, userId, reviewerComments, reviewerScore) => {
-      console.log('addReview dispatch');
-      dispatch(addReview(menteeId, userId, reviewerComments, reviewerScore));
+    addReview: (review, token) => {
+      dispatch(addReview(review, token));
     },
   };
 };
