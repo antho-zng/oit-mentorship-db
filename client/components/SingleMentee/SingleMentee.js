@@ -80,7 +80,17 @@ function SingleMentee(props) {
     const token = window.localStorage.getItem('token');
     addReview(review, token);
 
-    document.cookie = `reviewDisabled=true;Secure`;
+    const disableReviewCookie =
+      `reviewDisabled=true; path=` +
+      window.location.pathname +
+      `; max-age=` +
+      365 * 24 * 60 * 60 +
+      `; Secure`;
+    console.log(`reviews disabled`);
+    console.log(disableReviewCookie);
+
+    // document.cookie = `reviewDisabled=true;Secure`;
+    document.cookie = disableReviewCookie;
   };
 
   const scoreLabels = {
