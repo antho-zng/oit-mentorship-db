@@ -34,10 +34,13 @@ function SingleMentee(props) {
     setTextFieldInput(localStorage.getItem('textFieldInputValue'));
   }, []);
 
+  useEffect(() => {
+    setScore(localStorage.getItem('score'));
+  }, []);
+
   const [score, setScore] = React.useState(3);
   const [hover, setHover] = React.useState(-1);
   const [textFieldInput, setTextFieldInput] = React.useState('');
-
   const [expanded, setExpanded] = React.useState(false);
 
   const handleChange = (panel) => (event, isExpanded) => {
@@ -48,6 +51,12 @@ function SingleMentee(props) {
     event.preventDefault();
     setTextFieldInput(event.target.value);
     localStorage.setItem('textFieldInputValue', event.target.value);
+  };
+
+  const handleScoreChange = (event, newScore) => {
+    event.preventDefault();
+    setScore(newScore);
+    localStorage.setItem('score', newScore);
   };
 
   const saveReviewInput = (event) => {
@@ -64,10 +73,9 @@ function SingleMentee(props) {
     };
 
     const token = window.localStorage.getItem('token');
-    console.log('Trying to save review to DB');
-    console.log(review, token);
     addReview(review, token);
   };
+
   const scoreLabels = {
     1: 'Do not recommend',
     2: 'Recommend with reservations',
@@ -194,13 +202,13 @@ function SingleMentee(props) {
             <div className={style.scoreContainer}>
               <Rating
                 name='customized-color'
-                defaultValue={0}
+                value={score}
                 max={4}
                 getLabelText={(score) =>
                   `${score} Heart${score !== 1 ? 's' : ''}`
                 }
                 onChange={(event, newScore) => {
-                  setScore(newScore);
+                  handleScoreChange(event, newScore);
                 }}
                 onChangeActive={(event, newHover) => {
                   setHover(newHover);

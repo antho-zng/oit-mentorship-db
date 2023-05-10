@@ -32,38 +32,39 @@ const _editReview = (review) => ({ type: EDIT_REVIEW, review });
 // };
 
 export const addReview = async (review, token) => {
-  console.log(`review thunk working here`); // this is logging
-  console.log(review); // this is all showing up
-
-  const { data } = await axios.post(`/api/reviews`, {
-    review,
-    headers: {
-      authorization: token,
-      'content-type': 'application/json',
-    },
-  });
-  console.log(`review thunk working pt3`);
-  return dispatch(_addReview(data));
-
-  return async (dispatch) => {
-    try {
-      console.log(`review thunk working here pt2`); // ERROR : this should log
-      console.log(`review thunk working here pt2.5`); // ERROR : this should log
-
-      const { data } = await axios.post(`/api/reviews`, {
-        review,
-        headers: {
-          authorization: token,
-          'content-type': 'application/json',
-        },
-      });
-      console.log(`review thunk working pt3`);
-      return dispatch(_addReview(data));
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  try {
+    const { data } = await axios.post(`/api/reviews`, {
+      review,
+      headers: {
+        authorization: token,
+        'content-type': 'application/json',
+      },
+    });
+    return dispatch(_addReview(data));
+  } catch (error) {
+    console.log(error);
+  }
 };
+
+//   return async (dispatch) => {
+//     try {
+//       console.log(`review thunk working here pt2`); // ERROR : this should log
+//       console.log(`review thunk working here pt2.5`); // ERROR : this should log
+
+//       const { data } = await axios.post(`/api/reviews`, {
+//         review,
+//         headers: {
+//           authorization: token,
+//           'content-type': 'application/json',
+//         },
+//       });
+//       console.log(`review thunk working pt3`);
+//       return dispatch(_addReview(data));
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   };
+// };
 
 // INITIAL STATE
 const initialState = {};
