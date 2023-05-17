@@ -15,18 +15,18 @@ const requireUserToken = async (req, res, next) => {
 };
 
 // GET /api/reviews/:id
-// router.get('/:id', async (req, res, next) => {
-//   try {
-//     const reviews = await Review.findAll({
-//       where: {
-//         menteeId: req.params.id,
-//       },
-//     });
-//     res.send(reviews);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
+router.get('/:id', async (req, res, next) => {
+  try {
+    const reviews = await Review.findAll({
+      where: {
+        menteeId: req.params.id,
+      },
+    });
+    res.send(reviews);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // POST (creating new review)
 router.post('/', requireUserToken, async (req, res, next) => {

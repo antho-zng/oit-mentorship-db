@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 import style from './SingleMentee.module.css';
 import { getMentee } from '../../store/mentee';
-import { addReview } from '../../store/reviews';
+import { getReviews, addReview } from '../../store/reviews';
 
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
@@ -12,7 +12,6 @@ import Button from '@mui/material/Button';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
-import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TextField from '@mui/material/TextField';
 import { Rating, StyledRating } from '@mui/material';
@@ -28,6 +27,10 @@ function getLabelText(score) {
 function SingleMentee(props) {
   useEffect(() => {
     props.getMentee(props.match.params.id);
+  }, []);
+
+  useEffect(() => {
+    props.getReviews(props.match.params.id);
   }, []);
 
   useEffect(() => {
@@ -107,6 +110,11 @@ function SingleMentee(props) {
   const lastName = useSelector((state) => state.mentee.lastName || []);
   const cohort = useSelector((state) => state.mentee.cohort || []);
   const userId = useSelector((state) => state.auth.id || []);
+
+  const reviews = useSelector((state) => state.reviews || []);
+
+  console.log('reviews');
+  console.log(reviews);
 
   const allQuestionsAndAnswers = useSelector(
     (state) => state.mentee.questions || []
@@ -268,6 +276,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getMentee: (id) => {
       dispatch(getMentee(id));
+    },
+    getReviews: (id) => {
+      dispatch(getReviews(id));
     },
     addReview: (review, token) => {
       dispatch(addReview(review, token));

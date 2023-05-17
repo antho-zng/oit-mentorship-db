@@ -9,7 +9,6 @@ router.get('/:id', async (req, res, next) => {
       where: {
         menteeId: req.params.id,
       },
-      // include: Question,
     });
     res.send(answers);
   } catch (error) {
