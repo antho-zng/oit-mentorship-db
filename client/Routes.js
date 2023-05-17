@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { withRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { me } from './store';
+import style from './Routes.module.css';
 
 import { Login, Signup } from './components/AuthForm';
 import Home from './components/Home';
@@ -18,9 +19,10 @@ class Routes extends Component {
 
   render() {
     const { isLoggedIn } = this.props;
-
+    console.log(isLoggedIn);
+    console.log(this.props);
     return (
-      <div>
+      <div className={style.pageContent}>
         {isLoggedIn ? (
           <Switch>
             <Route path='/home' component={Home} />

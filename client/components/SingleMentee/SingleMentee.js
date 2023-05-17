@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 import style from './SingleMentee.module.css';
 import { getMentee } from '../../store/mentee';
+import { addReview } from '../../store/reviews';
 
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
@@ -28,15 +29,24 @@ function SingleMentee(props) {
   useEffect(() => {
     props.getMentee(props.match.params.id);
   }, []);
+
   useEffect(() => {
     setTextFieldInput(localStorage.getItem('textFieldInputValue'));
+  }, []);
+
+  useEffect(() => {
+    setScore(localStorage.getItem('score'));
+  }, []);
+
+  useEffect(() => {
+    setReviewDisabled(document.cookie.split('=')[1] === 'true');
   }, []);
 
   const [score, setScore] = React.useState(3);
   const [hover, setHover] = React.useState(-1);
   const [textFieldInput, setTextFieldInput] = React.useState('');
-
   const [expanded, setExpanded] = React.useState(false);
+  const [reviewDisabled, setReviewDisabled] = React.useState(false);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -48,11 +58,41 @@ function SingleMentee(props) {
     localStorage.setItem('textFieldInputValue', event.target.value);
   };
 
+  const handleScoreChange = (event, newScore) => {
+    event.preventDefault();
+    setScore(newScore);
+    localStorage.setItem('score', newScore);
+  };
+
   const saveReviewInput = (event) => {
     event.preventDefault();
-    console.log(textFieldInput);
-    console.log(score);
+
+    const reviewerComments = textFieldInput;
+    const reviewerScore = score;
+
+    const review = {
+      menteeId: menteeId,
+      userId: userId,
+      reviewerComments: reviewerComments,
+      reviewerScore: reviewerScore,
+    };
+
+    const token = window.localStorage.getItem('token');
+    addReview(review, token);
+
+    const disableReviewCookie =
+      `reviewDisabled=true; path=` +
+      window.location.pathname +
+      `; max-age=` +
+      365 * 24 * 60 * 60 +
+      `; Secure`;
+    console.log(`reviews disabled`);
+    console.log(disableReviewCookie);
+
+    // document.cookie = `reviewDisabled=true;Secure`;
+    document.cookie = disableReviewCookie;
   };
+
   const scoreLabels = {
     1: 'Do not recommend',
     2: 'Recommend with reservations',
@@ -61,10 +101,12 @@ function SingleMentee(props) {
   };
 
   const mentee = useSelector((state) => state.mentee);
+  const menteeId = useSelector((state) => state.mentee.id || []);
   const pronouns = useSelector((state) => state.mentee.pronouns || []);
   const firstName = useSelector((state) => state.mentee.firstName || []);
   const lastName = useSelector((state) => state.mentee.lastName || []);
   const cohort = useSelector((state) => state.mentee.cohort || []);
+  const userId = useSelector((state) => state.auth.id || []);
 
   const allQuestionsAndAnswers = useSelector(
     (state) => state.mentee.questions || []
@@ -167,6 +209,7 @@ function SingleMentee(props) {
               rows={4}
               placeholder='Your comments here...'
               value={textFieldInput}
+              disabled={reviewDisabled}
               InputProps={{
                 classes: {
                   input: style.textFieldInput,
@@ -177,13 +220,14 @@ function SingleMentee(props) {
             <div className={style.scoreContainer}>
               <Rating
                 name='customized-color'
-                defaultValue={0}
+                value={score}
                 max={4}
                 getLabelText={(score) =>
                   `${score} Heart${score !== 1 ? 's' : ''}`
                 }
+                disabled={reviewDisabled}
                 onChange={(event, newScore) => {
-                  setScore(newScore);
+                  handleScoreChange(event, newScore);
                 }}
                 onChangeActive={(event, newHover) => {
                   setHover(newHover);
@@ -225,33 +269,10 @@ const mapDispatchToProps = (dispatch) => {
     getMentee: (id) => {
       dispatch(getMentee(id));
     },
+    addReview: (review, token) => {
+      dispatch(addReview(review, token));
+    },
   };
 };
 
 export default connect(null, mapDispatchToProps)(SingleMentee);
-
-/**
- *          <Accordion
-          className={style.ratingAccordion}
-          expanded={expanded === 'panel1'}
-          onChange={handleChange('panel1')}
-          position='sticky'
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls='panel1bh-content'
-            id='panel1bh-header'
-          >
-            <Typography sx={{ width: '33%', flexShrink: 0 }}>Rating</Typography>
-            <Typography sx={{ color: 'text.secondary' }}>
-              Leave applicant rating and comments here
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography>
-              Nulla facilisi. Phasellus sollicitudin nulla et quam mattis
-              feugiat. Aliquam eget maximus est, id dignissim quam.
-            </Typography>
-          </AccordionDetails>
-        </Accordion> 
- */
