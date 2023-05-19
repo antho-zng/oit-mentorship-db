@@ -90,18 +90,6 @@ function SingleMentee(props) {
 
     const token = window.localStorage.getItem('token');
     addReview(review, token);
-
-    const disableReviewCookie =
-      `reviewDisabled=true; path=` +
-      window.location.pathname +
-      `; max-age=` +
-      365 * 24 * 60 * 60 +
-      `; Secure`;
-    console.log(`reviews disabled`);
-    console.log(disableReviewCookie);
-
-    // document.cookie = `reviewDisabled=true;Secure`;
-    document.cookie = disableReviewCookie;
   };
 
   const filterMyReviews = (reviews) => {
@@ -112,6 +100,11 @@ function SingleMentee(props) {
       const myReviews = reviews.filter((review) => review.userId === userId);
       if (myReviews.length > 0) {
         setReviewDisabled(true);
+        window.localStorage.setItem(
+          'textFieldInputValue',
+          myReviews[0].reviewerComments
+        );
+        window.localStorage.setItem('score', myReviews[0].reviewerScore);
       }
     } else {
       return;
