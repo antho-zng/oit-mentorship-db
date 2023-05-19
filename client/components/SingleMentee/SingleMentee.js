@@ -106,15 +106,14 @@ function SingleMentee(props) {
 
   const filterMyReviews = (reviews) => {
     if (reviews === undefined) {
-      console.log('reviews undefined');
       return;
     }
     if (Array.isArray(reviews)) {
       const myReviews = reviews.filter((review) => review.userId === userId);
-      console.log(`myReviews`);
-      console.log(myReviews);
+      if (myReviews.length > 0) {
+        setReviewDisabled(true);
+      }
     } else {
-      console.log('reviews idk lol');
       return;
     }
   };
@@ -135,11 +134,6 @@ function SingleMentee(props) {
   const userId = useSelector((state) => state.auth.id || []);
 
   const reviews = useSelector((state) => state.reviews || []);
-
-  console.log('reviews');
-  console.log(reviews);
-  // console.log('my reviews');
-  // console.log(myReviews);
 
   const allQuestionsAndAnswers = useSelector(
     (state) => state.mentee.questions || []
