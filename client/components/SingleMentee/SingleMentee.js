@@ -33,6 +33,13 @@ function SingleMentee(props) {
     props.getReviews(props.match.params.id);
   }, []);
 
+  useEffect(
+    (reviews) => {
+      filterMyReviews(reviews);
+    },
+    [reviews]
+  );
+
   useEffect(() => {
     setTextFieldInput(localStorage.getItem('textFieldInputValue'));
   }, []);
@@ -41,9 +48,13 @@ function SingleMentee(props) {
     setScore(localStorage.getItem('score'));
   }, []);
 
-  useEffect(() => {
-    setReviewDisabled(document.cookie.split('=')[1] === 'true');
-  }, []);
+  // useEffect(() => {
+  //   setReviewDisabled(document.cookie.split('=')[1] === 'true');
+  // }, []);
+
+  // useEffect(() => {
+  //   setReviewDisabled(reviews.length > 0 === 'true');
+  // }, []);
 
   const [score, setScore] = React.useState(3);
   const [hover, setHover] = React.useState(-1);
@@ -96,6 +107,19 @@ function SingleMentee(props) {
     document.cookie = disableReviewCookie;
   };
 
+  const filterMyReviews = (reviews) => {
+    if (reviews === undefined) {
+      return;
+    }
+    if (reviews.isArray()) {
+      const myReviews = reviews.filter((review) => review.userId === userId);
+      console.log(`myReviews`);
+      console.log(myReviews);
+    } else {
+      return;
+    }
+  };
+
   const scoreLabels = {
     1: 'Do not recommend',
     2: 'Recommend with reservations',
@@ -115,6 +139,8 @@ function SingleMentee(props) {
 
   console.log('reviews');
   console.log(reviews);
+  // console.log('my reviews');
+  // console.log(myReviews);
 
   const allQuestionsAndAnswers = useSelector(
     (state) => state.mentee.questions || []
