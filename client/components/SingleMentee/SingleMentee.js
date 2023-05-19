@@ -33,12 +33,9 @@ function SingleMentee(props) {
     props.getReviews(props.match.params.id);
   }, []);
 
-  useEffect(
-    (reviews) => {
-      filterMyReviews(reviews);
-    },
-    [reviews]
-  );
+  useEffect(() => {
+    filterMyReviews(reviews);
+  });
 
   useEffect(() => {
     setTextFieldInput(localStorage.getItem('textFieldInputValue'));
@@ -109,13 +106,15 @@ function SingleMentee(props) {
 
   const filterMyReviews = (reviews) => {
     if (reviews === undefined) {
+      console.log('reviews undefined');
       return;
     }
-    if (reviews.isArray()) {
+    if (Array.isArray(reviews)) {
       const myReviews = reviews.filter((review) => review.userId === userId);
       console.log(`myReviews`);
       console.log(myReviews);
     } else {
+      console.log('reviews idk lol');
       return;
     }
   };
