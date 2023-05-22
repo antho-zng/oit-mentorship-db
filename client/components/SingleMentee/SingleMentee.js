@@ -14,9 +14,11 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TextField from '@mui/material/TextField';
+import Link from '@mui/material/Link';
 import { Rating, StyledRating } from '@mui/material';
 import { Recommend, RecommendOutlined } from '@mui/icons-material';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
+import ArrowCircleUpOutlinedIcon from '@mui/icons-material/ArrowCircleUpOutlined';
 
 const questionCutoff = 8;
 
@@ -34,7 +36,7 @@ function SingleMentee(props) {
   }, []);
 
   useEffect(() => {
-    filterMyReviews(reviews);
+    reviewCheck(reviews);
   });
 
   useEffect(() => {
@@ -58,9 +60,23 @@ function SingleMentee(props) {
   const [textFieldInput, setTextFieldInput] = React.useState('');
   const [expanded, setExpanded] = React.useState(false);
   const [reviewDisabled, setReviewDisabled] = React.useState(false);
+  const [reviewSubmitted, setReviewSubmitted] = React.useState(false);
+  const [editingMode, setEditingMode] = React.useState(false);
+  // const [accordionDisabled, setAccordionDisabled] = React.useState(false);
+  const [reviewAccordionMessage, setReviewAccordionMessage] = React.useState(
+    'Leave applicant score and comments here'
+  );
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
+  };
+
+  const handleEnableReview = (event) => {
+    event.preventDefault();
+    setReviewDisabled(false);
+    setEditingMode(true);
+    console.log('review enabled');
+    console.log(reviewDisabled);
   };
 
   const handleTextFieldChange = (event) => {
@@ -92,24 +108,53 @@ function SingleMentee(props) {
     addReview(review, token);
   };
 
-  const filterMyReviews = (reviews) => {
+  const reviewCheck = (reviews) => {
     if (reviews === undefined) {
       return;
-    }
-    if (Array.isArray(reviews)) {
-      const myReviews = reviews.filter((review) => review.userId === userId);
-      if (myReviews.length > 0) {
-        setReviewDisabled(true);
-        window.localStorage.setItem(
-          'textFieldInputValue',
-          myReviews[0].reviewerComments
-        );
-        window.localStorage.setItem('score', myReviews[0].reviewerScore);
-      }
+    } else if (Array.isArray(reviews) && !editingMode) {
+      console.log('reviewcheck fired');
+      reviewScoreCheck(reviews);
+      filterMyReviews(reviews);
     } else {
       return;
     }
   };
+
+  const filterMyReviews = (reviews) => {
+    const myReviews = reviews.filter((review) => review.userId === userId);
+    if (myReviews.length > 0) {
+      setReviewDisabled(true);
+      setReviewSubmitted(true);
+      setReviewAccordionMessage(
+        `You've already submitted a review for this application on ${new Date(
+          myReviews[0].updatedAt
+        )}.`
+      );
+      window.localStorage.setItem(
+        'textFieldInputValue',
+        myReviews[0].reviewerComments
+      );
+      window.localStorage.setItem('score', myReviews[0].reviewerScore);
+    }
+  };
+
+  const reviewScoreCheck = (reviews) => {
+    for (const review of reviews) {
+      if (review.reviewerScore === 1 || review.reviewerScore === 5) {
+        setReviewAccordionMessage(
+          "Another reviewer has already marked this application as either 'Strong Accept' or 'Do Not Accept'."
+        );
+        setReviewDisabled(true);
+        return;
+      }
+    }
+  };
+  /**
+   * TO-DO:
+   * check reviewer assignment
+   * check other scores for do not accept / high accept
+   *
+   */
 
   const scoreLabels = {
     1: 'Do not recommend',
@@ -207,6 +252,7 @@ function SingleMentee(props) {
           expanded={expanded === 'panel1'}
           onChange={handleChange('panel1')}
           className={style.reviewAccordion}
+          // disabled={accordionDisabled}
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon className={style.expandMoreIcon} />}
@@ -219,9 +265,37 @@ function SingleMentee(props) {
             }}
           >
             <h4>REVIEW</h4>
-            <p>Leave applicant score and comments here</p>
+            <p>{reviewAccordionMessage}</p>
+
+            {/* {!reviewDisabled ? (
+              <p>Leave applicant score and comments here</p>
+            ) : (
+              <div>
+                <p>{reviewAccordionMessage}</p>
+              </div>
+            )} */}
           </AccordionSummary>
           <AccordionDetails>
+            {!reviewDisabled ? (
+              ''
+            ) : (
+              <div className={style.enableReviewLink}>
+                <Link
+                  component='button'
+                  variant='button'
+                  onClick={(event) => {
+                    handleEnableReview(event);
+                  }}
+                >
+                  {reviewSubmitted ? (
+                    <p>Update My Review</p>
+                  ) : (
+                    <p>Submit A Review Anyway</p>
+                  )}
+                  <br></br>
+                </Link>
+              </div>
+            )}
             <TextField
               id='outlined-multiline-static'
               label='Comments'
@@ -267,12 +341,21 @@ function SingleMentee(props) {
             </div>
           </AccordionDetails>
           <div className={style.submitReviewButton}>
-            <Button
-              startIcon={<AddCircleOutlineOutlinedIcon />}
-              onClick={(event) => saveReviewInput(event)}
-            >
-              SUBMIT REVIEW
-            </Button>
+            {editingMode ? (
+              <Button
+                startIcon={<ArrowCircleUpOutlinedIcon />}
+                onClick={(event) => saveReviewInput(event)}
+              >
+                UPDATE REVIEW
+              </Button>
+            ) : (
+              <Button
+                startIcon={<AddCircleOutlineOutlinedIcon />}
+                onClick={(event) => saveReviewInput(event)}
+              >
+                SUBMIT REVIEW
+              </Button>
+            )}
           </div>
         </Accordion>
       </div>
