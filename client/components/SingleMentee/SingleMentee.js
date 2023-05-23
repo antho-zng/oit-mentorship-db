@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 import style from './SingleMentee.module.css';
 import { getMentee } from '../../store/mentee';
-import { getReviews, addReview } from '../../store/reviews';
+import { getReviews, addReview, editReview } from '../../store/reviews';
 
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
@@ -39,13 +39,13 @@ function SingleMentee(props) {
     reviewCheck(reviews);
   });
 
-  useEffect(() => {
-    setTextFieldInput(localStorage.getItem('textFieldInputValue'));
-  }, []);
+  // useEffect(() => {
+  //   setTextFieldInput(localStorage.getItem('textFieldInputValue'));
+  // }, []);
 
-  useEffect(() => {
-    setScore(localStorage.getItem('score'));
-  }, []);
+  // useEffect(() => {
+  //   setScore(localStorage.getItem('score'));
+  // }, []);
 
   // useEffect(() => {
   //   setReviewDisabled(document.cookie.split('=')[1] === 'true');
@@ -82,13 +82,13 @@ function SingleMentee(props) {
   const handleTextFieldChange = (event) => {
     event.preventDefault();
     setTextFieldInput(event.target.value);
-    localStorage.setItem('textFieldInputValue', event.target.value);
+    // localStorage.setItem('textFieldInputValue', event.target.value);
   };
 
   const handleScoreChange = (event, newScore) => {
     event.preventDefault();
     setScore(newScore);
-    localStorage.setItem('score', newScore);
+    // localStorage.setItem('score', newScore);
   };
 
   const saveReviewInput = (event) => {
@@ -106,6 +106,28 @@ function SingleMentee(props) {
 
     const token = window.localStorage.getItem('token');
     addReview(review, token);
+
+    setReviewSubmitted(true);
+  };
+
+  const updateReview = (event) => {
+    event.preventDefault();
+
+    const reviewerComments = textFieldInput;
+    const reviewerScore = score;
+
+    const review = {
+      userId: userId,
+      reviewerComments: reviewerComments,
+      reviewerScore: reviewerScore,
+    };
+
+    const token = window.localStorage.getItem('token');
+    editReview(review, menteeId, token);
+    setEditingMode(false);
+
+    console.log(`review updated`);
+    console.log(review);
   };
 
   const reviewCheck = (reviews) => {
@@ -117,6 +139,18 @@ function SingleMentee(props) {
       filterMyReviews(reviews);
     } else {
       return;
+    }
+  };
+
+  const reviewScoreCheck = (reviews) => {
+    for (const review of reviews) {
+      if (review.reviewerScore === 1 || review.reviewerScore === 5) {
+        setReviewAccordionMessage(
+          "Another reviewer has already marked this application as either 'Strong Accept' or 'Do Not Accept'."
+        );
+        setReviewDisabled(true);
+        return;
+      }
     }
   };
 
@@ -138,17 +172,6 @@ function SingleMentee(props) {
     }
   };
 
-  const reviewScoreCheck = (reviews) => {
-    for (const review of reviews) {
-      if (review.reviewerScore === 1 || review.reviewerScore === 5) {
-        setReviewAccordionMessage(
-          "Another reviewer has already marked this application as either 'Strong Accept' or 'Do Not Accept'."
-        );
-        setReviewDisabled(true);
-        return;
-      }
-    }
-  };
   /**
    * TO-DO:
    * check reviewer assignment
@@ -341,10 +364,10 @@ function SingleMentee(props) {
             </div>
           </AccordionDetails>
           <div className={style.submitReviewButton}>
-            {editingMode ? (
+            {editingMode && reviewSubmitted ? (
               <Button
                 startIcon={<ArrowCircleUpOutlinedIcon />}
-                onClick={(event) => saveReviewInput(event)}
+                onClick={(event) => updateReview(event)}
               >
                 UPDATE REVIEW
               </Button>
@@ -377,6 +400,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     addReview: (review, token) => {
       dispatch(addReview(review, token));
+    },
+    editReview: (review, id, token) => {
+      dispatch(editReview(review, id, token));
     },
   };
 };

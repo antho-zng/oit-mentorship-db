@@ -46,6 +46,36 @@ export const addReview = async (review, token) => {
   }
 };
 
+export const editReview = async (review, id, token) => {
+  try {
+    const { data } = await axios.put(`/api/reviews/${id}`, {
+      review,
+      headers: {
+        authorization: token,
+        'content-type': 'application/json',
+      },
+    });
+    return dispatch(_editReview(data));
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// export const editItemQuant = (token, itemId, cartId, quant) => {
+//   return async (dispatch) => {
+//     try {
+//       const response = await axios('/api/orders/cart', {
+//         headers: { authorization: token },
+//         data: { itemId: itemId, cartId: cartId, quantity: +quant },
+//         method: 'put',
+//       });
+//       const editedItem = response.data;
+//       dispatch(editQuant(editedItem));
+//     } catch (e) {
+//       console.error(e);
+//     }
+//   };
+// };
 // INITIAL STATE
 const initialState = {};
 
@@ -58,6 +88,8 @@ export default function (state = initialState, action) {
       return action.review;
     case GET_REVIEWS:
       return action.reviews;
+    case EDIT_REVIEW:
+      return action.review;
     default:
       return state;
   }

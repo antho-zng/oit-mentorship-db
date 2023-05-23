@@ -31,14 +31,7 @@ router.get('/:id', async (req, res, next) => {
 // POST (creating new review)
 router.post('/', requireUserToken, async (req, res, next) => {
   try {
-    console.log(`req body`);
-    console.log(req.body); // ERROR : this is showing up as empty obj
-    console.log('req.headers');
-    console.log(req.headers);
     const review = await Review.create(req.body.review);
-
-    console.log(`create review success !`);
-    console.log(review);
     res.send(review);
   } catch (error) {
     console.log(`Error with review API post req! Error: ${error}`);
@@ -46,9 +39,41 @@ router.post('/', requireUserToken, async (req, res, next) => {
 });
 
 // PUT (editing review)
-// router.put();
+router.put('/:id', requireUserToken, async (req, res, next) => {
+  try {
+    const review = await Review.findOne({
+      where: {
+        menteeId: req.params.id,
+        userId: req.body.review.userId,
+      },
+    });
+    review.reviewerComments = req.body.review.reviewerComments;
+    review.reviewerScore = req.body.review.reviewerScore;
+
+    review.save();
+    res.send(review);
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = router;
+
+// router.put('/cart', requireToken, async (req, res, next) => {
+//   try {
+//     const orderItem = await OrderItem.findOne({
+//       where: {
+//         orderId: req.body.cartId,
+//         productId: req.body.itemId,
+//       },
+//     });
+//     orderItem.quantity = req.body.quantity;
+//     orderItem.save();
+//     res.send(orderItem);
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
 // router.post('/cart', requireTokenForPosts, async (req, res, next) => {
 //   try {
@@ -65,22 +90,6 @@ module.exports = router;
 //       orderItem.quantity = 1;
 //     }
 //     await orderItem.save();
-//     res.send(orderItem);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
-// router.put('/cart', requireToken, async (req, res, next) => {
-//   try {
-//     const orderItem = await OrderItem.findOne({
-//       where: {
-//         orderId: req.body.cartId,
-//         productId: req.body.itemId,
-//       },
-//     });
-//     orderItem.quantity = req.body.quantity;
-//     orderItem.save();
 //     res.send(orderItem);
 //   } catch (error) {
 //     next(error);
