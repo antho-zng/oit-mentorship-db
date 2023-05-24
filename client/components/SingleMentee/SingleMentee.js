@@ -39,22 +39,6 @@ function SingleMentee(props) {
     reviewCheck(reviews);
   });
 
-  // useEffect(() => {
-  //   setTextFieldInput(localStorage.getItem('textFieldInputValue'));
-  // }, []);
-
-  // useEffect(() => {
-  //   setScore(localStorage.getItem('score'));
-  // }, []);
-
-  // useEffect(() => {
-  //   setReviewDisabled(document.cookie.split('=')[1] === 'true');
-  // }, []);
-
-  // useEffect(() => {
-  //   setReviewDisabled(reviews.length > 0 === 'true');
-  // }, []);
-
   const [score, setScore] = React.useState(3);
   const [hover, setHover] = React.useState(-1);
   const [textFieldInput, setTextFieldInput] = React.useState('');
@@ -82,13 +66,11 @@ function SingleMentee(props) {
   const handleTextFieldChange = (event) => {
     event.preventDefault();
     setTextFieldInput(event.target.value);
-    // localStorage.setItem('textFieldInputValue', event.target.value);
   };
 
   const handleScoreChange = (event, newScore) => {
     event.preventDefault();
     setScore(newScore);
-    // localStorage.setItem('score', newScore);
   };
 
   const saveReviewInput = (event) => {
@@ -106,8 +88,8 @@ function SingleMentee(props) {
 
     const token = window.localStorage.getItem('token');
     addReview(review, token);
-
     setReviewSubmitted(true);
+    setEditingMode(false);
   };
 
   const updateReview = (event) => {
@@ -125,9 +107,6 @@ function SingleMentee(props) {
     const token = window.localStorage.getItem('token');
     editReview(review, menteeId, token);
     setEditingMode(false);
-
-    console.log(`review updated`);
-    console.log(review);
   };
 
   const reviewCheck = (reviews) => {
@@ -164,11 +143,8 @@ function SingleMentee(props) {
           myReviews[0].updatedAt
         )}.`
       );
-      window.localStorage.setItem(
-        'textFieldInputValue',
-        myReviews[0].reviewerComments
-      );
-      window.localStorage.setItem('score', myReviews[0].reviewerScore);
+      setTextFieldInput(myReviews[0].reviewerComments);
+      setScore(myReviews[0].reviewerScore);
     }
   };
 
