@@ -108,4 +108,14 @@ min-height:80px;
 .enableReviewLink{
   display:flex;
   justify-content:center;
+  padding-bottom:10px
+}
+.enableReviewButton{
+  display: inline-flex;
+  align-items:center;
+}
+.editIcon{
+  padding-right:3px;
+  transform-origin:center;
+  scale:0.8
 }

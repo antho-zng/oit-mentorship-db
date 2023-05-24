@@ -19,6 +19,7 @@ import { Rating, StyledRating } from '@mui/material';
 import { Recommend, RecommendOutlined } from '@mui/icons-material';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import ArrowCircleUpOutlinedIcon from '@mui/icons-material/ArrowCircleUpOutlined';
+import EditIcon from '@mui/icons-material/Edit';
 
 const questionCutoff = 8;
 
@@ -279,20 +280,22 @@ function SingleMentee(props) {
               ''
             ) : (
               <div className={style.enableReviewLink}>
-                <Link
-                  component='button'
-                  variant='button'
+                <Button
+                  size='small'
                   onClick={(event) => {
                     handleEnableReview(event);
                   }}
                 >
                   {reviewSubmitted ? (
-                    <p>Update My Review</p>
+                    <span className={style.enableReviewButton}>
+                      <EditIcon className={style.editIcon} />{' '}
+                      <p>Edit My Review</p>
+                    </span>
                   ) : (
                     <p>Submit A Review Anyway</p>
                   )}
                   <br></br>
-                </Link>
+                </Button>
               </div>
             )}
             <TextField
