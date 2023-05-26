@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 import style from './SingleMentee.module.css';
 import { getMentee } from '../../store/mentee';
-import { addReview } from '../../store/reviews';
+import { getReviews, addReview, editReview } from '../../store/reviews';
 
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
@@ -12,12 +12,14 @@ import Button from '@mui/material/Button';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
-import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TextField from '@mui/material/TextField';
+import Link from '@mui/material/Link';
 import { Rating, StyledRating } from '@mui/material';
 import { Recommend, RecommendOutlined } from '@mui/icons-material';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
+import ArrowCircleUpOutlinedIcon from '@mui/icons-material/ArrowCircleUpOutlined';
+import EditIcon from '@mui/icons-material/Edit';
 
 const questionCutoff = 8;
 
@@ -31,37 +33,44 @@ function SingleMentee(props) {
   }, []);
 
   useEffect(() => {
-    setTextFieldInput(localStorage.getItem('textFieldInputValue'));
+    props.getReviews(props.match.params.id);
   }, []);
 
   useEffect(() => {
-    setScore(localStorage.getItem('score'));
-  }, []);
-
-  useEffect(() => {
-    setReviewDisabled(document.cookie.split('=')[1] === 'true');
-  }, []);
+    reviewCheck(reviews);
+  });
 
   const [score, setScore] = React.useState(3);
   const [hover, setHover] = React.useState(-1);
   const [textFieldInput, setTextFieldInput] = React.useState('');
   const [expanded, setExpanded] = React.useState(false);
   const [reviewDisabled, setReviewDisabled] = React.useState(false);
+  const [reviewSubmitted, setReviewSubmitted] = React.useState(false);
+  const [editingMode, setEditingMode] = React.useState(false);
+  const [reviewAccordionMessage, setReviewAccordionMessage] = React.useState(
+    'Leave applicant score and comments here'
+  );
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
 
+  const handleEnableReview = (event) => {
+    event.preventDefault();
+    setReviewDisabled(false);
+    setEditingMode(true);
+    console.log('review enabled');
+    console.log(reviewDisabled);
+  };
+
   const handleTextFieldChange = (event) => {
     event.preventDefault();
     setTextFieldInput(event.target.value);
-    localStorage.setItem('textFieldInputValue', event.target.value);
   };
 
   const handleScoreChange = (event, newScore) => {
     event.preventDefault();
     setScore(newScore);
-    localStorage.setItem('score', newScore);
   };
 
   const saveReviewInput = (event) => {
@@ -79,25 +88,80 @@ function SingleMentee(props) {
 
     const token = window.localStorage.getItem('token');
     addReview(review, token);
-
-    const disableReviewCookie =
-      `reviewDisabled=true; path=` +
-      window.location.pathname +
-      `; max-age=` +
-      365 * 24 * 60 * 60 +
-      `; Secure`;
-    console.log(`reviews disabled`);
-    console.log(disableReviewCookie);
-
-    // document.cookie = `reviewDisabled=true;Secure`;
-    document.cookie = disableReviewCookie;
+    setReviewSubmitted(true);
+    setEditingMode(false);
   };
 
+  const updateReview = (event) => {
+    event.preventDefault();
+
+    const reviewerComments = textFieldInput;
+    const reviewerScore = score;
+
+    const review = {
+      userId: userId,
+      reviewerComments: reviewerComments,
+      reviewerScore: reviewerScore,
+    };
+
+    const token = window.localStorage.getItem('token');
+    editReview(review, menteeId, token);
+    setEditingMode(false);
+    setTextFieldInput(textFieldInput);
+  };
+
+  const reviewCheck = (reviews) => {
+    if (reviews === undefined) {
+      return;
+    } else if (Array.isArray(reviews) && !editingMode) {
+      console.log('reviewcheck fired');
+      reviewScoreCheck(reviews);
+      filterMyReviews(reviews);
+    } else {
+      return;
+    }
+  };
+
+  const reviewScoreCheck = (reviews) => {
+    for (const review of reviews) {
+      if (review.reviewerScore === 1 || review.reviewerScore === 5) {
+        setReviewAccordionMessage(
+          "Another reviewer has already marked this application as either 'Strong Accept' or 'Do Not Accept'."
+        );
+        setReviewDisabled(true);
+        return;
+      }
+    }
+  };
+
+  const filterMyReviews = (reviews) => {
+    const myReviews = reviews.filter((review) => review.userId === userId);
+    if (myReviews.length > 0) {
+      setReviewDisabled(true);
+      setReviewSubmitted(true);
+      setReviewAccordionMessage(
+        `You've already submitted a review for this application on ${new Date(
+          myReviews[0].updatedAt
+        )}.`
+      );
+      setTextFieldInput(myReviews[0].reviewerComments);
+      setScore(myReviews[0].reviewerScore);
+    }
+  };
+
+  /**
+   * TO-DO:
+   * check reviewer assignment
+   * check other scores for do not accept / high accept
+   *
+   */
+
   const scoreLabels = {
-    1: 'Do not recommend',
-    2: 'Recommend with reservations',
-    3: 'Recommend',
-    4: 'Strongly recommend',
+    1: 'Do not accept',
+    2: 'Borderline',
+    3: 'Accept with low priority',
+    4: 'Accept',
+    5: 'Strong accept',
   };
 
   const mentee = useSelector((state) => state.mentee);
@@ -107,6 +171,8 @@ function SingleMentee(props) {
   const lastName = useSelector((state) => state.mentee.lastName || []);
   const cohort = useSelector((state) => state.mentee.cohort || []);
   const userId = useSelector((state) => state.auth.id || []);
+
+  const reviews = useSelector((state) => state.reviews || []);
 
   const allQuestionsAndAnswers = useSelector(
     (state) => state.mentee.questions || []
@@ -187,6 +253,7 @@ function SingleMentee(props) {
           expanded={expanded === 'panel1'}
           onChange={handleChange('panel1')}
           className={style.reviewAccordion}
+          // disabled={accordionDisabled}
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon className={style.expandMoreIcon} />}
@@ -199,9 +266,39 @@ function SingleMentee(props) {
             }}
           >
             <h4>REVIEW</h4>
-            <p>Leave applicant score and comments here</p>
+            <p>{reviewAccordionMessage}</p>
+
+            {/* {!reviewDisabled ? (
+              <p>Leave applicant score and comments here</p>
+            ) : (
+              <div>
+                <p>{reviewAccordionMessage}</p>
+              </div>
+            )} */}
           </AccordionSummary>
           <AccordionDetails>
+            {!reviewDisabled ? (
+              ''
+            ) : (
+              <div className={style.enableReviewLink}>
+                <Button
+                  size='small'
+                  onClick={(event) => {
+                    handleEnableReview(event);
+                  }}
+                >
+                  {reviewSubmitted ? (
+                    <span className={style.enableReviewButton}>
+                      <EditIcon className={style.editIcon} />{' '}
+                      <p>Edit My Review</p>
+                    </span>
+                  ) : (
+                    <p>Submit A Review Anyway</p>
+                  )}
+                  <br></br>
+                </Button>
+              </div>
+            )}
             <TextField
               id='outlined-multiline-static'
               label='Comments'
@@ -221,7 +318,7 @@ function SingleMentee(props) {
               <Rating
                 name='customized-color'
                 value={score}
-                max={4}
+                max={5}
                 getLabelText={(score) =>
                   `${score} Heart${score !== 1 ? 's' : ''}`
                 }
@@ -247,12 +344,21 @@ function SingleMentee(props) {
             </div>
           </AccordionDetails>
           <div className={style.submitReviewButton}>
-            <Button
-              startIcon={<AddCircleOutlineOutlinedIcon />}
-              onClick={(event) => saveReviewInput(event)}
-            >
-              SUBMIT REVIEW
-            </Button>
+            {editingMode && reviewSubmitted ? (
+              <Button
+                startIcon={<ArrowCircleUpOutlinedIcon />}
+                onClick={(event) => updateReview(event)}
+              >
+                UPDATE REVIEW
+              </Button>
+            ) : (
+              <Button
+                startIcon={<AddCircleOutlineOutlinedIcon />}
+                onClick={(event) => saveReviewInput(event)}
+              >
+                SUBMIT REVIEW
+              </Button>
+            )}
           </div>
         </Accordion>
       </div>
@@ -269,8 +375,14 @@ const mapDispatchToProps = (dispatch) => {
     getMentee: (id) => {
       dispatch(getMentee(id));
     },
+    getReviews: (id) => {
+      dispatch(getReviews(id));
+    },
     addReview: (review, token) => {
       dispatch(addReview(review, token));
+    },
+    editReview: (review, id, token) => {
+      dispatch(editReview(review, id, token));
     },
   };
 };

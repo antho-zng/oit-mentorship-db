@@ -85,12 +85,10 @@ p{
   padding-bottom: 30px
 }
 .scoreContainer{
-  display:flex;
-padding-top:40px;
-min-height:80px;
-}
-.scoreIcons{
-  padding-top:20px;
+  display:inline-flex;
+  align-items:center;
+  padding-top:40px;
+  min-height:80px;
 }
 .scoreLabels{
   font-size:smaller;
@@ -104,4 +102,18 @@ min-height:80px;
 }
 .textFieldInput{
   font-size:14px;
+}
+.enableReviewLink{
+  display:flex;
+  justify-content:center;
+  padding-bottom:10px
+}
+.enableReviewButton{
+  display: inline-flex;
+  align-items:center;
+}
+.editIcon{
+  padding-right:3px;
+  transform-origin:center;
+  scale:0.8
 }
