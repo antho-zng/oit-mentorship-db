@@ -47,7 +47,6 @@ function SingleMentee(props) {
   const [reviewDisabled, setReviewDisabled] = React.useState(false);
   const [reviewSubmitted, setReviewSubmitted] = React.useState(false);
   const [editingMode, setEditingMode] = React.useState(false);
-  // const [accordionDisabled, setAccordionDisabled] = React.useState(false);
   const [reviewAccordionMessage, setReviewAccordionMessage] = React.useState(
     'Leave applicant score and comments here'
   );
@@ -158,10 +157,11 @@ function SingleMentee(props) {
    */
 
   const scoreLabels = {
-    1: 'Do not recommend',
-    2: 'Recommend with reservations',
-    3: 'Recommend',
-    4: 'Strongly recommend',
+    1: 'Do not accept',
+    2: 'Borderline',
+    3: 'Accept with low priority',
+    4: 'Accept',
+    5: 'Strong accept',
   };
 
   const mentee = useSelector((state) => state.mentee);
@@ -318,7 +318,7 @@ function SingleMentee(props) {
               <Rating
                 name='customized-color'
                 value={score}
-                max={4}
+                max={5}
                 getLabelText={(score) =>
                   `${score} Heart${score !== 1 ? 's' : ''}`
                 }
