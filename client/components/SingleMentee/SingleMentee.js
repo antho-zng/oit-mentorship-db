@@ -108,6 +108,7 @@ function SingleMentee(props) {
     const token = window.localStorage.getItem('token');
     editReview(review, menteeId, token);
     setEditingMode(false);
+    setTextFieldInput(textFieldInput);
   };
 
   const reviewCheck = (reviews) => {
