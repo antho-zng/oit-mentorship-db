@@ -1,4 +1,8 @@
-import * as React from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { connect, useSelector } from 'react-redux';
+import { createSelector } from '@reduxjs/toolkit';
+import { getAllMentees } from '../../store/allMentees';
+
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -21,37 +25,6 @@ import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-
-function createData(name, calories, fat, carbs, protein) {
-  return {
-    name,
-    calories,
-    fat,
-    carbs,
-    protein,
-  };
-}
-
-const rows = [
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Donut', 452, 25.0, 51, 4.9),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-  createData('Honeycomb', 408, 3.2, 87, 6.5),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Jelly Bean', 375, 0.0, 94, 0.0),
-  createData('KitKat', 518, 26.0, 65, 7.0),
-  createData('Lollipop', 392, 0.2, 98, 0.0),
-  createData('Marshmallow', 318, 0, 81, 2.0),
-  createData('Nougat', 360, 19.0, 9, 37.0),
-  createData('Oreo', 437, 18.0, 63, 4.0),
-];
-
-function createRows(mentees) {
-  console.log(`mentees from props`);
-  console.log(mentees);
-}
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -87,32 +60,38 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: 'name',
+    id: 'firstName',
     numeric: false,
     disablePadding: true,
-    label: 'NAME',
+    label: 'FIRST NAME',
+  },
+  {
+    id: 'lastName',
+    numeric: false,
+    disablePadding: true,
+    label: 'LAST NAME',
   },
   {
     id: 'email',
-    numeric: true,
+    numeric: false,
     disablePadding: false,
     label: 'EMAIL',
   },
   {
     id: 'cohort',
-    numeric: true,
+    numeric: false,
     disablePadding: false,
     label: 'COHORT',
   },
   {
     id: 'reviewer',
-    numeric: true,
+    numeric: false,
     disablePadding: false,
     label: 'REVIEWER',
   },
   {
     id: 'status',
-    numeric: true,
+    numeric: false,
     disablePadding: false,
     label: 'STATUS',
   },
@@ -134,17 +113,6 @@ function EnhancedTableHead(props) {
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding='checkbox'>
-          <Checkbox
-            color='primary'
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              'aria-label': 'select all mentees',
-            }}
-          />
-        </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
@@ -238,16 +206,34 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function MenteeTable(props) {
+function MenteeTable(props) {
+  // useEffect(() => {
+  //   getMentees();
+  // }, []);
+
+  useEffect(() => {
+    getVisibleRows(mentees);
+    // setMenteesFetched(true);
+  });
+
+  //[order, orderBy, page]
+
+  const mentees = useSelector((state) => state.allMentees || []);
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [tableRows, setTableRows] = React.useState({});
+  const [visibleRows, setVisibleRows] = React.useState([]);
+  const [menteesFetched, setMenteesFetched] = React.useState(false);
 
-  const mentees = props.mentees;
-  createRows(mentees);
+  // const getMentees = () => {
+  //   props.getAllMentees();
+  //   setMenteesFetched(true);
+  //   console.log(menteesFetched);
+  // };
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -303,14 +289,51 @@ export default function MenteeTable(props) {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-  const visibleRows = React.useMemo(
-    () =>
-      stableSort(rows, getComparator(order, orderBy)).slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-      ),
-    [order, orderBy, page, rowsPerPage]
-  );
+  const getVisibleRows = async (mentees) => {
+    if (mentees === undefined) {
+      console.log(`sad`);
+      return;
+    } else if (Array.isArray(mentees)) {
+      // console.log(`mentees in getvisiblerows`);
+      // console.log(mentees);
+      const visibleRowsInput = mentees
+        .slice()
+        .sort(getComparator(order, orderBy))
+        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+      console.log(`visibleRows ran`);
+      console.log(visibleRowsInput);
+      setVisibleRows(visibleRowsInput);
+    } else {
+      console.log(`more sad`);
+      return;
+    }
+  };
+  // const selectVisibleRows = createSelector(
+  //   (state) => state.allMentees || [],
+  //   (allMentees) =>
+  //     allMentees
+  //       .slice()
+  //       .sort(getComparator(order, orderBy))
+  //       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+  // );
+
+  // const visibleRows = useSelector(selectVisibleRows);
+  // const visibleRows = React.useMemo(() => {
+  //   const mentees = props.mentees;
+  //   if (mentees[0] !== undefined) {
+  //     return mentees
+  //       .slice()
+  //       .sort(getComparator(order, orderBy))
+  //       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  //   }
+  // }, [order, orderBy, page, rowsPerPage]);
+
+  // export const selectRawTranscript = createSelector(
+  //   (state: RootState) => state.data.someRawValue,
+  //   (rawValue) => rawValue.map(entry => entry.data)
+  // );
+
+  // exampleArray.slice().sort(exampleComparator)
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -328,7 +351,7 @@ export default function MenteeTable(props) {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={rows.length}
+              rowCount={mentees.length}
             />
             <TableBody>
               {visibleRows.map((row, index) => {
@@ -339,34 +362,23 @@ export default function MenteeTable(props) {
                   <TableRow
                     hover
                     onClick={(event) => handleClick(event, row.name)}
-                    role='checkbox'
-                    aria-checked={isItemSelected}
                     tabIndex={-1}
                     key={row.name}
-                    selected={isItemSelected}
                     sx={{ cursor: 'pointer' }}
                   >
-                    <TableCell padding='checkbox'>
-                      <Checkbox
-                        color='primary'
-                        checked={isItemSelected}
-                        inputProps={{
-                          'aria-labelledby': labelId,
-                        }}
-                      />
-                    </TableCell>
                     <TableCell
                       component='th'
                       id={labelId}
                       scope='row'
                       padding='none'
                     >
-                      {row.name}
+                      {row.firstName}
                     </TableCell>
-                    <TableCell align='right'>{row.calories}</TableCell>
-                    <TableCell align='right'>{row.fat}</TableCell>
-                    <TableCell align='right'>{row.carbs}</TableCell>
-                    <TableCell align='right'>{row.protein}</TableCell>
+                    <TableCell align='left'>{row.lastName}</TableCell>
+                    <TableCell align='left'>{row.email}</TableCell>
+                    <TableCell align='left'>{row.cohort.cohortId}</TableCell>
+                    <TableCell align='left'>' '</TableCell>
+                    <TableCell align='left'>PENDING</TableCell>
                   </TableRow>
                 );
               })}
@@ -385,7 +397,7 @@ export default function MenteeTable(props) {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
-          count={rows.length}
+          count={mentees.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -399,3 +411,13 @@ export default function MenteeTable(props) {
     </Box>
   );
 }
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getAllMentees: () => {
+      dispatch(getAllMentees());
+    },
+  };
+};
+
+export default connect(null, mapDispatchToProps)(MenteeTable);

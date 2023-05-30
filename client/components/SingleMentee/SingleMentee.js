@@ -114,7 +114,6 @@ function SingleMentee(props) {
     if (reviews === undefined) {
       return;
     } else if (Array.isArray(reviews) && !editingMode) {
-      console.log('reviewcheck fired');
       reviewScoreCheck(reviews);
       filterMyReviews(reviews);
     } else {
