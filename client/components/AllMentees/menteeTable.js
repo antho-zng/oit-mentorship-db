@@ -27,6 +27,7 @@ import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
+import { FlashOnTwoTone } from '@mui/icons-material';
 
 function Foo(props) {
   useEffect(() => {
@@ -67,13 +68,13 @@ const headCells = [
   {
     id: 'firstName',
     numeric: false,
-    disablePadding: true,
+    disablePadding: false,
     label: 'FIRST NAME',
   },
   {
     id: 'lastName',
     numeric: false,
-    disablePadding: true,
+    disablePadding: false,
     label: 'LAST NAME',
   },
   {
@@ -279,32 +280,11 @@ function MenteeTable(props) {
     setDense(event.target.checked);
   };
 
-  const isSelected = (name) => selected.indexOf(name) !== -1;
+  // const isSelected = (name) => selected.indexOf(name) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
-  // const getVisibleRows = () => {
-  //   if (mentees === undefined) {
-  //     console.log(`sad`);
-  //     return [];
-  //   } else if (Array.isArray(mentees)) {
-  //     // console.log(`mentees in getvisiblerows`);
-  //     // console.log(mentees);
-  //     const visibleRowsInput = mentees
-  //       .slice()
-  //       .sort(getComparator(order, orderBy))
-  //       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-  //     console.log(`visibleRows ran`);
-  //     console.log(visibleRowsInput);
-  //     return visibleRowsInput;
-  //     // setVisibleRows(visibleRowsInput);
-  //   } else {
-  //     console.log(`more sad`);
-  //     return [];
-  //   }
-  // };
 
   const getVisibleRows = (mentees) => {
     if (mentees === undefined) {
@@ -329,43 +309,13 @@ function MenteeTable(props) {
     () => getVisibleRows(mentees),
     [order, orderBy, page, rowsPerPage, mentees]
   );
-  // const selectVisibleRows = createSelector(
-  //   (state) => state.allMentees || [],
-  //   (allMentees) =>
-  //     allMentees
-  //       .slice()
-  //       .sort(getComparator(order, orderBy))
-  //       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-  // );
-
-  // const visibleRows = useSelector(selectVisibleRows);
-  // const visibleRows = React.useMemo(() => {
-  //   const mentees = props.mentees;
-  //   if (mentees[0] !== undefined) {
-  //     return mentees
-  //       .slice()
-  //       .sort(getComparator(order, orderBy))
-  //       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-  //   }
-  // }, [order, orderBy, page, rowsPerPage]);
-
-  // export const selectRawTranscript = createSelector(
-  //   (state: RootState) => state.data.someRawValue,
-  //   (rawValue) => rawValue.map(entry => entry.data)
-  // );
-
-  // exampleArray.slice().sort(exampleComparator)
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '75%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby='tableTitle'
-            size={dense ? 'small' : 'medium'}
-          >
+          <Table aria-labelledby='tableTitle' size={dense ? 'small' : 'medium'}>
             <EnhancedTableHead
               numSelected={selected.length}
               order={order}
@@ -387,12 +337,7 @@ function MenteeTable(props) {
                     key={row.name}
                     sx={{ cursor: 'pointer' }}
                   >
-                    <TableCell
-                      component='th'
-                      id={labelId}
-                      scope='row'
-                      padding='none'
-                    >
+                    <TableCell component='th' id={labelId} scope='row'>
                       {row.firstName}
                     </TableCell>
                     <TableCell align='left'>{row.lastName}</TableCell>
