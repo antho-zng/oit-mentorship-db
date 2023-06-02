@@ -1,6 +1,8 @@
-import React, { useEffect, useState, useMemo } from 'react';
+/* eslint-disable no-unused-vars */
+/* eslint-disable require-jsdoc */
+/* eslint-disable object-curly-spacing */
+import React, { useEffect, useMemo } from 'react';
 import { connect, useSelector } from 'react-redux';
-import { createSelector } from '@reduxjs/toolkit';
 import { getAllMentees } from '../../store/allMentees';
 
 import PropTypes from 'prop-types';
@@ -17,7 +19,7 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
+// import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -25,6 +27,12 @@ import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
+
+function Foo(props) {
+  useEffect(() => {
+    console.log(props.name);
+  }, []); // <-- should error and offer autofix to [props.name]
+}
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -42,21 +50,18 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
 // with exampleArray.slice().sort(exampleComparator)
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
+// function stableSort(array, comparator) {
+//   const stabilizedThis = array.map((el, index) => [el, index]);
+//   stabilizedThis.sort((a, b) => {
+//     const order = comparator(a[0], b[0]);
+//     if (order !== 0) {
+//       return order;
+//     }
+//     return a[1] - b[1];
+//   });
+//   return stabilizedThis.map((el) => el[0]);
+// }
 
 const headCells = [
   {
@@ -82,12 +87,6 @@ const headCells = [
     numeric: false,
     disablePadding: false,
     label: 'COHORT',
-  },
-  {
-    id: 'reviewer',
-    numeric: false,
-    disablePadding: false,
-    label: 'REVIEWER',
   },
   {
     id: 'status',
@@ -207,37 +206,34 @@ EnhancedTableToolbar.propTypes = {
 };
 
 function MenteeTable(props) {
-  // useEffect(() => {
-  //   getMentees();
-  // }, []);
-
   useEffect(() => {
-    getVisibleRows(mentees);
-    // setMenteesFetched(true);
-  });
+    props.getAllMentees();
+  }, []);
 
-  //[order, orderBy, page]
+  // useEffect(() => {
+  //   getVisibleRows();
+  // });
+
+  //[order, orderBy, page, rowsPerPage, mentees]
 
   const mentees = useSelector((state) => state.allMentees || []);
   const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('calories');
+  const [orderBy, setOrderBy] = React.useState('firstName');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [tableRows, setTableRows] = React.useState({});
-  const [visibleRows, setVisibleRows] = React.useState([]);
+  // const [visibleRows, setVisibleRows] = React.useState([]);
   const [menteesFetched, setMenteesFetched] = React.useState(false);
-
-  // const getMentees = () => {
-  //   props.getAllMentees();
-  //   setMenteesFetched(true);
-  //   console.log(menteesFetched);
-  // };
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
+    console.log(`order change`);
+    console.log(order);
     setOrder(isAsc ? 'desc' : 'asc');
+    console.log(`order change`);
+    console.log(order);
+
     setOrderBy(property);
   };
 
@@ -289,25 +285,50 @@ function MenteeTable(props) {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-  const getVisibleRows = async (mentees) => {
+  // const getVisibleRows = () => {
+  //   if (mentees === undefined) {
+  //     console.log(`sad`);
+  //     return [];
+  //   } else if (Array.isArray(mentees)) {
+  //     // console.log(`mentees in getvisiblerows`);
+  //     // console.log(mentees);
+  //     const visibleRowsInput = mentees
+  //       .slice()
+  //       .sort(getComparator(order, orderBy))
+  //       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  //     console.log(`visibleRows ran`);
+  //     console.log(visibleRowsInput);
+  //     return visibleRowsInput;
+  //     // setVisibleRows(visibleRowsInput);
+  //   } else {
+  //     console.log(`more sad`);
+  //     return [];
+  //   }
+  // };
+
+  const getVisibleRows = (mentees) => {
     if (mentees === undefined) {
       console.log(`sad`);
-      return;
+      return [];
     } else if (Array.isArray(mentees)) {
-      // console.log(`mentees in getvisiblerows`);
-      // console.log(mentees);
       const visibleRowsInput = mentees
         .slice()
         .sort(getComparator(order, orderBy))
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
       console.log(`visibleRows ran`);
       console.log(visibleRowsInput);
-      setVisibleRows(visibleRowsInput);
+      return visibleRowsInput;
+      // setVisibleRows(visibleRowsInput);
     } else {
       console.log(`more sad`);
-      return;
+      return [];
     }
   };
+
+  const visibleRows = useMemo(
+    () => getVisibleRows(mentees),
+    [order, orderBy, page, rowsPerPage, mentees]
+  );
   // const selectVisibleRows = createSelector(
   //   (state) => state.allMentees || [],
   //   (allMentees) =>
@@ -355,7 +376,7 @@ function MenteeTable(props) {
             />
             <TableBody>
               {visibleRows.map((row, index) => {
-                const isItemSelected = isSelected(row.name);
+                // const isItemSelected = isSelected(row.name);
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
@@ -377,7 +398,6 @@ function MenteeTable(props) {
                     <TableCell align='left'>{row.lastName}</TableCell>
                     <TableCell align='left'>{row.email}</TableCell>
                     <TableCell align='left'>{row.cohort.cohortId}</TableCell>
-                    <TableCell align='left'>' '</TableCell>
                     <TableCell align='left'>PENDING</TableCell>
                   </TableRow>
                 );
