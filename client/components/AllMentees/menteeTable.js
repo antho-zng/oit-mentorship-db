@@ -29,12 +29,6 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import { FlashOnTwoTone } from '@mui/icons-material';
 
-function Foo(props) {
-  useEffect(() => {
-    console.log(props.name);
-  }, []); // <-- should error and offer autofix to [props.name]
-}
-
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -181,7 +175,7 @@ function EnhancedTableToolbar(props) {
           id='tableTitle'
           component='div'
         >
-          ALL MENTEES
+          MENTEE APPLICATIONS
         </Typography>
       )}
 
@@ -206,10 +200,14 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-function MenteeTable(props) {
+function MenteeTable({ getAllMentees, sendMenteeData }) {
   useEffect(() => {
-    props.getAllMentees();
+    getAllMentees();
   }, []);
+
+  // useEffect(() => {
+  //   sendMenteeData(mentees, menteesFetched);
+  // }, [menteesFetched]);
 
   const mentees = useSelector((state) => state.allMentees || []);
   const [order, setOrder] = React.useState('asc');
@@ -218,8 +216,9 @@ function MenteeTable(props) {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  // const [visibleRows, setVisibleRows] = React.useState([]);
-  const [menteesFetched, setMenteesFetched] = React.useState(false);
+  const [menteesFetched, setMenteesFetched] = React.useState(null);
+
+  // sendMenteeData(mentees, menteesFetched);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -235,26 +234,6 @@ function MenteeTable(props) {
     }
     setSelected([]);
   };
-
-  // const handleClick = (event, name) => {
-  //   const selectedIndex = selected.indexOf(name);
-  //   let newSelected = [];
-
-  //   if (selectedIndex === -1) {
-  //     newSelected = newSelected.concat(selected, name);
-  //   } else if (selectedIndex === 0) {
-  //     newSelected = newSelected.concat(selected.slice(1));
-  //   } else if (selectedIndex === selected.length - 1) {
-  //     newSelected = newSelected.concat(selected.slice(0, -1));
-  //   } else if (selectedIndex > 0) {
-  //     newSelected = newSelected.concat(
-  //       selected.slice(0, selectedIndex),
-  //       selected.slice(selectedIndex + 1)
-  //     );
-  //   }
-
-  //   setSelected(newSelected);
-  // };
 
   const handleClick = (event, id) => {
     console.log(`menteeId is ${id}`);
@@ -282,19 +261,16 @@ function MenteeTable(props) {
 
   const getVisibleRows = (mentees) => {
     if (mentees === undefined) {
-      console.log(`sad`);
       return [];
     } else if (Array.isArray(mentees)) {
       const visibleRowsInput = mentees
         .slice()
         .sort(getComparator(order, orderBy))
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-      console.log(`visibleRows ran`);
-      console.log(visibleRowsInput);
+      setMenteesFetched(true);
+      console.log(`getVisRows ran, mentees fetched status: ${menteesFetched}`);
       return visibleRowsInput;
-      // setVisibleRows(visibleRowsInput);
     } else {
-      console.log(`more sad`);
       return [];
     }
   };
@@ -302,6 +278,11 @@ function MenteeTable(props) {
   const visibleRows = useMemo(
     () => getVisibleRows(mentees),
     [order, orderBy, page, rowsPerPage, mentees]
+  );
+
+  const sendMenteeAppData = useMemo(
+    () => sendMenteeData(mentees, menteesFetched),
+    [mentees, menteesFetched]
   );
 
   return (
@@ -380,3 +361,27 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(null, mapDispatchToProps)(MenteeTable);
+
+/*
+
+  // const handleClick = (event, name) => {
+  //   const selectedIndex = selected.indexOf(name);
+  //   let newSelected = [];
+
+  //   if (selectedIndex === -1) {
+  //     newSelected = newSelected.concat(selected, name);
+  //   } else if (selectedIndex === 0) {
+  //     newSelected = newSelected.concat(selected.slice(1));
+  //   } else if (selectedIndex === selected.length - 1) {
+  //     newSelected = newSelected.concat(selected.slice(0, -1));
+  //   } else if (selectedIndex > 0) {
+  //     newSelected = newSelected.concat(
+  //       selected.slice(0, selectedIndex),
+  //       selected.slice(selectedIndex + 1)
+  //     );
+  //   }
+
+  //   setSelected(newSelected);
+  // };
+
+*/
