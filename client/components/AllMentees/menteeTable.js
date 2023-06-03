@@ -211,12 +211,6 @@ function MenteeTable(props) {
     props.getAllMentees();
   }, []);
 
-  // useEffect(() => {
-  //   getVisibleRows();
-  // });
-
-  //[order, orderBy, page, rowsPerPage, mentees]
-
   const mentees = useSelector((state) => state.allMentees || []);
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('firstName');
@@ -229,12 +223,7 @@ function MenteeTable(props) {
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
-    console.log(`order change`);
-    console.log(order);
     setOrder(isAsc ? 'desc' : 'asc');
-    console.log(`order change`);
-    console.log(order);
-
     setOrderBy(property);
   };
 
@@ -247,24 +236,29 @@ function MenteeTable(props) {
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
+  // const handleClick = (event, name) => {
+  //   const selectedIndex = selected.indexOf(name);
+  //   let newSelected = [];
 
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
+  //   if (selectedIndex === -1) {
+  //     newSelected = newSelected.concat(selected, name);
+  //   } else if (selectedIndex === 0) {
+  //     newSelected = newSelected.concat(selected.slice(1));
+  //   } else if (selectedIndex === selected.length - 1) {
+  //     newSelected = newSelected.concat(selected.slice(0, -1));
+  //   } else if (selectedIndex > 0) {
+  //     newSelected = newSelected.concat(
+  //       selected.slice(0, selectedIndex),
+  //       selected.slice(selectedIndex + 1)
+  //     );
+  //   }
 
-    setSelected(newSelected);
+  //   setSelected(newSelected);
+  // };
+
+  const handleClick = (event, id) => {
+    console.log(`menteeId is ${id}`);
+    window.location.href = `/mentees/${id}`;
   };
 
   const handleChangePage = (event, newPage) => {
@@ -332,9 +326,9 @@ function MenteeTable(props) {
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row.name)}
+                    onClick={(event) => handleClick(event, row.id)}
                     tabIndex={-1}
-                    key={row.name}
+                    key={row.id}
                     sx={{ cursor: 'pointer' }}
                   >
                     <TableCell component='th' id={labelId} scope='row'>
