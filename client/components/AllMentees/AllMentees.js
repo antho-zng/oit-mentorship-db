@@ -24,43 +24,43 @@ export default function AllMentees(props) {
     let numInterviewLowPriority;
    */
 
-  const [mentees, setMentees] = React.useState({});
+  const [mentees, setMentees] = React.useState(null);
   const [totalMenteeApps, setTotalMenteeApps] = React.useState(0);
   const [totalPendingApps, setTotalPendingApps] = React.useState(0);
   const [scoreBreakdown, setScoreBreakdown] = React.useState({});
 
   const sendMenteeData = (mentees, menteesFetched) => {
     if (menteesFetched == true) {
-      console.log('receiving mentee data from child');
-      console.log(mentees);
       setMentees(mentees);
     } else {
-      console.log(menteesFetched);
       return;
     }
   };
 
   const calculateAppBreakdown = (mentees) => {
-    const numApps = mentees.length;
-    const appStatusSummary = {};
-    setTotalMenteeApps(numApps);
+    if (mentees !== null && mentees.length > 0) {
+      const numApps = mentees.length;
+      const appStatusSummary = {};
+      setTotalMenteeApps(numApps);
 
-    for (const mentee in mentees) {
-      const appStatus = mentee.acceptedStatus;
-      if (appStatusSummary[appStatus] == undefined) {
-        appStatusSummary[appStatus] = 1;
-      } else if (appStatusSummary[appStatus] !== undefined) {
-        appStatusSummary[appStatus] = appStatusSummary[appStatus] + 1;
+      for (const mentee of mentees) {
+        const appStatus = mentee.acceptedStatus;
+        if (appStatusSummary[appStatus] === undefined) {
+          appStatusSummary[appStatus] = 1;
+        } else if (appStatusSummary[appStatus] !== undefined) {
+          appStatusSummary[appStatus] = appStatusSummary[appStatus] + 1;
+        }
       }
+      console.log(`app status summary`);
+      console.log(appStatusSummary);
+      return appStatusSummary;
     }
-
-    return appStatusSummary;
   };
 
-  // const setMenteeAppData = useMemo(
-  //   (mentees) => setScoreBreakdown(calculateAppBreakdown(mentees)),
-  //   [mentees]
-  // );
+  const setMenteeAppData = useMemo(
+    () => setScoreBreakdown(calculateAppBreakdown(mentees)),
+    [mentees]
+  );
 
   return (
     <div>
