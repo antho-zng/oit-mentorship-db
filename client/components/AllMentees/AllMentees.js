@@ -24,10 +24,23 @@ export default function AllMentees(props) {
     let numInterviewLowPriority;
    */
 
+  const initialScoreBreakdown = {
+    DO_NOT_ACCEPT: 0,
+    STRONG_ACCEPT: 0,
+    ACCEPT: 0,
+    WAITLIST: 0,
+    LOW_PRIORITY_ACCEPT: 0,
+    PENDING: 0,
+  };
   const [mentees, setMentees] = React.useState(null);
   const [totalMenteeApps, setTotalMenteeApps] = React.useState(0);
   const [totalPendingApps, setTotalPendingApps] = React.useState(0);
-  const [scoreBreakdown, setScoreBreakdown] = React.useState({});
+  const [scoreBreakdown, setScoreBreakdown] = React.useState(
+    initialScoreBreakdown
+  );
+
+  const currentCohort = 'SPRING 2023';
+  const reviewDeadline = 'JULY 23, 2023';
 
   const sendMenteeData = (mentees, menteesFetched) => {
     if (menteesFetched == true) {
@@ -40,20 +53,20 @@ export default function AllMentees(props) {
   const calculateAppBreakdown = (mentees) => {
     if (mentees !== null && mentees.length > 0) {
       const numApps = mentees.length;
-      const appStatusSummary = {};
+      const appStatusSummary = initialScoreBreakdown;
       setTotalMenteeApps(numApps);
 
       for (const mentee of mentees) {
         const appStatus = mentee.acceptedStatus;
-        if (appStatusSummary[appStatus] === undefined) {
-          appStatusSummary[appStatus] = 1;
-        } else if (appStatusSummary[appStatus] !== undefined) {
+        if (appStatusSummary[appStatus] !== undefined) {
           appStatusSummary[appStatus] = appStatusSummary[appStatus] + 1;
         }
       }
       console.log(`app status summary`);
       console.log(appStatusSummary);
       return appStatusSummary;
+    } else {
+      return initialScoreBreakdown;
     }
   };
 
@@ -62,8 +75,59 @@ export default function AllMentees(props) {
     [mentees]
   );
 
+  console.log(`scoreBreakdown`);
+  console.log(scoreBreakdown);
   return (
-    <div>
+    <div className={style.container}>
+      <div className={style.body}>
+        <h2 className={style.header}>MENTEE APPLICATION DASHBOARD</h2>
+        <p className={style.bodyText}>
+          Hi! Mentee applications are currently being reviewed for the{' '}
+          <span className={style.variableText}>{currentCohort}</span> Cohort.
+          The deadline for review is{' '}
+          <span className={style.variableText}>{reviewDeadline}</span>.
+        </p>
+        <p className={style.bodyTextCentered}>
+          Mentee applications by the numbers:
+        </p>
+        <br />
+        <br />
+        <span className={style.numbersRow}>
+          <div className={style.numberBox}>
+            <p className={style.appCount}>{totalMenteeApps}</p>
+            <p className={style.numberCaption}>TOTAL APPLICATIONS</p>
+          </div>
+        </span>
+        <br />
+        <span className={style.numbersRow}>
+          <div className={style.numberBox}>
+            <p className={style.number}>{scoreBreakdown['STRONG_ACCEPT']}</p>
+            <p className={style.numberCaption}>STRONG ACCEPT</p>
+          </div>
+          <div className={style.numberBox}>
+            <p className={style.number}>{scoreBreakdown['ACCEPT']}</p>
+            <p className={style.numberCaption}>ACCEPTED</p>
+          </div>
+          <div className={style.numberBox}>
+            <p className={style.number}>
+              {scoreBreakdown['LOW_PRIORITY_ACCEPT']}
+            </p>
+            <p className={style.numberCaption}>
+              ACCEPTED
+              <br />
+              (LOW PRIORITY)
+            </p>
+          </div>
+          <div className={style.numberBox}>
+            <p className={style.number}>{scoreBreakdown['WAITLIST']}</p>
+            <p className={style.numberCaption}>WAITLISTED</p>
+          </div>
+          <div className={style.numberBox}>
+            <p className={style.number}>{scoreBreakdown['DO_NOT_ACCEPT']}</p>
+            <p className={style.numberCaption}>REJECTED</p>
+          </div>
+        </span>
+      </div>
       <div className={style.menteeTable}>
         <MenteeTable sendMenteeData={sendMenteeData} />
       </div>
