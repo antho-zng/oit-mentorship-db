@@ -8,6 +8,9 @@
 .header{
   margin-left:75px;
 }
+ul{
+  list-style-type: none;
+}
 .body{
 flex-direction: column;
 grid-column-start: body;

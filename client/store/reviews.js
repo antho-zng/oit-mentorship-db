@@ -61,22 +61,6 @@ export const editReview = async (review, id, token) => {
   }
 };
 
-// export const editItemQuant = (token, itemId, cartId, quant) => {
-//   return async (dispatch) => {
-//     try {
-//       const response = await axios('/api/orders/cart', {
-//         headers: { authorization: token },
-//         data: { itemId: itemId, cartId: cartId, quantity: +quant },
-//         method: 'put',
-//       });
-//       const editedItem = response.data;
-//       dispatch(editQuant(editedItem));
-//     } catch (e) {
-//       console.error(e);
-//     }
-//   };
-// };
-// INITIAL STATE
 const initialState = {};
 
 /**

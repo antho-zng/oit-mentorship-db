@@ -6,7 +6,7 @@ import { getReviews, addReview, editReview } from '../../store/reviews';
 
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
-import CardActions from '@mui/material/CardActions';
+import Fab from '@mui/material/Fab';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Accordion from '@mui/material/Accordion';
@@ -14,9 +14,12 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
-import { Rating, StyledRating } from '@mui/material';
-import { Recommend, RecommendOutlined } from '@mui/icons-material';
+import { Rating } from '@mui/material';
+import {
+  Recommend,
+  RecommendOutlined,
+  SignalCellularNull,
+} from '@mui/icons-material';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import ArrowCircleUpOutlinedIcon from '@mui/icons-material/ArrowCircleUpOutlined';
 import EditIcon from '@mui/icons-material/Edit';
@@ -44,15 +47,37 @@ function SingleMentee(props) {
   const [hover, setHover] = React.useState(-1);
   const [textFieldInput, setTextFieldInput] = React.useState('');
   const [expanded, setExpanded] = React.useState(false);
-  const [reviewDisabled, setReviewDisabled] = React.useState(false);
+  const [reviewerAdded, setReviewerAdded] = React.useState(false);
+  const [reviewDisabled, setReviewDisabled] = React.useState(true);
   const [reviewSubmitted, setReviewSubmitted] = React.useState(false);
   const [editingMode, setEditingMode] = React.useState(false);
   const [reviewAccordionMessage, setReviewAccordionMessage] = React.useState(
-    'Leave applicant score and comments here'
+    'Add yourself as a reviewer to leave applicant score and comments.'
   );
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
+  };
+
+  const handleAddReviewer = (event) => {
+    event.preventDefault();
+    setReviewerAdded(true);
+    setReviewDisabled(false);
+    setEditingMode(true);
+    setReviewAccordionMessage(
+      'You have been added as a reviewer for this mentee application. Please leave your comments and score below.'
+    );
+
+    const review = {
+      menteeId: menteeId,
+      userId: userId,
+      reviewerComments: null,
+      reviewerScore: null,
+      submitStatus: false,
+    };
+
+    const token = window.localStorage.getItem('token');
+    addReview(review, token);
   };
 
   const handleEnableReview = (event) => {
@@ -73,21 +98,22 @@ function SingleMentee(props) {
     setScore(newScore);
   };
 
-  const saveReviewInput = (event) => {
+  const submitReview = (event) => {
     event.preventDefault();
 
     const reviewerComments = textFieldInput;
     const reviewerScore = score;
+    const submitStatus = true;
 
     const review = {
-      menteeId: menteeId,
       userId: userId,
       reviewerComments: reviewerComments,
       reviewerScore: reviewerScore,
+      submitStatus: submitStatus,
     };
 
     const token = window.localStorage.getItem('token');
-    addReview(review, token);
+    editReview(review, menteeId, token);
     setReviewSubmitted(true);
     setEditingMode(false);
   };
@@ -102,6 +128,7 @@ function SingleMentee(props) {
       userId: userId,
       reviewerComments: reviewerComments,
       reviewerScore: reviewerScore,
+      submitStatus: true,
     };
 
     const token = window.localStorage.getItem('token');
@@ -114,9 +141,18 @@ function SingleMentee(props) {
     if (reviews === undefined) {
       return;
     } else if (Array.isArray(reviews) && !editingMode) {
+      maxReviewCheck(reviews);
       reviewScoreCheck(reviews);
       filterMyReviews(reviews);
     } else {
+      return;
+    }
+  };
+
+  const maxReviewCheck = (reviews) => {
+    if (reviews.length > 1) {
+      setReviewAccordionMessage('This application has already been reviewed.');
+      setReviewDisabled(true);
       return;
     }
   };
@@ -135,9 +171,18 @@ function SingleMentee(props) {
 
   const filterMyReviews = (reviews) => {
     const myReviews = reviews.filter((review) => review.userId === userId);
-    if (myReviews.length > 0) {
+    if (myReviews.length > 0 && myReviews[0].submitStatus === false) {
+      setReviewerAdded(true);
+      setReviewDisabled(false);
+      setEditingMode(true);
+      setReviewAccordionMessage(
+        'You have been added as a reviewer for this mentee application. Please leave your comments and score below.'
+      );
+      return;
+    } else if (myReviews.length > 0) {
       setReviewDisabled(true);
       setReviewSubmitted(true);
+      setReviewerAdded(true);
       setReviewAccordionMessage(
         `You've already submitted a review for this application on ${new Date(
           myReviews[0].updatedAt
@@ -248,11 +293,27 @@ function SingleMentee(props) {
         </div>
       </div>
       <div className={style.reviewContainer}>
+        <div className={style.enableReviewLink}>
+          {reviewerAdded ? (
+            ''
+          ) : (
+            <Fab
+              variant='extended'
+              size='small'
+              color='primary'
+              aria-label='add'
+              onClick={(event) => handleAddReviewer(event)}
+            >
+              <AddCircleOutlineOutlinedIcon sx={{ mr: 1 }} />
+              Add review
+            </Fab>
+          )}
+        </div>
         <Accordion
           expanded={expanded === 'panel1'}
           onChange={handleChange('panel1')}
           className={style.reviewAccordion}
-          // disabled={accordionDisabled}
+          disabled={!reviewerAdded}
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon className={style.expandMoreIcon} />}
@@ -353,7 +414,7 @@ function SingleMentee(props) {
             ) : (
               <Button
                 startIcon={<AddCircleOutlineOutlinedIcon />}
-                onClick={(event) => saveReviewInput(event)}
+                onClick={(event) => submitReview(event)}
               >
                 SUBMIT REVIEW
               </Button>

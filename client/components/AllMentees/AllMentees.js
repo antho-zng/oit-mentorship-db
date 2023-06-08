@@ -87,6 +87,70 @@ export default function AllMentees(props) {
           The deadline for review is{' '}
           <span className={style.variableText}>{reviewDeadline}</span>.
         </p>
+
+        <p className={style.bodyText}>
+          Mentee applications by the numbers:{' '}
+          <ul>
+            <span className={style.variableText}>{totalMenteeApps}</span> total
+            applications submitted.
+          </ul>
+          <ul>
+            <span className={style.variableText}>
+              {scoreBreakdown['STRONG_ACCEPT']}
+            </span>{' '}
+            applications accepted for follow-up with questionnaire.
+          </ul>
+          <ul>
+            <span className={style.variableText}>
+              {scoreBreakdown['ACCEPT']}
+            </span>{' '}
+            applications accepted for follow-up with interview.
+          </ul>
+          <ul>
+            <span className={style.variableText}>
+              {scoreBreakdown['LOW_PRIORITY_ACCEPT']}
+            </span>{' '}
+            applications accepted with low-priority.
+          </ul>
+          <ul>
+            <span className={style.variableText}>
+              {scoreBreakdown['WAITLIST']}
+            </span>{' '}
+            applications waitlisted.
+          </ul>
+          <ul>
+            <span className={style.variableText}>
+              {scoreBreakdown['DO_NOT_ACCEPT']}
+            </span>{' '}
+            applications not accepted.
+          </ul>
+        </p>
+
+        <p className={style.bodyText}>
+          <span className={style.variableText}>
+            {scoreBreakdown['PENDING']}
+          </span>{' '}
+          applications still pending review.
+        </p>
+      </div>
+      <div className={style.menteeTable}>
+        <MenteeTable sendMenteeData={sendMenteeData} />
+      </div>
+    </div>
+  );
+}
+
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     getAllMentees: () => {
+//       dispatch(getAllMentees());
+//     },
+//   };
+// };
+
+// export default connect(null, mapDispatchToProps)(AllMentees);
+
+/*
         <p className={style.bodyTextCentered}>
           Mentee applications by the numbers:
         </p>
@@ -127,20 +191,4 @@ export default function AllMentees(props) {
             <p className={style.numberCaption}>REJECTED</p>
           </div>
         </span>
-      </div>
-      <div className={style.menteeTable}>
-        <MenteeTable sendMenteeData={sendMenteeData} />
-      </div>
-    </div>
-  );
-}
-
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     getAllMentees: () => {
-//       dispatch(getAllMentees());
-//     },
-//   };
-// };
-
-// export default connect(null, mapDispatchToProps)(AllMentees);
+*/

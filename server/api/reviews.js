@@ -49,6 +49,7 @@ router.put('/:id', requireUserToken, async (req, res, next) => {
     });
     review.reviewerComments = req.body.review.reviewerComments;
     review.reviewerScore = req.body.review.reviewerScore;
+    review.submitStatus = req.body.review.submitStatus;
 
     review.save();
     res.send(review);
