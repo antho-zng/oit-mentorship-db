@@ -52,7 +52,7 @@ function SingleMentee(props) {
   const [reviewSubmitted, setReviewSubmitted] = React.useState(false);
   const [editingMode, setEditingMode] = React.useState(false);
   const [reviewAccordionMessage, setReviewAccordionMessage] = React.useState(
-    'Add yourself as a reviewer to leave applicant score and comments.'
+    'Add yourself as a reviewer to leave score and comments for this application.'
   );
 
   const handleChange = (panel) => (event, isExpanded) => {
@@ -134,7 +134,7 @@ function SingleMentee(props) {
     const token = window.localStorage.getItem('token');
     editReview(review, menteeId, token);
     setEditingMode(false);
-    setTextFieldInput(textFieldInput);
+    setTextFieldInput(reviewerComments);
   };
 
   const reviewCheck = (reviews) => {
@@ -360,6 +360,7 @@ function SingleMentee(props) {
               </div>
             )}
             <TextField
+              className={style.textField}
               id='outlined-multiline-static'
               label='Comments'
               multiline
@@ -368,9 +369,7 @@ function SingleMentee(props) {
               value={textFieldInput}
               disabled={reviewDisabled}
               InputProps={{
-                classes: {
-                  input: style.textFieldInput,
-                },
+                className: style.textFieldInput,
               }}
               onChange={(event) => handleTextFieldChange(event)}
             />

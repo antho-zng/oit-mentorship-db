@@ -99,8 +99,18 @@ p{
   justify-content:center;
   padding-bottom: 20px;
 }
+.textField{
+  justify-content:center;
+  align-items:center;
+  display: flex;
+  width: 100%;
+}
 .textFieldInput{
-  font-size:14px;
+  font-size:12px;
+  width:100%
+}
+.MuiInputLabel-root{
+  left:50px;
 }
 .enableReviewLink{
   display:flex;
