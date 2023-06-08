@@ -23,6 +23,7 @@ import {
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import ArrowCircleUpOutlinedIcon from '@mui/icons-material/ArrowCircleUpOutlined';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const questionCutoff = 8;
 
@@ -293,7 +294,7 @@ function SingleMentee(props) {
         </div>
       </div>
       <div className={style.reviewContainer}>
-        <div className={style.enableReviewLink}>
+        <div>
           {reviewerAdded ? (
             ''
           ) : (
@@ -368,8 +369,11 @@ function SingleMentee(props) {
               placeholder='Your comments here...'
               value={textFieldInput}
               disabled={reviewDisabled}
-              InputProps={{
+              inputProps={{
                 className: style.textFieldInput,
+              }}
+              InputProps={{
+                className: style.textFieldBox,
               }}
               onChange={(event) => handleTextFieldChange(event)}
             />
@@ -420,6 +424,23 @@ function SingleMentee(props) {
             )}
           </div>
         </Accordion>
+        {reviewerAdded ? (
+          <div className={style.deleteReviewButton}>
+            <Button
+              size='small'
+              onClick={(event) => {
+                handleEnableReview(event);
+              }}
+            >
+              <span className={style.deleteReviewButton}>
+                <DeleteIcon className={style.editIcon} />{' '}
+                <p>Remove My Review</p>
+              </span>
+            </Button>
+          </div>
+        ) : (
+          ''
+        )}
       </div>
     </div>
   );

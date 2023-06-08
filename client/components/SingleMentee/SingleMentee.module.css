@@ -26,14 +26,14 @@
   display:block;
   position:sticky;
   position: -webkit-sticky;
-  top:80px;
+  top:60px;
   height:100vh;
   overflow-y:auto;
-  margin-top:65px;
+  margin-top:60px;
 }
-.reviewAccordion{
+/* .reviewAccordion{
   margin:15px;
-}
+} */
 .reviewAccordionSummary{
   flex-direction: column;
   display:grid;
@@ -104,10 +104,13 @@ p{
   align-items:center;
   display: flex;
   width: 100%;
+  font-size:13px;
+}
+.textFieldBox{
+  width:100%
 }
 .textFieldInput{
-  font-size:12px;
-  width:100%
+  font-size:13px;
 }
 .MuiInputLabel-root{
   left:50px;
@@ -115,7 +118,6 @@ p{
 .enableReviewLink{
   display:flex;
   justify-content:center;
-  padding-bottom:10px
 }
 .enableReviewButton{
   display: inline-flex;
@@ -125,4 +127,11 @@ p{
   padding-right:3px;
   transform-origin:center;
   scale:0.8
+}
+.deleteReviewButton{
+  display: inline-flex;
+  width:100%;
+  align-items:center;
+  justify-content:center;
+  padding-top: 5px;
 }
