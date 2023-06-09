@@ -2,7 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
 import style from './SingleMentee.module.css';
 import { getMentee } from '../../store/mentee';
-import { getReviews, addReview, editReview } from '../../store/reviews';
+import {
+  getReviews,
+  addReview,
+  editReview,
+  deleteReview,
+} from '../../store/reviews';
 
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
@@ -70,7 +75,6 @@ function SingleMentee(props) {
     );
 
     const review = {
-      menteeId: menteeId,
       userId: userId,
       reviewerComments: null,
       reviewerScore: null,
@@ -78,7 +82,7 @@ function SingleMentee(props) {
     };
 
     const token = window.localStorage.getItem('token');
-    addReview(review, token);
+    addReview(review, menteeId, token);
   };
 
   const handleEnableReview = (event) => {
@@ -136,6 +140,12 @@ function SingleMentee(props) {
     editReview(review, menteeId, token);
     setEditingMode(false);
     setTextFieldInput(reviewerComments);
+  };
+
+  const handleDeleteReview = (event) => {
+    event.preventDefault();
+    const token = window.localStorage.getItem('token');
+    deleteReview(userId, menteeId, token);
   };
 
   const reviewCheck = (reviews) => {
@@ -429,7 +439,7 @@ function SingleMentee(props) {
             <Button
               size='small'
               onClick={(event) => {
-                handleEnableReview(event);
+                handleDeleteReview(event);
               }}
             >
               <span className={style.deleteReviewButton}>

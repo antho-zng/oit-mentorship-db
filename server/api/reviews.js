@@ -64,11 +64,11 @@ router.delete('/:id', requireUserToken, async (req, res, next) => {
     const review = await Review.findOne({
       where: {
         menteeId: req.params.id,
-        userId: req.body.review.userId,
+        userId: req.body.userId,
       },
     });
     await review.destroy();
-    res.send(review);
+    res.sendStatus(200);
   } catch (error) {
     next(error);
   }

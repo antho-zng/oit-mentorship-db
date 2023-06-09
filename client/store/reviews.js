@@ -7,6 +7,7 @@ import history from '../history';
 const GET_REVIEWS = 'GET_REVIEWS';
 const ADD_REVIEW = 'ADD_REVIEW';
 const EDIT_REVIEW = 'EDIT_REVIEW';
+const DELETE_REVIEW = 'DELETE_REVIEW';
 
 /**
  * ACTION CREATORS
@@ -14,6 +15,7 @@ const EDIT_REVIEW = 'EDIT_REVIEW';
 const _getReviews = (reviews) => ({ type: GET_REVIEWS, reviews });
 const _addReview = (review) => ({ type: ADD_REVIEW, review });
 const _editReview = (review) => ({ type: EDIT_REVIEW, review });
+const _deleteReview = (review) => ({ type: DELETE_REVIEW, review });
 
 /**
  * THUNK CREATORS
@@ -61,6 +63,20 @@ export const editReview = async (review, id, token) => {
   }
 };
 
+export const deleteReview = async (userId, menteeId, token) => {
+  try {
+    const response = await axios.delete(`/api/reviews/${menteeId}`, {
+      headers: {
+        authorization: token,
+      },
+      data: { userId: userId },
+    });
+    return dispatch(_deleteReview(response));
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const initialState = {};
 
 /**
@@ -74,6 +90,8 @@ export default function (state = initialState, action) {
       return action.reviews;
     case EDIT_REVIEW:
       return action.review;
+    case DELETE_REVIEW:
+      return state.filter((review) => review.id !== action.review.id);
     default:
       return state;
   }
