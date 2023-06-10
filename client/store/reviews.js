@@ -91,11 +91,13 @@ export default function (state = initialState, action) {
     case EDIT_REVIEW:
       return action.review;
     case DELETE_REVIEW:
-      return state.filter((review) => review.id !== action.review.id);
+      return state.filter((review) => review.userId !== action.review.userId);
     default:
       return state;
   }
 }
+
+// return state.filter((review) => review.userId !== action.review.userId);
 
 // export const addReview = (review) => {
 //   console.log(`review thunk working here`); // this is logging

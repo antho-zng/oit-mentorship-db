@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { connect, useSelector } from 'react-redux';
+import { connect, useSelector, useDispatch } from 'react-redux';
 import style from './SingleMentee.module.css';
 import { getMentee } from '../../store/mentee';
 import {
@@ -49,6 +49,22 @@ function SingleMentee(props) {
     reviewCheck(reviews);
   });
 
+  const mentee = useSelector((state) => state.mentee);
+  const menteeId = useSelector((state) => state.mentee.id || []);
+  const pronouns = useSelector((state) => state.mentee.pronouns || []);
+  const firstName = useSelector((state) => state.mentee.firstName || []);
+  const lastName = useSelector((state) => state.mentee.lastName || []);
+  const cohort = useSelector((state) => state.mentee.cohort || []);
+  const userId = useSelector((state) => state.auth.id || []);
+
+  const reviews = useSelector((state) => state.reviews || []);
+
+  const allQuestionsAndAnswers = useSelector(
+    (state) => state.mentee.questions || []
+  );
+
+  const questionsAndAnswers = allQuestionsAndAnswers.slice(questionCutoff);
+
   const [score, setScore] = React.useState(3);
   const [hover, setHover] = React.useState(-1);
   const [textFieldInput, setTextFieldInput] = React.useState('');
@@ -76,13 +92,14 @@ function SingleMentee(props) {
 
     const review = {
       userId: userId,
+      menteeId: menteeId,
       reviewerComments: null,
       reviewerScore: null,
       submitStatus: false,
     };
 
     const token = window.localStorage.getItem('token');
-    addReview(review, menteeId, token);
+    addReview(review, token);
   };
 
   const handleEnableReview = (event) => {
@@ -119,6 +136,7 @@ function SingleMentee(props) {
 
     const token = window.localStorage.getItem('token');
     editReview(review, menteeId, token);
+    setReviewDisabled(true);
     setReviewSubmitted(true);
     setEditingMode(false);
   };
@@ -144,6 +162,15 @@ function SingleMentee(props) {
 
   const handleDeleteReview = (event) => {
     event.preventDefault();
+    setReviewerAdded(false);
+    setReviewSubmitted(false);
+    setReviewDisabled(false);
+    setReviewAccordionMessage(
+      'Add yourself as a reviewer to leave score and comments for this application.'
+    );
+    setTextFieldInput('');
+    setEditingMode(false);
+
     const token = window.localStorage.getItem('token');
     deleteReview(userId, menteeId, token);
   };
@@ -219,22 +246,6 @@ function SingleMentee(props) {
     5: 'Strong accept',
   };
 
-  const mentee = useSelector((state) => state.mentee);
-  const menteeId = useSelector((state) => state.mentee.id || []);
-  const pronouns = useSelector((state) => state.mentee.pronouns || []);
-  const firstName = useSelector((state) => state.mentee.firstName || []);
-  const lastName = useSelector((state) => state.mentee.lastName || []);
-  const cohort = useSelector((state) => state.mentee.cohort || []);
-  const userId = useSelector((state) => state.auth.id || []);
-
-  const reviews = useSelector((state) => state.reviews || []);
-
-  const allQuestionsAndAnswers = useSelector(
-    (state) => state.mentee.questions || []
-  );
-
-  const questionsAndAnswers = allQuestionsAndAnswers.slice(questionCutoff);
-
   // TO-DO : display mentee age instead of DOB
 
   return (
@@ -308,16 +319,18 @@ function SingleMentee(props) {
           {reviewerAdded ? (
             ''
           ) : (
-            <Fab
-              variant='extended'
-              size='small'
-              color='primary'
-              aria-label='add'
-              onClick={(event) => handleAddReviewer(event)}
-            >
-              <AddCircleOutlineOutlinedIcon sx={{ mr: 1 }} />
-              Add review
-            </Fab>
+            <div className={style.addReviewButton}>
+              <Fab
+                variant='extended'
+                size='small'
+                color='primary'
+                aria-label='add'
+                onClick={(event) => handleAddReviewer(event)}
+              >
+                <AddCircleOutlineOutlinedIcon sx={{ mr: 1 }} />
+                Add review
+              </Fab>
+            </div>
           )}
         </div>
         <Accordion
@@ -428,6 +441,7 @@ function SingleMentee(props) {
               <Button
                 startIcon={<AddCircleOutlineOutlinedIcon />}
                 onClick={(event) => submitReview(event)}
+                disabled={reviewSubmitted}
               >
                 SUBMIT REVIEW
               </Button>
@@ -444,7 +458,11 @@ function SingleMentee(props) {
             >
               <span className={style.deleteReviewButton}>
                 <DeleteIcon className={style.editIcon} />{' '}
-                <p>Remove My Review</p>
+                {reviewSubmitted ? (
+                  <p>Remove My Review</p>
+                ) : (
+                  <p>Remove Me As Reviewer</p>
+                )}
               </span>
             </Button>
           </div>

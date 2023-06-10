@@ -83,10 +83,17 @@ p{
   text-transform: uppercase;
   padding-bottom: 30px
 }
+.addReviewButton{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  width: 100%;
+}
 .scoreContainer{
   display:inline-flex;
   align-items:center;
-  padding-top:40px;
+  padding-top:10px;
   min-height:80px;
 }
 .scoreLabels{
