@@ -120,7 +120,7 @@ export default function AllMentees(props) {
           </ul>
           <ul>
             <span className={style.variableText}>
-              {scoreBreakdown['NOT_ACCEPTED']}
+              {scoreBreakdown['NOT ACCEPTED']}
             </span>{' '}
             applications not accepted.
           </ul>

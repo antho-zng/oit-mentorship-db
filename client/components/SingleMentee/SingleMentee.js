@@ -120,7 +120,7 @@ function SingleMentee(props) {
     setScore(newScore);
   };
 
-  const submitReview = (event) => {
+  const handleSubmitReview = (event) => {
     event.preventDefault();
 
     const reviewerComments = textFieldInput;
@@ -141,7 +141,7 @@ function SingleMentee(props) {
     setEditingMode(false);
   };
 
-  const updateReview = (event) => {
+  const handleUpdateReview = (event) => {
     event.preventDefault();
 
     const reviewerComments = textFieldInput;
@@ -167,17 +167,19 @@ function SingleMentee(props) {
 
   const handleDeleteReview = (event) => {
     event.preventDefault();
+
+    const token = window.localStorage.getItem('token');
+    deleteReview(userId, menteeId, token);
+
     setReviewerAdded(false);
+    setReviewDisabled(true);
     setReviewSubmitted(false);
-    setReviewDisabled(false);
     setReviewAccordionMessage(
       'Add yourself as a reviewer to leave score and comments for this application.'
     );
     setTextFieldInput('');
     setEditingMode(false);
-
-    const token = window.localStorage.getItem('token');
-    deleteReview(userId, menteeId, token);
+    setExpanded(false);
   };
 
   const reviewCheck = (reviews) => {
@@ -438,14 +440,14 @@ function SingleMentee(props) {
             {editingMode && reviewSubmitted ? (
               <Button
                 startIcon={<ArrowCircleUpOutlinedIcon />}
-                onClick={(event) => updateReview(event)}
+                onClick={(event) => handleUpdateReview(event)}
               >
                 UPDATE REVIEW
               </Button>
             ) : (
               <Button
                 startIcon={<AddCircleOutlineOutlinedIcon />}
-                onClick={(event) => submitReview(event)}
+                onClick={(event) => handleSubmitReview(event)}
                 disabled={reviewSubmitted}
               >
                 SUBMIT REVIEW

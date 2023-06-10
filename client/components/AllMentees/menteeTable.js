@@ -318,7 +318,7 @@ function MenteeTable({ getAllMentees, sendMenteeData }) {
                     <TableCell align='left'>{row.lastName}</TableCell>
                     <TableCell align='left'>{row.email}</TableCell>
                     <TableCell align='left'>{row.cohort.cohortId}</TableCell>
-                    <TableCell align='left'>PENDING</TableCell>
+                    <TableCell align='left'>{row.acceptedStatus}</TableCell>
                   </TableRow>
                 );
               })}
