@@ -25,11 +25,11 @@ export default function AllMentees(props) {
    */
 
   const initialScoreBreakdown = {
-    DO_NOT_ACCEPT: 0,
-    STRONG_ACCEPT: 0,
-    ACCEPT: 0,
+    'NOT ACCEPTED': 0,
+    'STRONG ACCEPT': 0,
+    ACCEPTED: 0,
     WAITLIST: 0,
-    LOW_PRIORITY_ACCEPT: 0,
+    'LOW PRIORITY ACCEPT': 0,
     PENDING: 0,
   };
   const [mentees, setMentees] = React.useState(null);
@@ -96,19 +96,19 @@ export default function AllMentees(props) {
           </ul>
           <ul>
             <span className={style.variableText}>
-              {scoreBreakdown['STRONG_ACCEPT']}
+              {scoreBreakdown['STRONG ACCEPT']}
             </span>{' '}
             applications accepted for follow-up with questionnaire.
           </ul>
           <ul>
             <span className={style.variableText}>
-              {scoreBreakdown['ACCEPT']}
+              {scoreBreakdown['ACCEPTED']}
             </span>{' '}
             applications accepted for follow-up with interview.
           </ul>
           <ul>
             <span className={style.variableText}>
-              {scoreBreakdown['LOW_PRIORITY_ACCEPT']}
+              {scoreBreakdown['LOW PRIORITY ACCEPT']}
             </span>{' '}
             applications accepted with low-priority.
           </ul>
@@ -120,7 +120,7 @@ export default function AllMentees(props) {
           </ul>
           <ul>
             <span className={style.variableText}>
-              {scoreBreakdown['DO_NOT_ACCEPT']}
+              {scoreBreakdown['NOT_ACCEPTED']}
             </span>{' '}
             applications not accepted.
           </ul>

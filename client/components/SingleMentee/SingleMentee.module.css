@@ -22,6 +22,9 @@
   height: 100vh;
   overflow-y:auto;
 }
+.reviewHeader{
+  margin-top:0;
+}
 .reviewContainer{
   display:block;
   position:sticky;

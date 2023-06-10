@@ -156,8 +156,13 @@ function SingleMentee(props) {
 
     const token = window.localStorage.getItem('token');
     editReview(review, menteeId, token);
-    setEditingMode(false);
+
     setTextFieldInput(reviewerComments);
+    setScore(reviewerScore);
+
+    setEditingMode(false);
+    setReviewDisabled(true);
+    setReviewSubmitted(true);
   };
 
   const handleDeleteReview = (event) => {
@@ -349,7 +354,7 @@ function SingleMentee(props) {
               root: style.reviewAccordionSummary,
             }}
           >
-            <h4>REVIEW</h4>
+            <h4 className={style.reviewHeader}>REVIEW</h4>
             <p>{reviewAccordionMessage}</p>
 
             {/* {!reviewDisabled ? (
