@@ -6,15 +6,15 @@ import style from './Navbar.module.css';
 import cornerLogo from './OIT-Logo-Black-1.png';
 
 const Navbar = ({ handleClick, isLoggedIn }) => (
-  <div>
+  <div className={style.container}>
     <nav>
       {isLoggedIn ? (
         <div>
           {/* The navbar will show these links after you log in */}
           <Link to='/home'>HOME</Link>
           <Link to='/applications'>APPLICATIONS</Link>
-          <Link to='/interviews'>INTERVIEWS</Link>
-          <Link to='/matching'>MATCHING</Link>
+          {/* <Link to='/interviews'>INTERVIEWS</Link> */}
+          {/* <Link to='/matching'>MATCHING</Link> */}
 
           <a href='#' onClick={handleClick}>
             LOGOUT

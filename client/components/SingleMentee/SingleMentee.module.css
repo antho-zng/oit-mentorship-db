@@ -1,6 +1,6 @@
 .menteeProfile{
   display: grid;
-  grid-template-columns: [sidebar] 240px [questions] 1fr [ratings] 260px;
+  grid-template-columns: [sidebar] 250px [questions] 0.75fr [ratings] 300px;
   /* overflow:hidden; */
 }
 .sidebarCard{
@@ -10,7 +10,6 @@
   height:fit-content;
   width:fit-content;
   margin-top:60px;
-
 }
 .sidearSubhead{
   font-weight:bold;
@@ -23,18 +22,21 @@
   height: 100vh;
   overflow-y:auto;
 }
+.reviewHeader{
+  margin-top:0;
+}
 .reviewContainer{
   display:block;
   position:sticky;
   position: -webkit-sticky;
-  top:65px;
+  top:60px;
   height:100vh;
   overflow-y:auto;
-  margin-top:65px;
+  margin-top:60px;
 }
-.reviewAccordion{
+/* .reviewAccordion{
   margin:15px;
-}
+} */
 .reviewAccordionSummary{
   flex-direction: column;
   display:grid;
@@ -84,10 +86,17 @@ p{
   text-transform: uppercase;
   padding-bottom: 30px
 }
+.addReviewButton{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  width: 100%;
+}
 .scoreContainer{
   display:inline-flex;
   align-items:center;
-  padding-top:40px;
+  padding-top:10px;
   min-height:80px;
 }
 .scoreLabels{
@@ -100,13 +109,25 @@ p{
   justify-content:center;
   padding-bottom: 20px;
 }
+.textField{
+  justify-content:center;
+  align-items:center;
+  display: flex;
+  width: 100%;
+  font-size:13px;
+}
+.textFieldBox{
+  width:100%
+}
 .textFieldInput{
-  font-size:14px;
+  font-size:13px;
+}
+.MuiInputLabel-root{
+  left:50px;
 }
 .enableReviewLink{
   display:flex;
   justify-content:center;
-  padding-bottom:10px
 }
 .enableReviewButton{
   display: inline-flex;
@@ -116,4 +137,11 @@ p{
   padding-right:3px;
   transform-origin:center;
   scale:0.8
+}
+.deleteReviewButton{
+  display: inline-flex;
+  width:100%;
+  align-items:center;
+  justify-content:center;
+  padding-top: 5px;
 }

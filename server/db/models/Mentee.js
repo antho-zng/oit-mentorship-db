@@ -76,8 +76,9 @@ module.exports = db.define(
         'PENDING',
         'ACCEPTED',
         'NOT ACCEPTED',
-        'HIGHLY ACCEPTED',
-        'ACCEPTED LOW PRIORITY'
+        'STRONG ACCEPT',
+        'LOW PRIORITY ACCEPT',
+        'WAITLIST'
       ),
       allowNull: false,
       validate: {

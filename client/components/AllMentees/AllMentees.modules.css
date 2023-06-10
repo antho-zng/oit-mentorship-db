@@ -1,0 +1,72 @@
+/* body{
+  background-color: #E9F1F7
+} */
+.container{
+  display: grid;
+  grid-template-columns: [left] 100px [body] 1fr [right] 100px;
+}
+.header{
+  margin-left:75px;
+}
+ul{
+  list-style-type: none;
+}
+.body{
+flex-direction: column;
+grid-column-start: body;
+height:fit-content;
+width:fit-content;
+}
+.bodyText{
+  font-size:22px;
+  margin-left:75px;
+  margin-right:75px;
+}
+.bodyTextCentered{
+  font-size:22px;
+  margin-left:75px;
+  margin-right:75px;
+  text-align: center;
+}
+.variableText{
+  font-weight:500;
+  text-decoration: underline;
+  text-decoration-style:dotted;
+}
+.menteeTable{
+  display:flex;
+  margin-top: 20px;
+  justify-content: center;
+  grid-column-start: body;
+}
+.numbersRow{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+}
+.numberBox{
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items:center;
+  margin-left:10px;
+  margin-right:10px;
+  width: 110px;
+}
+.appCount{
+  font-size:80px;
+  font-weight:500;
+  margin:0;
+}
+.number{
+  font-size:60px;
+  font-weight:500;
+  margin:0;
+}
+.numberCaption{
+  font-size:12px;
+  justify-content: center;
+  align-items: center;
+  text-align:center;
+}

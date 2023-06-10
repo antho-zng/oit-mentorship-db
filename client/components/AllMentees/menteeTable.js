@@ -1,4 +1,10 @@
-import * as React from 'react';
+/* eslint-disable no-unused-vars */
+/* eslint-disable require-jsdoc */
+/* eslint-disable object-curly-spacing */
+import React, { useEffect, useMemo } from 'react';
+import { connect, useSelector } from 'react-redux';
+import { getAllMentees } from '../../store/allMentees';
+
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -13,7 +19,7 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
+// import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -21,37 +27,7 @@ import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-
-function createData(name, calories, fat, carbs, protein) {
-  return {
-    name,
-    calories,
-    fat,
-    carbs,
-    protein,
-  };
-}
-
-const rows = [
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Donut', 452, 25.0, 51, 4.9),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-  createData('Honeycomb', 408, 3.2, 87, 6.5),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Jelly Bean', 375, 0.0, 94, 0.0),
-  createData('KitKat', 518, 26.0, 65, 7.0),
-  createData('Lollipop', 392, 0.2, 98, 0.0),
-  createData('Marshmallow', 318, 0, 81, 2.0),
-  createData('Nougat', 360, 19.0, 9, 37.0),
-  createData('Oreo', 437, 18.0, 63, 4.0),
-];
-
-function createRows(mentees) {
-  console.log(`mentees from props`);
-  console.log(mentees);
-}
+import { FlashOnTwoTone } from '@mui/icons-material';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -69,50 +45,47 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
 // with exampleArray.slice().sort(exampleComparator)
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
+// function stableSort(array, comparator) {
+//   const stabilizedThis = array.map((el, index) => [el, index]);
+//   stabilizedThis.sort((a, b) => {
+//     const order = comparator(a[0], b[0]);
+//     if (order !== 0) {
+//       return order;
+//     }
+//     return a[1] - b[1];
+//   });
+//   return stabilizedThis.map((el) => el[0]);
+// }
 
 const headCells = [
   {
-    id: 'name',
+    id: 'firstName',
     numeric: false,
-    disablePadding: true,
-    label: 'NAME',
+    disablePadding: false,
+    label: 'FIRST NAME',
+  },
+  {
+    id: 'lastName',
+    numeric: false,
+    disablePadding: false,
+    label: 'LAST NAME',
   },
   {
     id: 'email',
-    numeric: true,
+    numeric: false,
     disablePadding: false,
     label: 'EMAIL',
   },
   {
     id: 'cohort',
-    numeric: true,
+    numeric: false,
     disablePadding: false,
     label: 'COHORT',
   },
   {
-    id: 'reviewer',
-    numeric: true,
-    disablePadding: false,
-    label: 'REVIEWER',
-  },
-  {
     id: 'status',
-    numeric: true,
+    numeric: false,
     disablePadding: false,
     label: 'STATUS',
   },
@@ -134,17 +107,6 @@ function EnhancedTableHead(props) {
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding='checkbox'>
-          <Checkbox
-            color='primary'
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              'aria-label': 'select all mentees',
-            }}
-          />
-        </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
@@ -213,7 +175,7 @@ function EnhancedTableToolbar(props) {
           id='tableTitle'
           component='div'
         >
-          ALL MENTEES
+          MENTEE APPLICATIONS
         </Typography>
       )}
 
@@ -238,16 +200,25 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function MenteeTable(props) {
+function MenteeTable({ getAllMentees, sendMenteeData }) {
+  useEffect(() => {
+    getAllMentees();
+  }, []);
+
+  // useEffect(() => {
+  //   sendMenteeData(mentees, menteesFetched);
+  // }, [menteesFetched]);
+
+  const mentees = useSelector((state) => state.allMentees || []);
   const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('calories');
+  const [orderBy, setOrderBy] = React.useState('firstName');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [menteesFetched, setMenteesFetched] = React.useState(null);
 
-  const mentees = props.mentees;
-  createRows(mentees);
+  // sendMenteeData(mentees, menteesFetched);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -264,24 +235,9 @@ export default function MenteeTable(props) {
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-
-    setSelected(newSelected);
+  const handleClick = (event, id) => {
+    console.log(`menteeId is ${id}`);
+    window.location.href = `/mentees/${id}`;
   };
 
   const handleChangePage = (event, newPage) => {
@@ -297,76 +253,72 @@ export default function MenteeTable(props) {
     setDense(event.target.checked);
   };
 
-  const isSelected = (name) => selected.indexOf(name) !== -1;
+  // const isSelected = (name) => selected.indexOf(name) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-  const visibleRows = React.useMemo(
-    () =>
-      stableSort(rows, getComparator(order, orderBy)).slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-      ),
-    [order, orderBy, page, rowsPerPage]
+  const getVisibleRows = (mentees) => {
+    if (mentees === undefined) {
+      return [];
+    } else if (Array.isArray(mentees)) {
+      const visibleRowsInput = mentees
+        .slice()
+        .sort(getComparator(order, orderBy))
+        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+      setMenteesFetched(true);
+      console.log(`getVisRows ran, mentees fetched status: ${menteesFetched}`);
+      return visibleRowsInput;
+    } else {
+      return [];
+    }
+  };
+
+  const visibleRows = useMemo(
+    () => getVisibleRows(mentees),
+    [order, orderBy, page, rowsPerPage, mentees]
+  );
+
+  const sendMenteeAppData = useMemo(
+    () => sendMenteeData(mentees, menteesFetched),
+    [mentees, menteesFetched]
   );
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '75%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby='tableTitle'
-            size={dense ? 'small' : 'medium'}
-          >
+          <Table aria-labelledby='tableTitle' size={dense ? 'small' : 'medium'}>
             <EnhancedTableHead
               numSelected={selected.length}
               order={order}
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={rows.length}
+              rowCount={mentees.length}
             />
             <TableBody>
               {visibleRows.map((row, index) => {
-                const isItemSelected = isSelected(row.name);
+                // const isItemSelected = isSelected(row.name);
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row.name)}
-                    role='checkbox'
-                    aria-checked={isItemSelected}
+                    onClick={(event) => handleClick(event, row.id)}
                     tabIndex={-1}
-                    key={row.name}
-                    selected={isItemSelected}
+                    key={row.id}
                     sx={{ cursor: 'pointer' }}
                   >
-                    <TableCell padding='checkbox'>
-                      <Checkbox
-                        color='primary'
-                        checked={isItemSelected}
-                        inputProps={{
-                          'aria-labelledby': labelId,
-                        }}
-                      />
+                    <TableCell component='th' id={labelId} scope='row'>
+                      {row.firstName}
                     </TableCell>
-                    <TableCell
-                      component='th'
-                      id={labelId}
-                      scope='row'
-                      padding='none'
-                    >
-                      {row.name}
-                    </TableCell>
-                    <TableCell align='right'>{row.calories}</TableCell>
-                    <TableCell align='right'>{row.fat}</TableCell>
-                    <TableCell align='right'>{row.carbs}</TableCell>
-                    <TableCell align='right'>{row.protein}</TableCell>
+                    <TableCell align='left'>{row.lastName}</TableCell>
+                    <TableCell align='left'>{row.email}</TableCell>
+                    <TableCell align='left'>{row.cohort.cohortId}</TableCell>
+                    <TableCell align='left'>{row.acceptedStatus}</TableCell>
                   </TableRow>
                 );
               })}
@@ -385,7 +337,7 @@ export default function MenteeTable(props) {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
-          count={rows.length}
+          count={mentees.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -399,3 +351,37 @@ export default function MenteeTable(props) {
     </Box>
   );
 }
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getAllMentees: () => {
+      dispatch(getAllMentees());
+    },
+  };
+};
+
+export default connect(null, mapDispatchToProps)(MenteeTable);
+
+/*
+
+  // const handleClick = (event, name) => {
+  //   const selectedIndex = selected.indexOf(name);
+  //   let newSelected = [];
+
+  //   if (selectedIndex === -1) {
+  //     newSelected = newSelected.concat(selected, name);
+  //   } else if (selectedIndex === 0) {
+  //     newSelected = newSelected.concat(selected.slice(1));
+  //   } else if (selectedIndex === selected.length - 1) {
+  //     newSelected = newSelected.concat(selected.slice(0, -1));
+  //   } else if (selectedIndex > 0) {
+  //     newSelected = newSelected.concat(
+  //       selected.slice(0, selectedIndex),
+  //       selected.slice(selectedIndex + 1)
+  //     );
+  //   }
+
+  //   setSelected(newSelected);
+  // };
+
+*/

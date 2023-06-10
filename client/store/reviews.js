@@ -7,6 +7,7 @@ import history from '../history';
 const GET_REVIEWS = 'GET_REVIEWS';
 const ADD_REVIEW = 'ADD_REVIEW';
 const EDIT_REVIEW = 'EDIT_REVIEW';
+const DELETE_REVIEW = 'DELETE_REVIEW';
 
 /**
  * ACTION CREATORS
@@ -14,6 +15,7 @@ const EDIT_REVIEW = 'EDIT_REVIEW';
 const _getReviews = (reviews) => ({ type: GET_REVIEWS, reviews });
 const _addReview = (review) => ({ type: ADD_REVIEW, review });
 const _editReview = (review) => ({ type: EDIT_REVIEW, review });
+const _deleteReview = (review) => ({ type: DELETE_REVIEW, review });
 
 /**
  * THUNK CREATORS
@@ -61,22 +63,20 @@ export const editReview = async (review, id, token) => {
   }
 };
 
-// export const editItemQuant = (token, itemId, cartId, quant) => {
-//   return async (dispatch) => {
-//     try {
-//       const response = await axios('/api/orders/cart', {
-//         headers: { authorization: token },
-//         data: { itemId: itemId, cartId: cartId, quantity: +quant },
-//         method: 'put',
-//       });
-//       const editedItem = response.data;
-//       dispatch(editQuant(editedItem));
-//     } catch (e) {
-//       console.error(e);
-//     }
-//   };
-// };
-// INITIAL STATE
+export const deleteReview = async (userId, menteeId, token) => {
+  try {
+    const response = await axios.delete(`/api/reviews/${menteeId}`, {
+      headers: {
+        authorization: token,
+      },
+      data: { userId: userId },
+    });
+    return dispatch(_deleteReview(response));
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const initialState = {};
 
 /**
@@ -90,10 +90,14 @@ export default function (state = initialState, action) {
       return action.reviews;
     case EDIT_REVIEW:
       return action.review;
+    case DELETE_REVIEW:
+      return state.filter((review) => review.userId !== action.review.userId);
     default:
       return state;
   }
 }
+
+// return state.filter((review) => review.userId !== action.review.userId);
 
 // export const addReview = (review) => {
 //   console.log(`review thunk working here`); // this is logging

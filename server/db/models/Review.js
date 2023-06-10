@@ -11,20 +11,10 @@ module.exports = db.define(
       type: Sequelize.INTEGER,
       allowNull: true,
     },
-    // reviewerId: {
-    //   type: Sequelize.STRING,
-    //   references: {
-    //     model: 'users',
-    //     key: 'username',
-    //   },
-    // },
-    // menteeId: {
-    //   type: Sequelize.STRING,
-    //   references: {
-    //     model: 'mentees',
-    //     key: 'id',
-    //   },
-    // },
+    submitStatus: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+    },
   },
   {
     indexes: [
