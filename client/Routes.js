@@ -22,11 +22,18 @@ import AllMentees from './components/AllMentees/AllMentees';
 function Routes(props) {
   useEffect(() => {
     props.loadInitialData();
-  });
+  }, []);
 
-  const isLoggedIn = useSelector((state) => state.auth.id);
+  const isLoggedIn = useSelector((state) => state.auth.id || []);
 
-  // const { isLoggedIn } = this.props;
+  const [location, setLocation] = React.useState('');
+
+  const handleClick = (event) => {
+    event.preventDefault();
+    const locationData = useLocation();
+    const pathname = locationData.pathname;
+    setLocation(pathname);
+  };
 
   return (
     <div className={style.pageContent}>
