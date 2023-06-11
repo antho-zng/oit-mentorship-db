@@ -237,7 +237,7 @@ function MenteeTable({ getAllMentees, sendMenteeData }) {
 
   const handleClick = (event, id) => {
     console.log(`menteeId is ${id}`);
-    window.location.href = `/mentees/${id}`;
+    window.location.href = `/applications/${id}`;
   };
 
   const handleChangePage = (event, newPage) => {
