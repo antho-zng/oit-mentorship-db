@@ -322,24 +322,6 @@ function SingleMentee(props) {
         </div>
       </div>
       <div className={style.reviewContainer}>
-        <div>
-          {reviewerAdded ? (
-            ''
-          ) : (
-            <div className={style.addReviewButton}>
-              <Fab
-                variant='extended'
-                size='small'
-                color='primary'
-                aria-label='add'
-                onClick={(event) => handleAddReviewer(event)}
-              >
-                <AddCircleOutlineOutlinedIcon sx={{ mr: 1 }} />
-                Add review
-              </Fab>
-            </div>
-          )}
-        </div>
         <Accordion
           expanded={expanded === 'panel1'}
           onChange={handleChange('panel1')}
@@ -476,6 +458,24 @@ function SingleMentee(props) {
         ) : (
           ''
         )}
+        <div>
+          {reviewerAdded ? (
+            ''
+          ) : (
+            <div className={style.addReviewButton}>
+              <Fab
+                variant='extended'
+                size='small'
+                aria-label='add'
+                onClick={(event) => handleAddReviewer(event)}
+                className={style.fab}
+              >
+                <AddCircleOutlineOutlinedIcon sx={{ mr: 1 }} />
+                Add review
+              </Fab>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,15 +1,29 @@
-/* eslint-disable no-undef */
+'use strict';
+const path = require('path');
+const webpack = require('webpack');
+require('dotenv').config();
+
 module.exports = {
   entry: ['./client/index.js'],
   output: {
-    path: __dirname,
-    filename: './public/bundle.js',
+    path: path.resolve(__dirname, 'public'),
+    filename: 'bundle.js',
+    publicPath: '/',
   },
+  mode: 'development',
+  plugins: [
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser.js',
+    }),
+  ],
   devtool: 'source-map',
   module: {
     rules: [
       {
-        test: /\.(js|jsx|ts|tsx)$/,
+        test: /\.(js|jsx|ts|tsx|png)$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
         options: {
@@ -37,8 +51,8 @@ module.exports = {
         exclude: /\.module\.css$/,
       },
       {
-        test: /\.(png)$/i,
-        loader: 'file-loader',
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        loader: 'url-loader?name=app/images/[name].[ext]',
       },
     ],
   },

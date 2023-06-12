@@ -1,6 +1,6 @@
 .menteeProfile{
   display: grid;
-  grid-template-columns: [sidebar] 250px [questions] 0.75fr [ratings] 300px;
+  grid-template-columns: [sidebar] 250px [questions] 0.8fr [ratings] 300px;
   /* overflow:hidden; */
 }
 .sidebarCard{
@@ -18,7 +18,7 @@
   display: block;
   position:sticky;
   position: -webkit-sticky;
-  top:0;
+  top:50px;
   height: 100vh;
   overflow-y:auto;
 }
@@ -29,7 +29,7 @@
   display:block;
   position:sticky;
   position: -webkit-sticky;
-  top:60px;
+  top:120px;
   height:100vh;
   overflow-y:auto;
   margin-top:60px;
@@ -90,7 +90,7 @@ p{
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-top: 20px;
   width: 100%;
 }
 .scoreContainer{
