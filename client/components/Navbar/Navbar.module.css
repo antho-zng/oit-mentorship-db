@@ -7,21 +7,19 @@
   margin:10px;
 }
 .logoContainer{
-  width:-webkit-fill-available;
   display:flex;
   flex-direction: row;
   justify-content: flex-start;
   position:absolute;
   top:0;
-  margin-left:30px;
+  margin-right:calc(100vw - 100px);
   min-height:80px;
   align-items:center;
 }
 nav {
   justify-content: center;
-  padding-right: 60px;
   font-weight: medium;
-  color: white;
+  color: black;
   align-items: center;
   display: flex;
   flex-direction: row;
@@ -30,41 +28,51 @@ nav {
   flex-direction: column;
   right:0;
   box-sizing:border-box;
-  background-color:#4392F1;
+  background-color:rgba(255,255,255,1);
   top:0;
   align-items: flex-end;
   width:100%;
-  /* backdrop-filter: blur(8px); */
-  filter: drop-shadow(2px 4px 6px #d3d3d3);
+  backdrop-filter: blur(8px);
+  /* filter: drop-shadow(2px 4px 6px #d3d3d3); */
   z-index:1000;
 }
-
-a {
-  color: white;
-  font-size: 14px;
-  text-decoration: none;
+nav::after{
+  content : "";
+  position:relative;
+  left    : 0;
+  bottom  : -15px;
+  height  : 1px;
+  width   : 120%;
+  border-bottom:1px solid black;
+  justify-self: center;
 }
-
+.navbarLinks{
+  padding-right:60px;
+}
 a {
-
-  /* background-image: linear-gradient(
+  color: black;
+  font-size: 14px;
+  /* text-decoration: none; */
+}
+/*
+a {
+  background-image: linear-gradient(
     to right,
     rgba(255, 0, 0, 1),
     rgba(255, 0, 180, 1),
     rgba(0, 100, 200, 1),
-    white,
-    white,
-    white
-
-); */
+    black,
+    black,
+    black,
+);
   background-size: 200% 100%;
   background-position: -100%;
   display: inline-block;
   padding: 5px 0;
   position: relative;
   -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   transition: all 0.3s ease-in-out;
-  font-weight:bold;
 }
 
 a:before {
@@ -73,7 +81,7 @@ a:before {
     to right,
     rgba(255, 0, 0, 1),
     rgba(255, 0, 180, 1),
-    rgba(0, 100, 200, 1)
+    rgba(0, 100, 200, 1),
 );
   display: block;
   position: absolute;
@@ -91,3 +99,4 @@ a:hover {
 a:hover::before {
   width:100%;
 }
+*/

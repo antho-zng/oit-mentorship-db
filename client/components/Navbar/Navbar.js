@@ -3,7 +3,7 @@ import { connect, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { logout } from '../../store';
 import style from './Navbar.module.css';
-import cornerLogo from './OIT-Logo-White-3.png';
+import cornerLogo from './OIT-Logo-Black.png';
 
 function Navbar({ handleClick }) {
   const isLoggedIn = useSelector((state) => state.auth.id || []);
@@ -15,7 +15,7 @@ function Navbar({ handleClick }) {
           <img className={style.logo} src={cornerLogo} alt='Out-in-Tech logo' />
         </div>
         {isLoggedIn ? (
-          <div>
+          <div className={style.navbarLinks}>
             {/* The navbar will show these links after you log in */}
             <Link to='/home'>HOME</Link>
             <Link to='/applications'>APPLICATIONS</Link>
@@ -33,6 +33,7 @@ function Navbar({ handleClick }) {
             <Link to='/signup'>SIGN UP</Link>
           </div>
         )}
+        {/* <hr width='90%' color='black' size='1px' /> */}
       </nav>
     </div>
   );

@@ -466,9 +466,9 @@ function SingleMentee(props) {
               <Fab
                 variant='extended'
                 size='small'
+                color='primary'
                 aria-label='add'
                 onClick={(event) => handleAddReviewer(event)}
-                className={style.fab}
               >
                 <AddCircleOutlineOutlinedIcon sx={{ mr: 1 }} />
                 Add review

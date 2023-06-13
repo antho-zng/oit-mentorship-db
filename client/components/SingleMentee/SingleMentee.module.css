@@ -10,6 +10,8 @@
   height:fit-content;
   width:fit-content;
   margin-top:60px;
+  border:none;
+  box-shadow: none;
 }
 .sidearSubhead{
   font-weight:bold;

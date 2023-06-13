@@ -285,7 +285,7 @@ function MenteeTable({ getAllMentees, sendMenteeData }) {
 
   return (
     <Box sx={{ width: '90%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
+      <Paper sx={{ width: '100%', mb: 2, 'box-shadow': 'none' }}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
           <Table aria-labelledby='tableTitle' size={dense ? 'small' : 'medium'}>

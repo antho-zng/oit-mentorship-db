@@ -23,7 +23,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx|ts|tsx|png)$/,
+        test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
         options: {
@@ -51,8 +51,16 @@ module.exports = {
         exclude: /\.module\.css$/,
       },
       {
-        test: /\.(jpe?g|png|gif|svg)$/i,
-        loader: 'url-loader?name=app/images/[name].[ext]',
+        test: /\.(jpe?g|png|gif|woff|woff2|otf|eot|ttf|svg)(\?[a-z0-9=.]+)?$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 1000,
+              name: 'assets/img/[name].[ext]',
+            },
+          },
+        ],
       },
     ],
   },
