@@ -33,20 +33,10 @@ function Navbar({ handleClick }) {
             <Link to='/signup'>SIGN UP</Link>
           </div>
         )}
-        {/* <hr width='90%' color='black' size='1px' /> */}
       </nav>
     </div>
   );
 }
-
-/**
- * CONTAINER
- */
-// const mapState = (state) => {
-//   return {
-//     isLoggedIn: !!state.auth.id,
-//   };
-// };
 
 const mapDispatch = (dispatch) => {
   return {

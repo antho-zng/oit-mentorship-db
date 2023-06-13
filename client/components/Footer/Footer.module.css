@@ -1,0 +1,29 @@
+.container{
+  min-height:30vh;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  margin-top:70px;
+}
+.content{
+  justify-content: center;
+  align-items: center;
+  display:flex;
+  flex-direction:row;
+}
+.logoContainer{
+  justify-content: center;
+  align-items: center;
+}
+.logo{
+  height:100px;
+}
+.aboutHeader{
+  font-weight:700;
+  color:gray
+}
+.links{
+  display:flex;
+  flex-direction: column;
+  margin-left:30px;
+}
