@@ -218,8 +218,6 @@ function MenteeTable({ getAllMentees, sendMenteeData }) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [menteesFetched, setMenteesFetched] = React.useState(null);
 
-  // sendMenteeData(mentees, menteesFetched);
-
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -237,7 +235,7 @@ function MenteeTable({ getAllMentees, sendMenteeData }) {
 
   const handleClick = (event, id) => {
     console.log(`menteeId is ${id}`);
-    window.location.href = `/mentees/${id}`;
+    window.location.href = `/applications/${id}`;
   };
 
   const handleChangePage = (event, newPage) => {
@@ -286,8 +284,8 @@ function MenteeTable({ getAllMentees, sendMenteeData }) {
   );
 
   return (
-    <Box sx={{ width: '75%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
+    <Box sx={{ width: '90%' }}>
+      <Paper sx={{ width: '100%', mb: 2, 'box-shadow': 'none' }}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
           <Table aria-labelledby='tableTitle' size={dense ? 'small' : 'medium'}>

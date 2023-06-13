@@ -1,10 +1,24 @@
-/* eslint-disable no-undef */
+'use strict';
+const path = require('path');
+const webpack = require('webpack');
+require('dotenv').config();
+
 module.exports = {
   entry: ['./client/index.js'],
   output: {
-    path: __dirname,
-    filename: './public/bundle.js',
+    path: path.resolve(__dirname, 'public'),
+    filename: 'bundle.js',
+    publicPath: '/',
   },
+  mode: 'development',
+  plugins: [
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser.js',
+    }),
+  ],
   devtool: 'source-map',
   module: {
     rules: [
@@ -37,8 +51,16 @@ module.exports = {
         exclude: /\.module\.css$/,
       },
       {
-        test: /\.(png)$/i,
-        loader: 'file-loader',
+        test: /\.(jpe?g|png|gif|woff|woff2|otf|eot|ttf|svg)(\?[a-z0-9=.]+)?$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 1000,
+              name: 'assets/img/[name].[ext]',
+            },
+          },
+        ],
       },
     ],
   },

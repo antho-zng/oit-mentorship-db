@@ -258,8 +258,11 @@ function SingleMentee(props) {
   return (
     <div className={style.menteeProfile}>
       <div className={style.leftSidebar}>
-        <Card className={style.sidebarCard}>
-          <CardContent>
+        <Card
+          style={{ border: 'none', boxShadow: 'none' }}
+          className={style.sidebarCard}
+        >
+          <CardContent className={style.cardContent}>
             <p>Mentee ({mentee.acceptedStatus})</p>
 
             <h2 className={style.menteeName}>
@@ -321,161 +324,167 @@ function SingleMentee(props) {
           })}
         </div>
       </div>
-      <div className={style.reviewContainer}>
-        <div>
-          {reviewerAdded ? (
-            ''
-          ) : (
-            <div className={style.addReviewButton}>
-              <Fab
-                variant='extended'
-                size='small'
-                color='primary'
-                aria-label='add'
-                onClick={(event) => handleAddReviewer(event)}
-              >
-                <AddCircleOutlineOutlinedIcon sx={{ mr: 1 }} />
-                Add review
-              </Fab>
-            </div>
-          )}
-        </div>
-        <Accordion
-          expanded={expanded === 'panel1'}
-          onChange={handleChange('panel1')}
-          className={style.reviewAccordion}
-          disabled={!reviewerAdded}
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon className={style.expandMoreIcon} />}
-            aria-controls='panel1bh-content'
-            id='panel1bh-header'
-            classes={{
-              content: style.reviewAccordionSummary,
-              expanded: style.expandedAccordion,
-              root: style.reviewAccordionSummary,
+      <div className={style.reviewBar}>
+        <div className={style.reviewContainer}>
+          <Accordion
+            expanded={expanded === 'panel1'}
+            onChange={handleChange('panel1')}
+            style={{
+              boxShadow: 'none',
+              backgroundColor: 'aliceblue',
+              borderRadius: '30px',
             }}
+            disabled={!reviewerAdded}
           >
-            <h4 className={style.reviewHeader}>REVIEW</h4>
-            <p>{reviewAccordionMessage}</p>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon className={style.expandMoreIcon} />}
+              aria-controls='panel1bh-content'
+              id='panel1bh-header'
+              classes={{
+                content: style.reviewAccordionSummary,
+                expanded: style.expandedAccordion,
+                root: style.reviewAccordionSummary,
+              }}
+            >
+              <h4 className={style.reviewHeader}>REVIEW</h4>
+              <p>{reviewAccordionMessage}</p>
 
-            {/* {!reviewDisabled ? (
+              {/* {!reviewDisabled ? (
               <p>Leave applicant score and comments here</p>
             ) : (
               <div>
                 <p>{reviewAccordionMessage}</p>
               </div>
             )} */}
-          </AccordionSummary>
-          <AccordionDetails>
-            {!reviewDisabled ? (
-              ''
-            ) : (
-              <div className={style.enableReviewLink}>
-                <Button
-                  size='small'
-                  onClick={(event) => {
-                    handleEnableReview(event);
-                  }}
-                >
-                  {reviewSubmitted ? (
-                    <span className={style.enableReviewButton}>
-                      <EditIcon className={style.editIcon} />{' '}
-                      <p>Edit My Review</p>
-                    </span>
-                  ) : (
-                    <p>Submit A Review Anyway</p>
-                  )}
-                  <br></br>
-                </Button>
-              </div>
-            )}
-            <TextField
-              className={style.textField}
-              id='outlined-multiline-static'
-              label='Comments'
-              multiline
-              rows={4}
-              placeholder='Your comments here...'
-              value={textFieldInput}
-              disabled={reviewDisabled}
-              inputProps={{
-                className: style.textFieldInput,
-              }}
-              InputProps={{
-                className: style.textFieldBox,
-              }}
-              onChange={(event) => handleTextFieldChange(event)}
-            />
-            <div className={style.scoreContainer}>
-              <Rating
-                name='customized-color'
-                value={score}
-                max={5}
-                getLabelText={(score) =>
-                  `${score} Heart${score !== 1 ? 's' : ''}`
-                }
+            </AccordionSummary>
+            <AccordionDetails>
+              {!reviewDisabled ? (
+                ''
+              ) : (
+                <div className={style.enableReviewLink}>
+                  <Button
+                    size='small'
+                    onClick={(event) => {
+                      handleEnableReview(event);
+                    }}
+                  >
+                    {reviewSubmitted ? (
+                      <span className={style.enableReviewButton}>
+                        <EditIcon className={style.editIcon} />{' '}
+                        <p>Edit My Review</p>
+                      </span>
+                    ) : (
+                      <p>Submit A Review Anyway</p>
+                    )}
+                    <br></br>
+                  </Button>
+                </div>
+              )}
+              <TextField
+                className={style.textField}
+                id='outlined-multiline-static'
+                label='Comments'
+                multiline
+                rows={4}
+                placeholder='Your comments here...'
+                value={textFieldInput}
                 disabled={reviewDisabled}
-                onChange={(event, newScore) => {
-                  handleScoreChange(event, newScore);
+                inputProps={{
+                  className: style.textFieldInput,
                 }}
-                onChangeActive={(event, newHover) => {
-                  setHover(newHover);
+                InputProps={{
+                  className: style.textFieldBox,
                 }}
-                precision={1}
-                icon={<Recommend fontSize='inherit' />}
-                emptyIcon={<RecommendOutlined fontSize='inherit' />}
-                className={style.scoreIcons}
+                onChange={(event) => handleTextFieldChange(event)}
               />
-              {score !== null && (
-                <Box sx={{ ml: 3 }}>
-                  <p className={style.scoreLabels}>
-                    {scoreLabels[hover !== -1 ? hover : score]}
-                  </p>
-                </Box>
+              <div className={style.scoreContainer}>
+                <Rating
+                  name='customized-color'
+                  value={score}
+                  max={5}
+                  getLabelText={(score) =>
+                    `${score} Heart${score !== 1 ? 's' : ''}`
+                  }
+                  disabled={reviewDisabled}
+                  onChange={(event, newScore) => {
+                    handleScoreChange(event, newScore);
+                  }}
+                  onChangeActive={(event, newHover) => {
+                    setHover(newHover);
+                  }}
+                  precision={1}
+                  icon={<Recommend fontSize='inherit' />}
+                  emptyIcon={<RecommendOutlined fontSize='inherit' />}
+                  className={style.scoreIcons}
+                />
+                {score !== null && (
+                  <Box sx={{ ml: 3 }}>
+                    <p className={style.scoreLabels}>
+                      {scoreLabels[hover !== -1 ? hover : score]}
+                    </p>
+                  </Box>
+                )}
+              </div>
+            </AccordionDetails>
+            <div className={style.submitReviewButton}>
+              {editingMode && reviewSubmitted ? (
+                <Button
+                  startIcon={<ArrowCircleUpOutlinedIcon />}
+                  onClick={(event) => handleUpdateReview(event)}
+                >
+                  UPDATE REVIEW
+                </Button>
+              ) : (
+                <Button
+                  startIcon={<AddCircleOutlineOutlinedIcon />}
+                  onClick={(event) => handleSubmitReview(event)}
+                  disabled={reviewSubmitted}
+                >
+                  SUBMIT REVIEW
+                </Button>
               )}
             </div>
-          </AccordionDetails>
-          <div className={style.submitReviewButton}>
-            {editingMode && reviewSubmitted ? (
+          </Accordion>
+          {reviewerAdded ? (
+            <div className={style.deleteReviewButton}>
               <Button
-                startIcon={<ArrowCircleUpOutlinedIcon />}
-                onClick={(event) => handleUpdateReview(event)}
+                size='small'
+                onClick={(event) => {
+                  handleDeleteReview(event);
+                }}
               >
-                UPDATE REVIEW
+                <span className={style.deleteReviewButton}>
+                  <DeleteIcon className={style.editIcon} />{' '}
+                  {reviewSubmitted ? (
+                    <p>Remove My Review</p>
+                  ) : (
+                    <p>Remove Me As Reviewer</p>
+                  )}
+                </span>
               </Button>
+            </div>
+          ) : (
+            ''
+          )}
+          <div>
+            {reviewerAdded ? (
+              ''
             ) : (
-              <Button
-                startIcon={<AddCircleOutlineOutlinedIcon />}
-                onClick={(event) => handleSubmitReview(event)}
-                disabled={reviewSubmitted}
-              >
-                SUBMIT REVIEW
-              </Button>
+              <div className={style.addReviewButton}>
+                <Fab
+                  variant='extended'
+                  size='small'
+                  color='primary'
+                  aria-label='add'
+                  onClick={(event) => handleAddReviewer(event)}
+                >
+                  <AddCircleOutlineOutlinedIcon sx={{ mr: 1 }} />
+                  Add review
+                </Fab>
+              </div>
             )}
           </div>
-        </Accordion>
-        {reviewerAdded ? (
-          <div className={style.deleteReviewButton}>
-            <Button
-              size='small'
-              onClick={(event) => {
-                handleDeleteReview(event);
-              }}
-            >
-              <span className={style.deleteReviewButton}>
-                <DeleteIcon className={style.editIcon} />{' '}
-                {reviewSubmitted ? (
-                  <p>Remove My Review</p>
-                ) : (
-                  <p>Remove Me As Reviewer</p>
-                )}
-              </span>
-            </Button>
-          </div>
-        ) : (
-          ''
-        )}
+        </div>
       </div>
     </div>
   );

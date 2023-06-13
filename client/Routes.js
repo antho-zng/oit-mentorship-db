@@ -1,6 +1,12 @@
-import React, { Component, Fragment } from 'react';
-import { connect } from 'react-redux';
-import { withRouter, Route, Switch, Redirect } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { connect, useSelector } from 'react-redux';
+import {
+  withRouter,
+  Route,
+  Switch,
+  Redirect,
+  useLocation,
+} from 'react-router-dom';
 import { me } from './store';
 import style from './Routes.module.css';
 
@@ -12,47 +18,45 @@ import AllMentees from './components/AllMentees/AllMentees';
 /**
  * COMPONENT
  */
-class Routes extends Component {
-  componentDidMount() {
-    this.props.loadInitialData();
-  }
 
-  render() {
-    const { isLoggedIn } = this.props;
-    return (
-      <div className={style.pageContent}>
-        {isLoggedIn ? (
-          <Switch>
-            <Route path='/home' component={Home} />
-            <Route exact path='/mentees' component={AllMentees} />
-            <Route exact path='/mentees/:id' component={SingleMentee} />
-          </Switch>
-        ) : (
-          <Switch>
-            <Route path='/' exact component={Login} />
-            <Route path='/login' component={Login} />
-            <Route path='/signup' component={Signup} />
-          </Switch>
-        )}
-      </div>
-    );
-  }
+function Routes(props) {
+  useEffect(() => {
+    props.loadInitialData();
+  }, []);
+
+  const isLoggedIn = useSelector((state) => state.auth.id || []);
+
+  const [location, setLocation] = React.useState('');
+
+  const handleClick = (event) => {
+    event.preventDefault();
+    const locationData = useLocation();
+    const pathname = locationData.pathname;
+    setLocation(pathname);
+  };
+
+  return (
+    <div className={style.pageContent}>
+      {isLoggedIn ? (
+        <Switch>
+          {/* <Route path='/home' component={Home} /> */}
+          <Route path='/applications/:id' component={SingleMentee} />
+          <Route exact path='/applications' component={AllMentees} />
+        </Switch>
+      ) : (
+        <Switch>
+          <Route path='/' exact component={Login} />
+          <Route path='/login' component={Login} />
+          <Route path='/signup' component={Signup} />
+        </Switch>
+      )}
+    </div>
+  );
 }
 
-/**
- * CONTAINER
- */
-const mapState = (state) => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    // Being 'logged in' for our purposes will be defined has having a state.auth that has a truthy id.
-    // Otherwise, state.auth will be an empty object, and state.auth.id will be falsey
-    isLoggedIn: !!state.auth.id,
-  };
-};
-
-const mapDispatch = (dispatch) => {
-  return {
-    loadInitialData() {
+    loadInitialData: () => {
       dispatch(me());
     },
   };
@@ -60,4 +64,4 @@ const mapDispatch = (dispatch) => {
 
 // The `withRouter` wrapper makes sure that updates are not blocked
 // when the url changes
-export default withRouter(connect(mapState, mapDispatch)(Routes));
+export default withRouter(connect(null, mapDispatchToProps)(Routes));
