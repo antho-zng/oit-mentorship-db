@@ -1,7 +1,7 @@
 .menteeProfile{
   display: grid;
-  grid-template-columns: [sidebar] 250px [questions] 0.8fr [ratings] 300px;
-  /* overflow:hidden; */
+  grid-template-columns: [sidebar] 1fr [questions] 2.5fr [ratings] 1.4fr;
+  width:100vw;
 }
 .sidebarCard{
   margin-left: 15px;
@@ -16,13 +16,26 @@
 .sidearSubhead{
   font-weight:bold;
 }
+.MuiPaper-root-MuiCard-root{
+  box-shadow: none;
+}
 .leftSidebar{
-  display: block;
+  display: flex;
   position:sticky;
   position: -webkit-sticky;
   top:50px;
   height: 100vh;
   overflow-y:auto;
+  justify-content: center;
+}
+.cardContent{
+  box-shadow: none;
+  background-color: aliceblue;
+  border-radius: 30px;
+}
+.reviewBar{
+  display:flex;
+  justify-content: center;
 }
 .reviewHeader{
   margin-top:0;
@@ -34,16 +47,14 @@
   top:120px;
   height:100vh;
   overflow-y:auto;
+  margin-right: 60px;
+  margin-left: 20px;
   margin-top:60px;
 }
-/* .reviewAccordion{
-  margin:15px;
-} */
 .reviewAccordionSummary{
   flex-direction: column;
   display:grid;
   margin:15px;
-
 }
 .expandedAccordion{
   margin-top:65px;
@@ -75,7 +86,7 @@ p{
   padding-bottom:5px;
 }
 .questionsContainer{
-  margin-right: 30px;
+  margin-right: 70px;
   margin-left: 30px;
   grid-column-start: questions;
   margin-top:60px;
@@ -119,7 +130,8 @@ p{
   font-size:13px;
 }
 .textFieldBox{
-  width:100%
+  width:100%;
+  background-color: white; 
 }
 .textFieldInput{
   font-size:13px;
