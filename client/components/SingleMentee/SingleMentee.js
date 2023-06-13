@@ -8,7 +8,10 @@ import {
   editReview,
   deleteReview,
 } from '../../store/reviews';
-
+import PropTypes from 'prop-types';
+import Typography from '@mui/material/Typography';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
 import Fab from '@mui/material/Fab';
@@ -31,6 +34,41 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const questionCutoff = 8;
+const generalInfoQuestionsCutoff = 15;
+const essayResponseCutoff = 29;
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role='tabpanel'
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
 
 function getLabelText(score) {
   return `${score} Star${score !== 1 ? 's' : ''}, ${scoreLabels[score]}`;
@@ -64,6 +102,15 @@ function SingleMentee(props) {
   );
 
   const questionsAndAnswers = allQuestionsAndAnswers.slice(questionCutoff);
+  const generalInfoQA = allQuestionsAndAnswers.slice(
+    questionCutoff,
+    generalInfoQuestionsCutoff
+  );
+  const essayRespQA = allQuestionsAndAnswers.slice(
+    generalInfoQuestionsCutoff,
+    essayResponseCutoff
+  );
+  const miscQA = allQuestionsAndAnswers.slice(essayResponseCutoff);
 
   const [score, setScore] = React.useState(3);
   const [hover, setHover] = React.useState(-1);
@@ -76,6 +123,11 @@ function SingleMentee(props) {
   const [reviewAccordionMessage, setReviewAccordionMessage] = React.useState(
     'Add yourself as a reviewer to leave score and comments for this application.'
   );
+  const [tabValue, setTabValue] = React.useState(0);
+
+  const handleTabChange = (event, newTabValue) => {
+    setTabValue(newTabValue);
+  };
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -311,7 +363,68 @@ function SingleMentee(props) {
       </div>
       <div className={style.questionsContainer}>
         <h2>APPLICATION RESPONSES</h2>
-        <div>
+        <Box sx={{ width: '100%' }}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs
+              value={tabValue}
+              onChange={handleTabChange}
+              aria-label='application responses'
+              className={style.tabLabel}
+              TabIndicatorProps={{
+                sx: { backgroundColor: '#DC493A' },
+              }}
+            >
+              <Tab
+                className={style.tabLabel}
+                label='GENERAL INFO'
+                {...a11yProps(0)}
+              />
+              <Tab
+                className={style.tabLabel}
+                label='ESSAY RESPONSES'
+                {...a11yProps(1)}
+              />
+              <Tab className={style.tabLabel} label='MISC' {...a11yProps(2)} />
+            </Tabs>
+          </Box>
+          <TabPanel value={tabValue} index={0}>
+            {generalInfoQA.map((qaPair, idx) => {
+              return (
+                <div key={idx} className={style.qaCard}>
+                  <span className={style.question}>{qaPair.text}</span>
+                  <br></br>
+                  <br></br>
+                  {qaPair.answer.text}
+                </div>
+              );
+            })}
+          </TabPanel>
+          <TabPanel value={tabValue} index={1}>
+            {essayRespQA.map((qaPair, idx) => {
+              return (
+                <div key={idx} className={style.qaCard}>
+                  <span className={style.question}>{qaPair.text}</span>
+                  <br></br>
+                  <br></br>
+                  {qaPair.answer.text}
+                </div>
+              );
+            })}
+          </TabPanel>
+          <TabPanel value={tabValue} index={2}>
+            {miscQA.map((qaPair, idx) => {
+              return (
+                <div key={idx} className={style.qaCard}>
+                  <span className={style.question}>{qaPair.text}</span>
+                  <br></br>
+                  <br></br>
+                  {qaPair.answer.text}
+                </div>
+              );
+            })}
+          </TabPanel>
+        </Box>
+        {/* <div>
           {questionsAndAnswers.map((qaPair, idx) => {
             return (
               <div key={idx} className={style.qaCard}>
@@ -322,7 +435,7 @@ function SingleMentee(props) {
               </div>
             );
           })}
-        </div>
+        </div> */}
       </div>
       <div className={style.reviewBar}>
         <div className={style.reviewContainer}>
