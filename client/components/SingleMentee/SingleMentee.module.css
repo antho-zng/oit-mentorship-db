@@ -159,3 +159,26 @@ p{
   justify-content:center;
   padding-top: 5px;
 }
+.tabLabel{
+  color: #DC493A;
+
+  &:global(.MuiTab-root) {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight:600;
+    color: #DC493A;
+  }
+  &:global(.MuiTabs-indicator){
+    color: #DC493A;
+    background-color: #DC493A;
+  }
+  &:global(.MuiTab-root.Mui-selected) {
+    color: #DC493A;
+  }
+  &:global(.MuiTab-root.Mui-focusVisible) {
+    color: #DC493A;
+  }
+}
+.tabIndicator{
+  background-color: #DC493A;
+  color: #DC493A;
+}
