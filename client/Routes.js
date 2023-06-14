@@ -14,6 +14,7 @@ import { Login, Signup } from './components/AuthForm';
 import Home from './components/Home';
 import SingleMentee from './components/SingleMentee/SingleMentee';
 import AllMentees from './components/AllMentees/AllMentees';
+import UserProfile from './components/UserProfile/UserProfile';
 
 /**
  * COMPONENT
@@ -26,20 +27,11 @@ function Routes(props) {
 
   const isLoggedIn = useSelector((state) => state.auth.id || []);
 
-  const [location, setLocation] = React.useState('');
-
-  const handleClick = (event) => {
-    event.preventDefault();
-    const locationData = useLocation();
-    const pathname = locationData.pathname;
-    setLocation(pathname);
-  };
-
   return (
     <div className={style.pageContent}>
       {isLoggedIn ? (
         <Switch>
-          {/* <Route path='/home' component={Home} /> */}
+          <Route path='/home' component={UserProfile} />
           <Route path='/applications/:id' component={SingleMentee} />
           <Route exact path='/applications' component={AllMentees} />
         </Switch>

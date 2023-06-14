@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { connect, useSelector } from 'react-redux';
 // import { getAllMentees } from '../../store/allMentees';
 import MenteeTable from './menteeTable';
-import style from './AllMentees.modules.css';
+import style from './AllMentees.module.css';
 
 export default function AllMentees(props) {
   /**
