@@ -303,13 +303,6 @@ function SingleMentee(props) {
     }
   };
 
-  /**
-   * TO-DO:
-   * check reviewer assignment
-   * check other scores for do not accept / high accept
-   *
-   */
-
   const scoreLabels = {
     1: 'Do not accept',
     2: 'Borderline',
@@ -317,8 +310,6 @@ function SingleMentee(props) {
     4: 'Accept',
     5: 'Strong accept',
   };
-
-  // TO-DO : display mentee age instead of DOB
 
   return (
     <div className={style.menteeProfile}>
@@ -437,18 +428,6 @@ function SingleMentee(props) {
             })}
           </TabPanel>
         </Box>
-        {/* <div>
-          {questionsAndAnswers.map((qaPair, idx) => {
-            return (
-              <div key={idx} className={style.qaCard}>
-                <span className={style.question}>{qaPair.text}</span>
-                <br></br>
-                <br></br>
-                {qaPair.answer.text}
-              </div>
-            );
-          })}
-        </div> */}
       </div>
       <div className={style.reviewBar}>
         <div className={style.reviewContainer}>
