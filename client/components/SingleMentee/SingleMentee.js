@@ -32,6 +32,9 @@ import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOu
 import ArrowCircleUpOutlinedIcon from '@mui/icons-material/ArrowCircleUpOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Fade from '@mui/material/Fade';
 
 const questionCutoff = 8;
 const generalInfoQuestionsCutoff = 15;
@@ -123,7 +126,9 @@ function SingleMentee(props) {
   const [reviewAccordionMessage, setReviewAccordionMessage] = React.useState(
     'Add yourself as a reviewer to leave score and comments for this application.'
   );
+  // const [alertMessage, setAlertMessage] = React.useState('test');
   const [tabValue, setTabValue] = React.useState(0);
+  // const [alertVisibility, setAlertVisibility] = React.useState(false);
 
   const handleTabChange = (event, newTabValue) => {
     setTabValue(newTabValue);
@@ -138,6 +143,7 @@ function SingleMentee(props) {
     setReviewerAdded(true);
     setReviewDisabled(false);
     setEditingMode(true);
+    // setAlertVisibility(true);
     setReviewAccordionMessage(
       'You have been added as a reviewer for this mentee application. Please leave your comments and score below.'
     );
@@ -218,7 +224,7 @@ function SingleMentee(props) {
   };
 
   const handleDeleteReview = (event) => {
-    event.preventDefault();
+    // event.preventDefault();
 
     const token = window.localStorage.getItem('token');
     deleteReview(userId, menteeId, token);
@@ -446,6 +452,20 @@ function SingleMentee(props) {
       </div>
       <div className={style.reviewBar}>
         <div className={style.reviewContainer}>
+          {/* <Fade
+            in={alertVisibility}
+            timeout={{ enter: 1000, exit: 1000 }}
+            addEndListener={() => {
+              setTimeout(() => {
+                setAlertVisibility(false);
+              }, 2000);
+            }}
+          >
+            <Alert severity='success' variant='standard' className='alert'>
+              <AlertTitle>Success</AlertTitle>
+              {alertMessage}
+            </Alert>
+          </Fade> */}
           <Accordion
             expanded={expanded === 'panel1'}
             onChange={handleChange('panel1')}
@@ -589,7 +609,7 @@ function SingleMentee(props) {
                   color='primary'
                   aria-label='add'
                   onClick={(event) => handleAddReviewer(event)}
-                  disabled={reviewDisabled}
+                  disabled={mentee.acceptedStatus !== 'PENDING'}
                 >
                   <AddCircleOutlineOutlinedIcon sx={{ mr: 1 }} />
                   Add review

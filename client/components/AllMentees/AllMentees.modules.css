@@ -7,6 +7,8 @@
 }
 .header{
   margin-left:75px;
+  margin-top: 60px;
+  margin-bottom: 60px;
 }
 ul{
   list-style-type: none;
@@ -18,9 +20,21 @@ height:fit-content;
 width:fit-content;
 }
 .bodyText{
-  font-size:22px;
+  font-size:18px;
   margin-left:75px;
   margin-right:75px;
+}
+.bodyTextNumbers{
+  font-size:18px;
+  margin-left:75px;
+  margin-right:75px;
+  background-color: aliceblue;
+  padding: 15px;
+  border-radius: 30px;
+}
+.bodyTextInner{
+  font-size:18px;
+  margin-left:10px;
 }
 .bodyTextCentered{
   font-size:22px;
@@ -32,6 +46,7 @@ width:fit-content;
   font-weight:500;
   text-decoration: underline;
   text-decoration-style:dotted;
+  color: #DC493A;
 }
 .menteeTable{
   display:flex;
