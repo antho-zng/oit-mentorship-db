@@ -54,6 +54,11 @@ a {
   font-size: 14px;
   /* text-decoration: none; */
 }
+
+a:hover {
+  color: #DC493A;
+  font-weight:600;
+ }
 /*
 a {
   background-image: linear-gradient(

@@ -255,15 +255,22 @@ function SingleMentee(props) {
   };
 
   const reviewScoreCheck = (reviews) => {
-    for (const review of reviews) {
-      if (review.reviewerScore === 1 || review.reviewerScore === 5) {
-        setReviewAccordionMessage(
-          "Another reviewer has already marked this application as either 'Strong Accept' or 'Do Not Accept'."
-        );
-        setReviewDisabled(true);
-        return;
-      }
+    if (mentee.acceptedStatus !== 'PENDING') {
+      setReviewAccordionMessage(
+        `This application has already been reviewed and is currently marked as ${mentee.acceptedStatus}. No further reviews are needed.`
+      );
+      setReviewDisabled(true);
+      return;
     }
+    // for (const review of reviews) {
+    //   if (review.reviewerScore === 1 || review.reviewerScore === 5) {
+    //     setReviewAccordionMessage(
+    //       "Another reviewer has already marked this application as either 'Strong Accept' or 'Do Not Accept'."
+    //     );
+    //     setReviewDisabled(true);
+    //     return;
+    //   }
+    // }
   };
 
   const filterMyReviews = (reviews) => {
@@ -461,14 +468,6 @@ function SingleMentee(props) {
             >
               <h4 className={style.reviewHeader}>REVIEW</h4>
               <p>{reviewAccordionMessage}</p>
-
-              {/* {!reviewDisabled ? (
-              <p>Leave applicant score and comments here</p>
-            ) : (
-              <div>
-                <p>{reviewAccordionMessage}</p>
-              </div>
-            )} */}
             </AccordionSummary>
             <AccordionDetails>
               {!reviewDisabled ? (
@@ -590,6 +589,7 @@ function SingleMentee(props) {
                   color='primary'
                   aria-label='add'
                   onClick={(event) => handleAddReviewer(event)}
+                  disabled={reviewDisabled}
                 >
                   <AddCircleOutlineOutlinedIcon sx={{ mr: 1 }} />
                   Add review
