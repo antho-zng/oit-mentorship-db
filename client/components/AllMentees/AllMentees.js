@@ -88,50 +88,81 @@ export default function AllMentees(props) {
           <span className={style.variableText}>{reviewDeadline}</span>.
         </p>
 
-        <p className={style.bodyText}>
-          Mentee applications by the numbers:{' '}
+        <div className={style.bodyTextNumbers}>
+          <p className={style.bodyTextInner}>
+            Mentee applications by the numbers:{' '}
+          </p>
           <ul>
             <span className={style.variableText}>{totalMenteeApps}</span> total
-            applications submitted.
+            application
+            {totalMenteeApps > 1 && totalMenteeApps !== 0 ? 's ' : ' '}
+            submitted.
           </ul>
           <ul>
             <span className={style.variableText}>
               {scoreBreakdown['STRONG ACCEPT']}
             </span>{' '}
-            applications accepted for follow-up with questionnaire.
+            application
+            {scoreBreakdown['STRONG ACCEPT'] > 1 ||
+            scoreBreakdown['STRONG ACCEPT'] == 0
+              ? 's '
+              : ' '}
+            accepted for follow-up with questionnaire.
           </ul>
           <ul>
             <span className={style.variableText}>
               {scoreBreakdown['ACCEPTED']}
             </span>{' '}
-            applications accepted for follow-up with interview.
+            application
+            {scoreBreakdown['ACCEPTED'] > 1 || scoreBreakdown['ACCEPTED'] == 0
+              ? 's '
+              : ' '}
+            accepted for follow-up with interview.
           </ul>
           <ul>
             <span className={style.variableText}>
               {scoreBreakdown['LOW PRIORITY ACCEPT']}
             </span>{' '}
-            applications accepted with low-priority.
+            application
+            {scoreBreakdown['LOW PRIORITY ACCEPT'] > 1 ||
+            scoreBreakdown['LOW PRIORITY ACCEPT'] == 0
+              ? 's '
+              : ' '}
+            accepted with low-priority.
           </ul>
           <ul>
             <span className={style.variableText}>
               {scoreBreakdown['WAITLIST']}
             </span>{' '}
-            applications waitlisted.
+            application
+            {scoreBreakdown['WAITLIST'] > 1 || scoreBreakdown['WAITLIST'] == 0
+              ? 's '
+              : ' '}
+            waitlisted.
           </ul>
           <ul>
             <span className={style.variableText}>
               {scoreBreakdown['NOT ACCEPTED']}
             </span>{' '}
-            applications not accepted.
+            application
+            {scoreBreakdown['NOT ACCEPTED'] > 1 ||
+            scoreBreakdown['NOT ACCEPTED'] == 0
+              ? 's '
+              : ' '}{' '}
+            not accepted.
           </ul>
-        </p>
-
-        <p className={style.bodyText}>
-          <span className={style.variableText}>
-            {scoreBreakdown['PENDING']}
-          </span>{' '}
-          applications still pending review.
-        </p>
+          <br></br>
+          <p className={style.bodyTextInner}>
+            <span className={style.variableText}>
+              {scoreBreakdown['PENDING']}
+            </span>{' '}
+            application
+            {scoreBreakdown['PENDING'] > 1 || scoreBreakdown['PENDING'] == 0
+              ? 's '
+              : ' '}{' '}
+            still pending review.
+          </p>
+        </div>
       </div>
       <div className={style.menteeTable}>
         <MenteeTable sendMenteeData={sendMenteeData} />

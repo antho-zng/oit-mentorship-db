@@ -15,7 +15,7 @@ const requireUserToken = async (req, res, next) => {
   }
 };
 
-const testMiddleware = async (req, res, next) => {
+const updateMenteeAcceptStatus = async (req, res, next) => {
   const scoreKey = {
     1: 'NOT ACCEPTED',
     2: 'WAITLIST',
@@ -53,20 +53,43 @@ const testMiddleware = async (req, res, next) => {
       console.log(`mentee updated with score of 4`);
       console.log(mentee);
     }
-    // console.log(review);
-    // console.log(mentee);
     next();
   } catch (error) {
     next(error);
   }
 };
-// review
-// {
-//   userId: 1,
-//   reviewerComments: 'test123',
-//   reviewerScore: 2,
-//   submitStatus: true
-// }
+
+const resetMenteeAcceptStatus = async (req, res, next) => {
+  const scoreKey = {
+    1: 'NOT ACCEPTED',
+    2: 'WAITLIST',
+    3: 'LOW PRIORITY ACCEPT',
+    4: 'ACCEPTED',
+    5: 'STRONG ACCEPT',
+  };
+
+  try {
+    const mentee = await Mentee.findByPk(req.params.id);
+    const reviews = await Review.findAll({
+      where: {
+        menteeId: req.params.id,
+      },
+    });
+
+    for (const rev of reviews) {
+      if (rev.reviewerScore !== 4 && rev.userId === req.body.userId) {
+        mentee.acceptedStatus = 'PENDING';
+        mentee.save();
+        console.log(`reset to pending`);
+        console.log(mentee);
+      }
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
 
 // GET /api/reviews/:id
 router.get('/:id', async (req, res, next) => {
@@ -93,39 +116,49 @@ router.post('/', requireUserToken, async (req, res, next) => {
 });
 
 // PUT (editing review)
-router.put('/:id', requireUserToken, testMiddleware, async (req, res, next) => {
-  try {
-    const review = await Review.findOne({
-      where: {
-        menteeId: req.params.id,
-        userId: req.body.review.userId,
-      },
-    });
-    review.reviewerComments = req.body.review.reviewerComments;
-    review.reviewerScore = req.body.review.reviewerScore;
-    review.submitStatus = req.body.review.submitStatus;
+router.put(
+  '/:id',
+  requireUserToken,
+  updateMenteeAcceptStatus,
+  async (req, res, next) => {
+    try {
+      const review = await Review.findOne({
+        where: {
+          menteeId: req.params.id,
+          userId: req.body.review.userId,
+        },
+      });
+      review.reviewerComments = req.body.review.reviewerComments;
+      review.reviewerScore = req.body.review.reviewerScore;
+      review.submitStatus = req.body.review.submitStatus;
 
-    review.save();
-    res.send(review);
-  } catch (error) {
-    next(error);
+      review.save();
+      res.send(review);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 // DELETE
-router.delete('/:id', requireUserToken, async (req, res, next) => {
-  try {
-    const review = await Review.findOne({
-      where: {
-        menteeId: req.params.id,
-        userId: req.body.userId,
-      },
-    });
-    await review.destroy();
-    res.sendStatus(200);
-  } catch (error) {
-    next(error);
+router.delete(
+  '/:id',
+  requireUserToken,
+  resetMenteeAcceptStatus,
+  async (req, res, next) => {
+    try {
+      const review = await Review.findOne({
+        where: {
+          menteeId: req.params.id,
+          userId: req.body.userId,
+        },
+      });
+      await review.destroy();
+      res.sendStatus(200);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 module.exports = router;
