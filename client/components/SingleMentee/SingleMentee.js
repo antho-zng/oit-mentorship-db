@@ -83,7 +83,8 @@ function SingleMentee(props) {
   }, []);
 
   useEffect(() => {
-    props.getReviews(props.match.params.id);
+    const token = window.localStorage.getItem('token');
+    props.getReviews(`menteeId=${props.match.params.id}`, token);
   }, []);
 
   useEffect(() => {
@@ -611,8 +612,8 @@ const mapDispatchToProps = (dispatch) => {
     getMentee: (id) => {
       dispatch(getMentee(id));
     },
-    getReviews: (id) => {
-      dispatch(getReviews(id));
+    getReviews: (searchParams, token) => {
+      dispatch(getReviews(searchParams, token));
     },
     addReview: (review, token) => {
       dispatch(addReview(review, token));

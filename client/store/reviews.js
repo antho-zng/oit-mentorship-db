@@ -21,7 +21,7 @@ const _deleteReview = (review) => ({ type: DELETE_REVIEW, review });
  * THUNK CREATORS
  */
 
-export const getReviewsByUser = (searchParams, token) => async (dispatch) => {
+export const getReviews = (searchParams, token) => async (dispatch) => {
   const params = new URLSearchParams(searchParams);
 
   try {
@@ -35,18 +35,6 @@ export const getReviewsByUser = (searchParams, token) => async (dispatch) => {
   } catch (error) {
     console.error(error);
   }
-};
-
-export const getReviews = (id) => {
-  return async (dispatch) => {
-    try {
-      const { data } = await axios.get(`/api/reviews/${id}`);
-      dispatch(_getReviews(data));
-    } catch (error) {
-      console.log('Reviews not found!');
-      throw error;
-    }
-  };
 };
 
 export const addReview = async (review, token) => {
@@ -151,6 +139,18 @@ export default function (state = initialState, action) {
 //       return dispatch(_addReview(data));
 //     } catch (error) {
 //       console.log(error);
+//     }
+//   };
+// };
+
+// export const getReviews = (id) => {
+//   return async (dispatch) => {
+//     try {
+//       const { data } = await axios.get(`/api/reviews/${id}`);
+//       dispatch(_getReviews(data));
+//     } catch (error) {
+//       console.log('Reviews not found!');
+//       throw error;
 //     }
 //   };
 // };

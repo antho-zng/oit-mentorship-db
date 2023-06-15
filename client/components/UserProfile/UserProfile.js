@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect, useSelector, useDispatch } from 'react-redux';
 import style from './UserProfile.module.css';
-import { getReviews, getReviewsByUser } from '../../store/reviews';
+import { getReviews } from '../../store/reviews';
 import { getMentee } from '../../store/mentee';
 
 import { styled } from '@mui/material/styles';
@@ -61,7 +61,7 @@ function UserProfile(props) {
     } else {
       console.log(userId);
       const token = window.localStorage.getItem('token');
-      props.getReviewsByUser(`userId=${userId}`, token);
+      props.getReviews(`userId=${userId}`, token);
     }
   });
 
@@ -69,14 +69,14 @@ function UserProfile(props) {
 
   const userId = useSelector((state) => state.auth.id || null);
 
-  const getReviews = (userId) => {
-    if (userId === null) {
-      return;
-    } else {
-      console.log(userId);
-      props.getReviewsByUser(userId);
-    }
-  };
+  // const getReviews = (userId) => {
+  //   if (userId === null) {
+  //     return;
+  //   } else {
+  //     console.log(userId);
+  //     props.getReviews(userId);
+  //   }
+  // };
 
   const handleTabChange = (event, newTabValue) => {
     setTabValue(newTabValue);
@@ -139,8 +139,8 @@ function UserProfile(props) {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getReviewsByUser: (searchParams, token) => {
-      dispatch(getReviewsByUser(searchParams, token));
+    getReviews: (searchParams, token) => {
+      dispatch(getReviews(searchParams, token));
     },
   };
 };
