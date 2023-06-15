@@ -59,24 +59,17 @@ function UserProfile(props) {
     if (userId === null) {
       return;
     } else {
-      console.log(userId);
+      console.log(props.userId);
       const token = window.localStorage.getItem('token');
       props.getReviews(`userId=${userId}`, token);
     }
-  });
+  }, [props.userId]);
 
   const [tabValue, setTabValue] = React.useState(0);
+  // const [userId, setUserId] = React.useState(props.userId);
 
   const userId = useSelector((state) => state.auth.id || null);
-
-  // const getReviews = (userId) => {
-  //   if (userId === null) {
-  //     return;
-  //   } else {
-  //     console.log(userId);
-  //     props.getReviews(userId);
-  //   }
-  // };
+  const reviews = useSelector((state) => state.reviews || []);
 
   const handleTabChange = (event, newTabValue) => {
     setTabValue(newTabValue);
