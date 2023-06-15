@@ -95,10 +95,10 @@ const resetMenteeAcceptStatus = async (req, res, next) => {
 router.get('/', async (req, res, next) => {
   try {
     console.log(`USERID IS, ${req.params.userId}`);
+    console.log(`params`);
+    console.log(req.query);
     const reviews = await Review.findAll({
-      where: {
-        userId: req.params.userId,
-      },
+      where: req.query,
       include: [Mentee],
     });
     res.send(reviews);

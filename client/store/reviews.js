@@ -21,17 +21,15 @@ const _deleteReview = (review) => ({ type: DELETE_REVIEW, review });
  * THUNK CREATORS
  */
 
-export const getReviewsByUser = (userId) => {
-  return async (dispatch) => {
-    try {
-      const { data } = await axios.get(`/api/reviews/`, {
-        params: { userId: userId },
-      });
-      dispatch(_getReviews(data));
-    } catch (error) {
-      console.error(error);
-    }
-  };
+export const getReviewsByUser = () => async (dispatch) => {
+  const params = new URLSearchParams('userId=1');
+
+  try {
+    const { data } = await axios.get(`/api/reviews`, { params });
+    return dispatch(_getReviews(data));
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 export const getReviews = (id) => {
