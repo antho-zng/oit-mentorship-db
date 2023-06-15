@@ -91,6 +91,22 @@ const resetMenteeAcceptStatus = async (req, res, next) => {
   }
 };
 
+// GET /api/reviews
+router.get('/', async (req, res, next) => {
+  try {
+    console.log(`USERID IS, ${req.params.userId}`);
+    const reviews = await Review.findAll({
+      where: {
+        userId: req.params.userId,
+      },
+      include: [Mentee],
+    });
+    res.send(reviews);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // GET /api/reviews/:id
 router.get('/:id', async (req, res, next) => {
   try {

@@ -31,7 +31,10 @@ function Routes(props) {
     <div className={style.pageContent}>
       {isLoggedIn ? (
         <Switch>
-          <Route path='/home' component={UserProfile} />
+          <Route
+            path='/home'
+            render={(props) => <UserProfile userId={isLoggedIn} />}
+          />
           <Route path='/applications/:id' component={SingleMentee} />
           <Route exact path='/applications' component={AllMentees} />
         </Switch>

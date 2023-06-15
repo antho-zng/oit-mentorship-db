@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect, useSelector, useDispatch } from 'react-redux';
 import style from './UserProfile.module.css';
-import { getReviews } from '../../store/reviews';
+import { getReviews, getReviewsByUser } from '../../store/reviews';
 import { getMentee } from '../../store/mentee';
 
 import { styled } from '@mui/material/styles';
@@ -55,7 +55,27 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 function UserProfile(props) {
+  useEffect(() => {
+    if (userId === null) {
+      return;
+    } else {
+      console.log(userId);
+      props.getReviewsByUser(userId);
+    }
+  });
+
   const [tabValue, setTabValue] = React.useState(0);
+
+  const userId = useSelector((state) => state.auth.id || null);
+
+  const getReviews = (userId) => {
+    if (userId === null) {
+      return;
+    } else {
+      console.log(userId);
+      props.getReviewsByUser(userId);
+    }
+  };
 
   const handleTabChange = (event, newTabValue) => {
     setTabValue(newTabValue);
@@ -118,11 +138,8 @@ function UserProfile(props) {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getMentee: (id) => {
-      dispatch(getMentee(id));
-    },
-    getReviews: (id) => {
-      dispatch(getReviews(id));
+    getReviewsByUser: (id) => {
+      dispatch(getReviewsByUser(id));
     },
   };
 };

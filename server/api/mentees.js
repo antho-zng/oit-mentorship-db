@@ -3,6 +3,7 @@ const router = require('express').Router();
 const Mentees = require('../db/models/Mentee');
 const Cohort = require('../db/models/Cohort');
 const Question = require('../db/models/Question');
+const Review = require('../db/models/Review');
 
 // GET /api/mentees
 router.get('/', async (req, res, next) => {
@@ -23,7 +24,7 @@ router.get('/:id', async (req, res, next) => {
       where: {
         id: req.params.id,
       },
-      include: [Cohort, Question],
+      include: [Cohort, Question, Review],
     });
 
     if (mentee === null) {
@@ -36,17 +37,5 @@ router.get('/:id', async (req, res, next) => {
     next(error);
   }
 });
-
-/**
- * POST / PUT / DELETE requests
- * write after setting up google forms api
- *
- */
-
-// POST mentee
-
-// PUT mentee
-
-// DELETE mentee
 
 module.exports = router;
