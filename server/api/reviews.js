@@ -92,7 +92,7 @@ const resetMenteeAcceptStatus = async (req, res, next) => {
 };
 
 // GET /api/reviews
-router.get('/', async (req, res, next) => {
+router.get('/', requireUserToken, async (req, res, next) => {
   try {
     console.log(`USERID IS, ${req.params.userId}`);
     console.log(`params`);

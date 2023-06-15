@@ -60,7 +60,8 @@ function UserProfile(props) {
       return;
     } else {
       console.log(userId);
-      props.getReviewsByUser(userId);
+      const token = window.localStorage.getItem('token');
+      props.getReviewsByUser(`userId=${userId}`, token);
     }
   });
 
@@ -138,8 +139,8 @@ function UserProfile(props) {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getReviewsByUser: (id) => {
-      dispatch(getReviewsByUser(id));
+    getReviewsByUser: (searchParams, token) => {
+      dispatch(getReviewsByUser(searchParams, token));
     },
   };
 };
