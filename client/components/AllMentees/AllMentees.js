@@ -5,25 +5,6 @@ import MenteeTable from './menteeTable';
 import style from './AllMentees.module.css';
 
 export default function AllMentees(props) {
-  /**
-   * want to display:
-   * total apps
-   * total pending (still need reviews)
-   * total breakdown of score calculations
-   *
-   * 1 Do Not Accept -> Reject
-   * 1 Strong Accept -> Questionnaire
-   * 2 Accept -> Interview
-   * 1 Borderline -> Waitlist
-   * 1 Accept with low priority -> Interview (Low Priority)
-   * 
-   *     let numReject;
-    let numQuestionnaire;
-    let numInterview;
-    let numWaitlist;
-    let numInterviewLowPriority;
-   */
-
   const initialScoreBreakdown = {
     'NOT ACCEPTED': 0,
     'STRONG ACCEPT': 0,

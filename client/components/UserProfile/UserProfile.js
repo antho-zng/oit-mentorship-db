@@ -81,60 +81,27 @@ function UserProfile(props) {
   console.log(reviews);
 
   const filterOpenReviews = useMemo(
-    () => setOpenReviews(_filterOpenReviews(reviews)),
+    () => setOpenReviews(filterReviews(reviews, 'open')),
     [reviews]
   );
 
   const filterCompleteReviews = useMemo(
-    () => setCompleteReviews(_filterCompleteReviews(reviews)),
+    () => setCompleteReviews(filterReviews(reviews, 'complete')),
     [reviews]
   );
-  // const sortReviews = (reviews) => {
-  //   if (reviews === undefined) {
-  //     console.log(`boo`);
-  //     return;
-  //   } else if (Array.isArray(reviews)) {
-  //     filterOpenReviews(reviews);
-  //     filterCompleteReviews(reviews);
 
-  //     console.log('filteredReviews');
-  //     console.log(completeReviews);
-  //     console.log(openReviews);
-  //   } else {
-  //     console.log(`boo boooooo`);
+  function filterReviews(reviews, filter) {
+    const submitStatus = filter === 'complete';
+    console.log(`submitStatus is ${submitStatus}`);
 
-  //     return;
-  //   }
-  // };
-
-  function _filterOpenReviews(reviews) {
     if (reviews === undefined) {
-      console.log(`boo`);
       return;
     } else if (Array.isArray(reviews)) {
-      const filteredOpenReviews = reviews.filter(
-        (review) => review.submitStatus === false
+      const filteredReviews = reviews.filter(
+        (review) => review.submitStatus === submitStatus
       );
-      console.log(openReviews);
-      return filteredOpenReviews;
+      return filteredReviews;
     } else {
-      console.log(`boo boooooo`);
-      return;
-    }
-  }
-
-  function _filterCompleteReviews(reviews) {
-    if (reviews === undefined) {
-      console.log(`boo`);
-      return;
-    } else if (Array.isArray(reviews)) {
-      const filteredCompleteReviews = reviews.filter(
-        (review) => review.submitStatus === true
-      );
-      console.log(completeReviews);
-      return filteredCompleteReviews;
-    } else {
-      console.log(`boo boooooo`);
       return;
     }
   }
