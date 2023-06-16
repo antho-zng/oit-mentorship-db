@@ -2,10 +2,28 @@
   display: grid;
   grid-template-columns: [left] 1fr [body] 4fr [right] 1fr;
 }
+.cardName{
+  text-transform:uppercase;
+}
+.cardSubhead{
+  font-weight:bold;
+  color: grey;
+}
 .header{
   margin-left:75px;
   margin-top: 60px;
   margin-bottom: 60px;
+}
+.gridItemContainer{
+  cursor: pointer;
+}
+.gridItem{
+  box-shadow: none;
+  background-color: aliceblue;
+  border-radius: 30px;
+}
+.gridItem:hover{
+  background-color:#d7ecff;
 }
 .tabBox{
   grid-column-start: body;

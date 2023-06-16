@@ -269,15 +269,6 @@ function SingleMentee(props) {
       setReviewDisabled(true);
       return;
     }
-    // for (const review of reviews) {
-    //   if (review.reviewerScore === 1 || review.reviewerScore === 5) {
-    //     setReviewAccordionMessage(
-    //       "Another reviewer has already marked this application as either 'Strong Accept' or 'Do Not Accept'."
-    //     );
-    //     setReviewDisabled(true);
-    //     return;
-    //   }
-    // }
   };
 
   const filterMyReviews = (reviews) => {
