@@ -76,9 +76,8 @@ function UserProfile(props) {
   const [openReviews, setOpenReviews] = React.useState([]);
 
   const userId = useSelector((state) => state.auth.id || null);
+  const reviewerName = useSelector((state) => state.auth.firstName || '');
   const reviews = useSelector((state) => state.reviews || []);
-
-  console.log(reviews);
 
   const filterOpenReviews = useMemo(
     () => setOpenReviews(filterReviews(reviews, 'open')),
@@ -92,7 +91,6 @@ function UserProfile(props) {
 
   function filterReviews(reviews, filter) {
     const submitStatus = filter === 'complete';
-    console.log(`submitStatus is ${submitStatus}`);
 
     if (reviews === undefined) {
       return;
@@ -115,6 +113,13 @@ function UserProfile(props) {
   };
   return (
     <div className={style.container}>
+      <div className={style.body}>
+        <h2 className={style.header}>Hi {reviewerName ? reviewerName : ''}!</h2>
+        <p className={style.bodyText}>
+          Welcome to your reviewer profile. You can view all the applications
+          assigned to you below.
+        </p>
+      </div>
       <Box className={style.tabBox} sx={{ width: '100%' }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs
@@ -146,44 +151,54 @@ function UserProfile(props) {
               columnSpacing={{ xs: 1, sm: 2, md: 3 }}
             >
               {Array.isArray(openReviews) ? (
-                openReviews.map((review) => {
-                  return (
-                    <Grid
-                      xs={4}
-                      onClick={(event) =>
-                        handleMenteeClick(event, review.mentee.id)
-                      }
-                      className={style.gridItemContainer}
-                    >
-                      <Item className={style.gridItem}>
-                        <div>
-                          <h3 className={style.cardName}>
-                            {review.mentee.firstName} {review.mentee.lastName}
-                          </h3>
-                          <p>
-                            <span className={style.cardSubhead}>COHORT</span>
-                            <br></br>
-                            {review.mentee.cohortId}
-                          </p>
-                          <p>
-                            <span className={style.cardSubhead}>
-                              APPLICATION STATUS
-                            </span>
-                            <br></br>
-                            {review.mentee.acceptedStatus}
-                          </p>
-                          <p>
-                            <span className={style.cardSubhead}>
-                              ADDED AS REVIEWER ON
-                            </span>
-                            <br></br>
-                            {`${new Date(review.createdAt)}`}
-                          </p>
-                        </div>
-                      </Item>
-                    </Grid>
-                  );
-                })
+                openReviews.length === 0 ? (
+                  <p className={style.bodyText}>
+                    You currently have no open reviews to display. Applications
+                    pending review can be found on the{' '}
+                    <a href='/applications' className={style.linkText}>
+                      mentee application dashboard.
+                    </a>
+                  </p>
+                ) : (
+                  openReviews.map((review) => {
+                    return (
+                      <Grid
+                        xs={4}
+                        onClick={(event) =>
+                          handleMenteeClick(event, review.mentee.id)
+                        }
+                        className={style.gridItemContainer}
+                      >
+                        <Item className={style.gridItem}>
+                          <div>
+                            <h3 className={style.cardName}>
+                              {review.mentee.firstName} {review.mentee.lastName}
+                            </h3>
+                            <p>
+                              <span className={style.cardSubhead}>COHORT</span>
+                              <br></br>
+                              {review.mentee.cohortId}
+                            </p>
+                            <p>
+                              <span className={style.cardSubhead}>
+                                APPLICATION STATUS
+                              </span>
+                              <br></br>
+                              {review.mentee.acceptedStatus}
+                            </p>
+                            <p>
+                              <span className={style.cardSubhead}>
+                                ADDED AS REVIEWER ON
+                              </span>
+                              <br></br>
+                              {`${new Date(review.createdAt)}`}
+                            </p>
+                          </div>
+                        </Item>
+                      </Grid>
+                    );
+                  })
+                )
               ) : (
                 <div>
                   <LoadingSkeleton />
@@ -200,6 +215,100 @@ function UserProfile(props) {
               columnSpacing={{ xs: 1, sm: 2, md: 3 }}
             >
               {Array.isArray(completeReviews) ? (
+                completeReviews.length === 0 ? (
+                  <p className={style.bodyText}>
+                    You currently have no submitted reviews to display.
+                    Applications pending review can be found on the{' '}
+                    <a href='/applications' className={style.linkText}>
+                      mentee application dashboard.
+                    </a>
+                  </p>
+                ) : (
+                  completeReviews.map((review) => {
+                    return (
+                      <Grid
+                        xs={4}
+                        onClick={(event) =>
+                          handleMenteeClick(event, review.mentee.id)
+                        }
+                        className={style.gridItemContainer}
+                      >
+                        <Item className={style.gridItem}>
+                          <div>
+                            <h3 className={style.cardName}>
+                              {review.mentee.firstName} {review.mentee.lastName}
+                            </h3>
+                            <p>
+                              <span className={style.cardSubhead}>COHORT</span>
+                              <br></br>
+                              {review.mentee.cohortId}
+                            </p>
+                            <p>
+                              <span className={style.cardSubhead}>
+                                APPLICATION STATUS
+                              </span>
+                              <br></br>
+                              {review.mentee.acceptedStatus}
+                            </p>
+                            <p>
+                              <span className={style.cardSubhead}>
+                                ADDED AS REVIEWER ON
+                              </span>
+                              <br></br>
+                              {`${new Date(review.createdAt)}`}
+                            </p>
+                          </div>
+                        </Item>
+                      </Grid>
+                    );
+                  })
+                )
+              ) : (
+                <div>
+                  <LoadingSkeleton />
+                </div>
+              )}
+            </Grid>
+          </Box>
+        </TabPanel>
+      </Box>
+    </div>
+  );
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getReviews: (searchParams, token) => {
+      dispatch(getReviews(searchParams, token));
+    },
+  };
+};
+
+export default connect(null, mapDispatchToProps)(UserProfile);
+
+/*
+<Stack spacing={1}>
+<Skeleton variant='text' sx={{ fontSize: '1rem' }} />
+<Skeleton
+  variant='rounded'
+  width={243.547}
+  height={223.547}
+/>
+<Skeleton
+  variant='rounded'
+  width={243.547}
+  height={223.547}
+/>
+<Skeleton
+  variant='rounded'
+  width={243.547}
+  height={223.547}
+/>
+</Stack>
+*/
+
+/*
+   {Array.isArray(completeReviews) ? (
                 completeReviews.map((review) => {
                   return (
                     <Grid
@@ -243,41 +352,4 @@ function UserProfile(props) {
                   <LoadingSkeleton />
                 </div>
               )}
-            </Grid>
-          </Box>
-        </TabPanel>
-      </Box>
-    </div>
-  );
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getReviews: (searchParams, token) => {
-      dispatch(getReviews(searchParams, token));
-    },
-  };
-};
-
-export default connect(null, mapDispatchToProps)(UserProfile);
-
-/*
-<Stack spacing={1}>
-<Skeleton variant='text' sx={{ fontSize: '1rem' }} />
-<Skeleton
-  variant='rounded'
-  width={243.547}
-  height={223.547}
-/>
-<Skeleton
-  variant='rounded'
-  width={243.547}
-  height={223.547}
-/>
-<Skeleton
-  variant='rounded'
-  width={243.547}
-  height={223.547}
-/>
-</Stack>
 */
