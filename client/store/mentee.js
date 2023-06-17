@@ -16,7 +16,7 @@ const _getMentee = (mentee) => ({ type: GET_MENTEE, mentee });
  */
 
 export const getMentee = (id) => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     try {
       const { data } = await axios.get(`/api/mentees/${id}`);
       dispatch(_getMentee(data));

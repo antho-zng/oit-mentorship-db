@@ -144,7 +144,6 @@ function SingleMentee(props) {
     setReviewerAdded(true);
     setReviewDisabled(false);
     setEditingMode(true);
-    // setAlertVisibility(true);
     setReviewAccordionMessage(
       'You have been added as a reviewer for this mentee application. Please leave your comments and score below.'
     );
@@ -158,7 +157,7 @@ function SingleMentee(props) {
     };
 
     const token = window.localStorage.getItem('token');
-    addReview(review, token);
+    props.addReview(review, token);
   };
 
   const handleEnableReview = (event) => {
@@ -194,7 +193,7 @@ function SingleMentee(props) {
     };
 
     const token = window.localStorage.getItem('token');
-    editReview(review, menteeId, token);
+    props.editReview(review, menteeId, token);
     setReviewDisabled(true);
     setReviewSubmitted(true);
     setEditingMode(false);
@@ -214,7 +213,7 @@ function SingleMentee(props) {
     };
 
     const token = window.localStorage.getItem('token');
-    editReview(review, menteeId, token);
+    props.editReview(review, menteeId, token);
 
     setTextFieldInput(reviewerComments);
     setScore(reviewerScore);
@@ -228,7 +227,7 @@ function SingleMentee(props) {
     // event.preventDefault();
 
     const token = window.localStorage.getItem('token');
-    deleteReview(userId, menteeId, token);
+    props.deleteReview(userId, menteeId, token);
 
     setReviewerAdded(false);
     setReviewDisabled(true);
@@ -598,21 +597,12 @@ function SingleMentee(props) {
  * CONTAINER
  */
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getMentee: (id) => {
-      dispatch(getMentee(id));
-    },
-    getReviews: (searchParams, token) => {
-      dispatch(getReviews(searchParams, token));
-    },
-    addReview: (review, token) => {
-      dispatch(addReview(review, token));
-    },
-    editReview: (review, id, token) => {
-      dispatch(editReview(review, id, token));
-    },
-  };
+const mapDispatch = {
+  getMentee,
+  getReviews,
+  addReview,
+  editReview,
+  deleteReview,
 };
 
-export default connect(null, mapDispatchToProps)(SingleMentee);
+export default connect(null, mapDispatch)(SingleMentee);
