@@ -13,11 +13,15 @@ const Review = require('./models/Review');
 Mentee.belongsToMany(Question, { through: Answer });
 Question.belongsToMany(Mentee, { through: Answer });
 
+// super many-to-many relationship for mentee/user/review
+// additional information : https://sequelize.org/docs/v6/advanced-association-concepts/advanced-many-to-many/
+
 Mentee.belongsToMany(User, { through: Review }, { foreignKey: 'menteeId' });
 User.belongsToMany(Mentee, { through: Review }, { foreignKey: 'userId' });
-
-// Review.belongsTo(User, { foreignKey: 'reviewerId' });
-// User.hasMany(Review, { foreignKey: 'reviewerId' });
+Mentee.hasMany(Review);
+Review.belongsTo(Mentee);
+User.hasMany(Review);
+Review.belongsTo(User);
 
 Mentee.belongsTo(Cohort, { foreignKey: 'cohortId' });
 Cohort.hasMany(Mentee, { foreignKey: 'cohortId' });

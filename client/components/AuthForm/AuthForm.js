@@ -1,27 +1,26 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { authenticate } from '../store';
+import { authenticate } from '../../store';
+import style from './AuthForm.module.css';
 
 /**
  * COMPONENT
  */
 const AuthForm = (props) => {
   const { name, displayName, handleSubmit, error } = props;
-  console.log('authform loading');
-  console.log(props);
 
   return (
-    <div>
-      <form onSubmit={handleSubmit} name={name}>
+    <div className={style.container}>
+      <form className={style.body} onSubmit={handleSubmit} name={name}>
         <div>
           <label htmlFor='username'>
-            <small>Username</small>
+            <small>USERNAME</small>
           </label>
           <input name='username' type='text' />
         </div>
         <div>
           <label htmlFor='password'>
-            <small>Password</small>
+            <small>PASSWORD</small>
           </label>
           <input name='password' type='password' />
         </div>

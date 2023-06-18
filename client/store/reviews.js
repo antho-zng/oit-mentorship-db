@@ -13,69 +13,81 @@ const DELETE_REVIEW = 'DELETE_REVIEW';
  * ACTION CREATORS
  */
 const _getReviews = (reviews) => ({ type: GET_REVIEWS, reviews });
-const _addReview = (review) => ({ type: ADD_REVIEW, review });
+const _addReview = (review) => {
+  return {
+    type: ADD_REVIEW,
+    review,
+  };
+};
 const _editReview = (review) => ({ type: EDIT_REVIEW, review });
-const _deleteReview = (review) => ({ type: DELETE_REVIEW, review });
+const _deleteReview = (userId) => ({ type: DELETE_REVIEW, userId });
 
 /**
  * THUNK CREATORS
  */
 
-export const getReviews = (id) => {
-  return async (dispatch) => {
-    try {
-      const { data } = await axios.get(`/api/reviews/${id}`);
-      dispatch(_getReviews(data));
-    } catch (error) {
-      console.log('Reviews not found!');
-      throw error;
-    }
-  };
-};
+export const getReviews = (searchParams, token) => async (dispatch) => {
+  const params = new URLSearchParams(searchParams);
 
-export const addReview = async (review, token) => {
   try {
-    const { data } = await axios.post(`/api/reviews`, {
-      review,
+    const { data } = await axios.get(`/api/reviews`, {
       headers: {
         authorization: token,
-        'content-type': 'application/json',
       },
+      params,
     });
-    return dispatch(_addReview(data));
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const editReview = async (review, id, token) => {
-  try {
-    const { data } = await axios.put(`/api/reviews/${id}`, {
-      review,
-      headers: {
-        authorization: token,
-        'content-type': 'application/json',
-      },
-    });
-    return dispatch(_editReview(data));
+    return dispatch(_getReviews(data));
   } catch (error) {
     console.error(error);
   }
 };
 
-export const deleteReview = async (userId, menteeId, token) => {
-  try {
+export function addReview(review, token) {
+  return async (dispatch, getState) => {
+    try {
+      const { data } = await axios.post(`/api/reviews`, {
+        review,
+        headers: {
+          authorization: token,
+          'content-type': 'application/json',
+        },
+      });
+      dispatch(_addReview(data));
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+  };
+}
+
+export function editReview(review, id, token) {
+  return async (dispatch, getState) => {
+    try {
+      const { data } = await axios.put(`/api/reviews/${id}`, {
+        review,
+        headers: {
+          authorization: token,
+          'content-type': 'application/json',
+        },
+      });
+      dispatch(_editReview(data));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+}
+
+export function deleteReview(userId, menteeId, token) {
+  return async (dispatch, getState) => {
     const response = await axios.delete(`/api/reviews/${menteeId}`, {
       headers: {
         authorization: token,
       },
       data: { userId: userId },
     });
-    return dispatch(_deleteReview(response));
-  } catch (error) {
-    console.error(error);
-  }
-};
+    return dispatch(_deleteReview(userId));
+  };
+}
 
 const initialState = {};
 
@@ -85,13 +97,19 @@ const initialState = {};
 export default function (state = initialState, action) {
   switch (action.type) {
     case ADD_REVIEW:
-      return action.review;
+      return [...state, ...action.review];
     case GET_REVIEWS:
       return action.reviews;
     case EDIT_REVIEW:
-      return action.review;
+      return state.map((review) => {
+        if (review.id === action.review.id) {
+          review = action.review;
+        } else {
+          return;
+        }
+      });
     case DELETE_REVIEW:
-      return state.filter((review) => review.userId !== action.review.userId);
+      return state.filter((review) => review.userId !== action.userId);
     default:
       return state;
   }
@@ -135,6 +153,18 @@ export default function (state = initialState, action) {
 //       return dispatch(_addReview(data));
 //     } catch (error) {
 //       console.log(error);
+//     }
+//   };
+// };
+
+// export const getReviews = (id) => {
+//   return async (dispatch) => {
+//     try {
+//       const { data } = await axios.get(`/api/reviews/${id}`);
+//       dispatch(_getReviews(data));
+//     } catch (error) {
+//       console.log('Reviews not found!');
+//       throw error;
 //     }
 //   };
 // };

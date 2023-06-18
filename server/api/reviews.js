@@ -91,6 +91,23 @@ const resetMenteeAcceptStatus = async (req, res, next) => {
   }
 };
 
+// GET /api/reviews
+router.get('/', requireUserToken, async (req, res, next) => {
+  try {
+    console.log(`USERID IS, ${req.params.userId}`);
+    console.log(`params`);
+    console.log(req.query);
+    const reviews = await Review.findAll({
+      where: req.query,
+      include: [Mentee],
+    });
+    res.send(reviews);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 // GET /api/reviews/:id
 router.get('/:id', async (req, res, next) => {
   try {
@@ -101,6 +118,7 @@ router.get('/:id', async (req, res, next) => {
     });
     res.send(reviews);
   } catch (error) {
+    console.error(error);
     next(error);
   }
 });
@@ -111,7 +129,8 @@ router.post('/', requireUserToken, async (req, res, next) => {
     const review = await Review.create(req.body.review);
     res.send(review);
   } catch (error) {
-    console.log(`Error with review API post req! Error: ${error}`);
+    console.error(error);
+    next(error);
   }
 });
 
@@ -135,6 +154,7 @@ router.put(
       review.save();
       res.send(review);
     } catch (error) {
+      console.error(error);
       next(error);
     }
   }
@@ -156,6 +176,7 @@ router.delete(
       await review.destroy();
       res.sendStatus(200);
     } catch (error) {
+      console.error(error);
       next(error);
     }
   }

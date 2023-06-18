@@ -3,6 +3,12 @@ const db = require('../db');
 module.exports = db.define(
   'review',
   {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false,
+    },
     reviewerComments: {
       type: Sequelize.TEXT,
       allowNull: true,

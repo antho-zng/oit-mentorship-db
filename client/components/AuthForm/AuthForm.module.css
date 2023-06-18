@@ -1,0 +1,10 @@
+.container{
+  display: grid;
+  grid-template-columns: [left] 1fr [body] 4fr [right] 1fr;
+}
+.body{
+  grid-column-start: body;
+  margin-bottom: 75px;
+  display:flex;
+  flex-direction:column;
+}

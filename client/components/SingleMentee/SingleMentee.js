@@ -83,7 +83,8 @@ function SingleMentee(props) {
   }, []);
 
   useEffect(() => {
-    props.getReviews(props.match.params.id);
+    const token = window.localStorage.getItem('token');
+    props.getReviews(`menteeId=${props.match.params.id}`, token);
   }, []);
 
   useEffect(() => {
@@ -143,7 +144,6 @@ function SingleMentee(props) {
     setReviewerAdded(true);
     setReviewDisabled(false);
     setEditingMode(true);
-    // setAlertVisibility(true);
     setReviewAccordionMessage(
       'You have been added as a reviewer for this mentee application. Please leave your comments and score below.'
     );
@@ -157,7 +157,7 @@ function SingleMentee(props) {
     };
 
     const token = window.localStorage.getItem('token');
-    addReview(review, token);
+    props.addReview(review, token);
   };
 
   const handleEnableReview = (event) => {
@@ -193,7 +193,7 @@ function SingleMentee(props) {
     };
 
     const token = window.localStorage.getItem('token');
-    editReview(review, menteeId, token);
+    props.editReview(review, menteeId, token);
     setReviewDisabled(true);
     setReviewSubmitted(true);
     setEditingMode(false);
@@ -213,7 +213,7 @@ function SingleMentee(props) {
     };
 
     const token = window.localStorage.getItem('token');
-    editReview(review, menteeId, token);
+    props.editReview(review, menteeId, token);
 
     setTextFieldInput(reviewerComments);
     setScore(reviewerScore);
@@ -227,7 +227,7 @@ function SingleMentee(props) {
     // event.preventDefault();
 
     const token = window.localStorage.getItem('token');
-    deleteReview(userId, menteeId, token);
+    props.deleteReview(userId, menteeId, token);
 
     setReviewerAdded(false);
     setReviewDisabled(true);
@@ -268,15 +268,6 @@ function SingleMentee(props) {
       setReviewDisabled(true);
       return;
     }
-    // for (const review of reviews) {
-    //   if (review.reviewerScore === 1 || review.reviewerScore === 5) {
-    //     setReviewAccordionMessage(
-    //       "Another reviewer has already marked this application as either 'Strong Accept' or 'Do Not Accept'."
-    //     );
-    //     setReviewDisabled(true);
-    //     return;
-    //   }
-    // }
   };
 
   const filterMyReviews = (reviews) => {
@@ -303,13 +294,6 @@ function SingleMentee(props) {
     }
   };
 
-  /**
-   * TO-DO:
-   * check reviewer assignment
-   * check other scores for do not accept / high accept
-   *
-   */
-
   const scoreLabels = {
     1: 'Do not accept',
     2: 'Borderline',
@@ -317,8 +301,6 @@ function SingleMentee(props) {
     4: 'Accept',
     5: 'Strong accept',
   };
-
-  // TO-DO : display mentee age instead of DOB
 
   return (
     <div className={style.menteeProfile}>
@@ -437,18 +419,6 @@ function SingleMentee(props) {
             })}
           </TabPanel>
         </Box>
-        {/* <div>
-          {questionsAndAnswers.map((qaPair, idx) => {
-            return (
-              <div key={idx} className={style.qaCard}>
-                <span className={style.question}>{qaPair.text}</span>
-                <br></br>
-                <br></br>
-                {qaPair.answer.text}
-              </div>
-            );
-          })}
-        </div> */}
       </div>
       <div className={style.reviewBar}>
         <div className={style.reviewContainer}>
@@ -627,21 +597,12 @@ function SingleMentee(props) {
  * CONTAINER
  */
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getMentee: (id) => {
-      dispatch(getMentee(id));
-    },
-    getReviews: (id) => {
-      dispatch(getReviews(id));
-    },
-    addReview: (review, token) => {
-      dispatch(addReview(review, token));
-    },
-    editReview: (review, id, token) => {
-      dispatch(editReview(review, id, token));
-    },
-  };
+const mapDispatch = {
+  getMentee,
+  getReviews,
+  addReview,
+  editReview,
+  deleteReview,
 };
 
-export default connect(null, mapDispatchToProps)(SingleMentee);
+export default connect(null, mapDispatch)(SingleMentee);
