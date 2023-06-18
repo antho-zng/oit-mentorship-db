@@ -28,12 +28,12 @@ nav {
   flex-direction: column;
   right:0;
   box-sizing:border-box;
-  background-color:#ECE8EF;
+  background-color: white;
   top:0;
   align-items: flex-end;
   width:100%;
-  backdrop-filter: blur(8px);
-  /* filter: drop-shadow(2px 4px 6px #d3d3d3); */
+  /* backdrop-filter: blur(8px); */
+  filter: drop-shadow(2px 4px 6px #d3d3d3);
   z-index:1000;
 }
 nav::after{
@@ -49,16 +49,31 @@ nav::after{
 .navbarLinks{
   padding-right:60px;
 }
-a {
+nav .navbarLinks a {
   color: black;
   font-size: 14px;
-  /* text-decoration: none; */
+  display: inline-flex;
+
+  &:hover{
+    color: #DC493A;
+    font-weight:600;
+  }
+
+  flex-direction: column;
+  justify-content: space-between;
+  text-decoration: none;
 }
 
-a:hover {
-  color: #DC493A;
-  font-weight:600;
- }
+.navbarLinks a::before {
+  content: attr(title);
+  content: attr(title) / "";
+  height: 0;
+  visibility: hidden;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+  font-weight: 600;
+}
 /*
 a {
   background-image: linear-gradient(

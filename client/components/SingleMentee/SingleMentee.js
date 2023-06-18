@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { connect, useSelector, useDispatch } from 'react-redux';
+import React, { useEffect, useMemo } from 'react';
+import { connect, useSelector } from 'react-redux';
 import style from './SingleMentee.module.css';
 import { getMentee } from '../../store/mentee';
 import {
@@ -23,11 +23,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TextField from '@mui/material/TextField';
 import { Rating } from '@mui/material';
-import {
-  Recommend,
-  RecommendOutlined,
-  SignalCellularNull,
-} from '@mui/icons-material';
+import { Recommend, RecommendOutlined } from '@mui/icons-material';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import ArrowCircleUpOutlinedIcon from '@mui/icons-material/ArrowCircleUpOutlined';
 import EditIcon from '@mui/icons-material/Edit';
@@ -87,9 +83,9 @@ function SingleMentee(props) {
     props.getReviews(`menteeId=${props.match.params.id}`, token);
   }, []);
 
-  useEffect(() => {
-    reviewCheck(reviews);
-  });
+  // useEffect(() => {
+  //   reviewCheck(reviews);
+  // });
 
   const mentee = useSelector((state) => state.mentee);
   const menteeId = useSelector((state) => state.mentee.id || []);
@@ -225,22 +221,25 @@ function SingleMentee(props) {
 
   const handleDeleteReview = (event) => {
     // event.preventDefault();
+    location.reload();
 
     const token = window.localStorage.getItem('token');
     props.deleteReview(userId, menteeId, token);
 
-    setReviewerAdded(false);
-    setReviewDisabled(true);
-    setReviewSubmitted(false);
-    setReviewAccordionMessage(
-      'Add yourself as a reviewer to leave score and comments for this application.'
-    );
-    setTextFieldInput('');
-    setEditingMode(false);
-    setExpanded(false);
+    // setReviewerAdded(false);
+    // setReviewDisabled(true);
+    // setReviewSubmitted(false);
+    // setReviewAccordionMessage(
+    //   'Add yourself as a reviewer to leave score and comments for this application.'
+    // );
+    // setTextFieldInput('');
+    // setEditingMode(false);
+    // setExpanded(false);
   };
 
-  const reviewCheck = (reviews) => {
+  const _reviewCheck = useMemo(() => reviewCheck(reviews), [reviews]);
+
+  function reviewCheck(reviews) {
     if (reviews === undefined) {
       return;
     } else if (Array.isArray(reviews) && !editingMode) {
@@ -250,17 +249,17 @@ function SingleMentee(props) {
     } else {
       return;
     }
-  };
+  }
 
-  const maxReviewCheck = (reviews) => {
+  function maxReviewCheck(reviews) {
     if (reviews.length > 1) {
       setReviewAccordionMessage('This application has already been reviewed.');
       setReviewDisabled(true);
       return;
     }
-  };
+  }
 
-  const reviewScoreCheck = (reviews) => {
+  function reviewScoreCheck(reviews) {
     if (mentee.acceptedStatus !== 'PENDING') {
       setReviewAccordionMessage(
         `This application has already been reviewed and is currently marked as ${mentee.acceptedStatus}. No further reviews are needed.`
@@ -268,9 +267,9 @@ function SingleMentee(props) {
       setReviewDisabled(true);
       return;
     }
-  };
+  }
 
-  const filterMyReviews = (reviews) => {
+  function filterMyReviews(reviews) {
     const myReviews = reviews.filter((review) => review.userId === userId);
     if (myReviews.length > 0 && myReviews[0].submitStatus === false) {
       setReviewerAdded(true);
@@ -292,7 +291,7 @@ function SingleMentee(props) {
       setTextFieldInput(myReviews[0].reviewerComments);
       setScore(myReviews[0].reviewerScore);
     }
-  };
+  }
 
   const scoreLabels = {
     1: 'Do not accept',

@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { connect, useSelector, useDispatch } from 'react-redux';
+import React, { useEffect, useMemo } from 'react';
+import { connect, useSelector } from 'react-redux';
 import style from './UserProfile.module.css';
 import { getReviews } from '../../store/reviews';
 

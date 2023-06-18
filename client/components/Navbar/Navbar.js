@@ -18,17 +18,25 @@ function Navbar({ handleClick }) {
         </div>
         {isLoggedIn ? (
           <div className={style.navbarLinks}>
-            <Link to='/home'>HOME</Link>
-            <Link to='/applications'>APPLICATIONS</Link>
+            <Link to='/home' title='HOME'>
+              HOME
+            </Link>
+            <Link to='/applications' title='APPLICATIONS'>
+              APPLICATIONS
+            </Link>
 
-            <a href='#' onClick={handleClick}>
+            <a href='#' onClick={handleClick} title='LOGOUT'>
               LOGOUT
             </a>
           </div>
         ) : (
           <div className={style.navbarLinks}>
-            <Link to='/login'>LOGIN</Link>
-            <Link to='/signup'>SIGN UP</Link>
+            <Link to='/login' title='LOGIN'>
+              LOGIN
+            </Link>
+            <Link to='/signup' title='SIGN UP'>
+              SIGN UP
+            </Link>
           </div>
         )}
       </nav>
