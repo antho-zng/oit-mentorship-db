@@ -2,7 +2,6 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { connect, useSelector, useDispatch } from 'react-redux';
 import style from './UserProfile.module.css';
 import { getReviews } from '../../store/reviews';
-import { getMentee } from '../../store/mentee';
 
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';

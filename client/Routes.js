@@ -10,7 +10,7 @@ import {
 import { me } from './store';
 import style from './Routes.module.css';
 
-import { Login, Signup } from './components/AuthForm';
+import { Login, Signup } from './components/AuthForm/AuthForm';
 import Home from './components/Home';
 import SingleMentee from './components/SingleMentee/SingleMentee';
 import AllMentees from './components/AllMentees/AllMentees';
@@ -25,7 +25,7 @@ function Routes(props) {
     props.loadInitialData();
   }, []);
 
-  const isLoggedIn = useSelector((state) => state.auth.id || []);
+  const isLoggedIn = useSelector((state) => state.auth.id || null);
 
   return (
     <div className={style.pageContent}>

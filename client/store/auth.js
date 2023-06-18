@@ -25,8 +25,6 @@ export const me = () => async (dispatch) => {
       },
     });
     return dispatch(setAuth(res.data));
-  } else {
-    console.log('Auth error :(');
   }
 };
 

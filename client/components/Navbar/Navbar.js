@@ -6,7 +6,9 @@ import style from './Navbar.module.css';
 import cornerLogo from './OIT-Logo-Black.png';
 
 function Navbar({ handleClick }) {
-  const isLoggedIn = useSelector((state) => state.auth.id || []);
+  const isLoggedIn = useSelector((state) => state.auth.id || null);
+  console.log(`login`);
+  console.log(isLoggedIn);
 
   return (
     <div className={style.container}>
@@ -16,19 +18,15 @@ function Navbar({ handleClick }) {
         </div>
         {isLoggedIn ? (
           <div className={style.navbarLinks}>
-            {/* The navbar will show these links after you log in */}
             <Link to='/home'>HOME</Link>
             <Link to='/applications'>APPLICATIONS</Link>
-            {/* <Link to='/interviews'>INTERVIEWS</Link> */}
-            {/* <Link to='/matching'>MATCHING</Link> */}
 
             <a href='#' onClick={handleClick}>
               LOGOUT
             </a>
           </div>
         ) : (
-          <div>
-            {/* The navbar will show these links before you log in */}
+          <div className={style.navbarLinks}>
             <Link to='/login'>LOGIN</Link>
             <Link to='/signup'>SIGN UP</Link>
           </div>
