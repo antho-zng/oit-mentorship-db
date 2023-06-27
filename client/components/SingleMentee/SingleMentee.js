@@ -296,12 +296,20 @@ function SingleMentee(props) {
   }
 
   const scoreLabels = {
-    1: 'Do not accept',
-    2: 'Borderline',
-    3: 'Accept with low priority',
-    4: 'Accept',
-    5: 'Strong accept',
+    1: 'Reject',
+    2: 'Waitlist',
+    3: 'Interview (Low Priority)',
+    4: 'Interview',
+    5: 'Questionnaire (Strong Accept)',
   };
+  /**
+   * 1 Do Not Accept -> Reject
+1 Strong Accept -> Questionnaire
+2 Accept -> Interview (allow 2)
+1 Borderline -> Waitlist (allow 2)
+1 Accept with low priority -> Interview (Low Priority)(allow 2)
+
+   */
 
   return (
     <div className={style.menteeProfile}>

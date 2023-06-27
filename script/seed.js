@@ -58,6 +58,18 @@ async function seed() {
       menteeApplicationFormID: '1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII',
       isCurrent: true,
     }),
+    Cohort.create({
+      cohortId: 'FALL2022',
+      name: 'Fall 2022',
+      menteeApplicationFormID: '1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII',
+      isCurrent: false,
+    }),
+    Cohort.create({
+      cohortId: 'SPRING2022',
+      name: 'Spring 2022',
+      menteeApplicationFormID: '1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII',
+      isCurrent: false,
+    }),
   ]);
 
   /**
