@@ -14,8 +14,13 @@ function Footer() {
         </div>
         <div className={style.links}>
           <p className={style.aboutHeader}>ABOUT</p>
-          <a href='https://outintech.com/u/'>Out-in-Tech U</a>
-          <a href='https://outintech.com/mentorship-program/'>
+          <a href='https://outintech.com/u/' title='Out-in-Tech U'>
+            Out-in-Tech U
+          </a>
+          <a
+            href='https://outintech.com/mentorship-program/'
+            title='Mentorship Program'
+          >
             Mentorship Program
           </a>
         </div>

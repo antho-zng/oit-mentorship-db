@@ -2,36 +2,87 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { authenticate } from '../../store';
 import style from './AuthForm.module.css';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import LoginRoundedIcon from '@mui/icons-material/LoginRounded';
 
 /**
  * COMPONENT
  */
-const AuthForm = (props) => {
-  const { name, displayName, handleSubmit, error } = props;
+function AuthForm(props) {
+  const { name, displayName, error } = props;
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const formName = event.target.name;
+    const username = event.target.username.value;
+    const password = event.target.password.value;
+
+    console.log(formName);
+
+    props.authenticate(username, password, formName);
+  };
 
   return (
     <div className={style.container}>
-      <form className={style.body} onSubmit={handleSubmit} name={name}>
-        <div>
-          <label htmlFor='username'>
-            <small>USERNAME</small>
-          </label>
-          <input name='username' type='text' />
+      <Box
+        component='form'
+        name={name}
+        sx={{
+          '& .MuiTextField-root': { m: 1, width: '25ch' },
+        }}
+        noValidate
+        autoComplete='off'
+        className={style.bodyContainer}
+        onSubmit={handleSubmit}
+      >
+        <h2 className={style.header}>{displayName}</h2>
+
+        <div className={style.body}>
+          <TextField
+            id='outlined-required-error'
+            error={error}
+            label={error ? 'Error' : 'Username'}
+            name='username'
+            inputProps={{
+              className: style.textFieldInput,
+            }}
+            InputProps={{
+              className: style.textFieldBox,
+            }}
+            helperText={error ? 'Invalid credentials.' : ''}
+          />
+          <TextField
+            id='outlined-password-input-error'
+            error={error}
+            label={error ? 'Error' : 'Password'}
+            name='password'
+            type='password'
+            autoComplete='current-password'
+            inputProps={{
+              className: style.textFieldInput,
+            }}
+            InputProps={{
+              className: style.textFieldBox,
+            }}
+            helperText={error ? 'Invalid credentials.' : ''}
+          />
+          <div className={style.buttonContainer}>
+            <Button
+              type='submit'
+              variant='outlined'
+              startIcon={<LoginRoundedIcon />}
+            >
+              {displayName}
+            </Button>
+          </div>
+          {error && error.response && <div> {error.response.data} </div>}
         </div>
-        <div>
-          <label htmlFor='password'>
-            <small>PASSWORD</small>
-          </label>
-          <input name='password' type='password' />
-        </div>
-        <div>
-          <button type='submit'>{displayName}</button>
-        </div>
-        {error && error.response && <div> {error.response.data} </div>}
-      </form>
+      </Box>
     </div>
   );
-};
+}
 
 /**
  * CONTAINER
@@ -56,16 +107,8 @@ const mapSignup = (state) => {
   };
 };
 
-const mapDispatch = (dispatch) => {
-  return {
-    handleSubmit(evt) {
-      evt.preventDefault();
-      const formName = evt.target.name;
-      const username = evt.target.username.value;
-      const password = evt.target.password.value;
-      dispatch(authenticate(username, password, formName));
-    },
-  };
+const mapDispatch = {
+  authenticate,
 };
 
 export const Login = connect(mapLogin, mapDispatch)(AuthForm);

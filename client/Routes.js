@@ -37,6 +37,11 @@ function Routes(props) {
           />
           <Route path='/applications/:id' component={SingleMentee} />
           <Route exact path='/applications' component={AllMentees} />
+          <Route
+            exact
+            path='/'
+            render={(props) => <UserProfile userId={isLoggedIn} />}
+          />
         </Switch>
       ) : (
         <Switch>
