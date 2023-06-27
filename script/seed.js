@@ -21,6 +21,34 @@ async function seed() {
       password: 'IG@1019',
       email: 'zhang.anthony97@gmail.com',
     }),
+    User.create({
+      username: 'testAcc1',
+      firstName: 'Orange',
+      lastName: 'Apple',
+      password: 'IG@1019',
+      email: 'testaccount1@gmail.com',
+    }),
+    User.create({
+      username: 'testAcc2',
+      firstName: 'Green',
+      lastName: 'Banana',
+      password: 'IG@1019',
+      email: 'testaccount2@gmail.com',
+    }),
+    User.create({
+      username: 'testAcc3',
+      firstName: 'Yellow',
+      lastName: 'Grapefruit',
+      password: 'IG@1019',
+      email: 'testaccount3@gmail.com',
+    }),
+    User.create({
+      username: 'testAcc4',
+      firstName: 'Red',
+      lastName: 'Persimmon',
+      password: 'IG@1019',
+      email: 'testaccount4@gmail.com',
+    }),
   ]);
 
   const cohorts = await Promise.all([
@@ -87,12 +115,15 @@ async function seed() {
   //   { ignoreDuplicates: true }
   // );
 
-  console.log(`seeded ${users.length} users`);
+  console.log(`Seeded ${users.length} users.`);
   console.log(`seeded successfully`);
   return {
     users: {
-      cody: users[0],
-      murphy: users[1],
+      Anthony: users[0],
+      testAcc1: users[1],
+      testAcc2: users[2],
+      testAcc3: users[3],
+      testAcc4: users[4],
     },
     cohorts,
   };

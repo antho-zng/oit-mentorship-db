@@ -83,9 +83,9 @@ function SingleMentee(props) {
     props.getReviews(`menteeId=${props.match.params.id}`, token);
   }, []);
 
-  // useEffect(() => {
-  //   reviewCheck(reviews);
-  // });
+  useEffect(() => {
+    reviewCheck(reviews);
+  });
 
   const mentee = useSelector((state) => state.mentee);
   const menteeId = useSelector((state) => state.mentee.id || []);
@@ -237,7 +237,7 @@ function SingleMentee(props) {
     // setExpanded(false);
   };
 
-  const _reviewCheck = useMemo(() => reviewCheck(reviews), [reviews]);
+  // const _reviewCheck = useMemo(() => reviewCheck(reviews), [reviews]);
 
   function reviewCheck(reviews) {
     if (reviews === undefined) {
