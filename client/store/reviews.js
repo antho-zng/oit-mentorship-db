@@ -104,6 +104,7 @@ export default function (state = initialState, action) {
       return state.map((review) => {
         if (review.id === action.review.id) {
           review = action.review;
+          return review;
         } else {
           return;
         }

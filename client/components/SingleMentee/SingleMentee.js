@@ -83,9 +83,9 @@ function SingleMentee(props) {
     props.getReviews(`menteeId=${props.match.params.id}`, token);
   }, []);
 
-  useEffect(() => {
-    reviewCheck(reviews);
-  });
+  // useEffect(() => {
+  //   reviewCheck(reviews);
+  // });
 
   const mentee = useSelector((state) => state.mentee);
   const menteeId = useSelector((state) => state.mentee.id || []);
@@ -123,9 +123,7 @@ function SingleMentee(props) {
   const [reviewAccordionMessage, setReviewAccordionMessage] = React.useState(
     'Add yourself as a reviewer to leave score and comments for this application.'
   );
-  // const [alertMessage, setAlertMessage] = React.useState('test');
   const [tabValue, setTabValue] = React.useState(0);
-  // const [alertVisibility, setAlertVisibility] = React.useState(false);
 
   const handleTabChange = (event, newTabValue) => {
     setTabValue(newTabValue);
@@ -160,8 +158,6 @@ function SingleMentee(props) {
     event.preventDefault();
     setReviewDisabled(false);
     setEditingMode(true);
-    console.log('review enabled');
-    console.log(reviewDisabled);
   };
 
   const handleTextFieldChange = (event) => {
@@ -237,7 +233,10 @@ function SingleMentee(props) {
     // setExpanded(false);
   };
 
-  // const _reviewCheck = useMemo(() => reviewCheck(reviews), [reviews]);
+  const _reviewCheck = useMemo(
+    () => reviewCheck(reviews),
+    [reviews, reviewSubmitted]
+  );
 
   function reviewCheck(reviews) {
     if (reviews === undefined) {
@@ -270,6 +269,9 @@ function SingleMentee(props) {
   }
 
   function filterMyReviews(reviews) {
+    console.log(`userID is ${userId}`);
+    console.log(`reviews`);
+    console.log(reviews);
     const myReviews = reviews.filter((review) => review.userId === userId);
     if (myReviews.length > 0 && myReviews[0].submitStatus === false) {
       setReviewerAdded(true);
