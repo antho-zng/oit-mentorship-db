@@ -128,15 +128,11 @@ async function seed() {
   // );
 
   console.log(`Seeded ${users.length} users.`);
+  console.log(`Seeded ${cohorts.length} cohorts.`);
+
   console.log(`seeded successfully`);
   return {
-    users: {
-      Anthony: users[0],
-      testAcc1: users[1],
-      testAcc2: users[2],
-      testAcc3: users[3],
-      testAcc4: users[4],
-    },
+    users,
     cohorts,
   };
 }

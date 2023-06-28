@@ -4,11 +4,24 @@ const Mentees = require('../db/models/Mentee');
 const Cohort = require('../db/models/Cohort');
 const Question = require('../db/models/Question');
 const Review = require('../db/models/Review');
+const User = require('../db/models/User');
+
+const requireUserToken = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization || req.body.headers.authorization;
+    const user = await User.findByToken(token);
+    req.user = user;
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
 
 // GET /api/mentees
-router.get('/', async (req, res, next) => {
+router.get('/', requireUserToken, async (req, res, next) => {
   try {
     const mentees = await Mentees.findAll({
+      where: req.query,
       include: [Cohort],
     });
     res.send(mentees);

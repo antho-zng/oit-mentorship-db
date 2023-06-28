@@ -85,3 +85,10 @@ width:fit-content;
   align-items: center;
   text-align:center;
 }
+.dropdown{
+  width:150px;
+}
+.inputLabel{
+  background-color: white;
+  width: 55px;
+}

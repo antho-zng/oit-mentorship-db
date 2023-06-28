@@ -200,14 +200,16 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-function MenteeTable({ getAllMentees, sendMenteeData }) {
+function MenteeTable({ getAllMentees, sendMenteeData, selectedCohort }) {
   useEffect(() => {
-    getAllMentees();
-  }, []);
-
-  // useEffect(() => {
-  //   sendMenteeData(mentees, menteesFetched);
-  // }, [menteesFetched]);
+    if (selectedCohort === undefined) {
+      return;
+    } else {
+      console.log(`refetchmentees`);
+      const token = window.localStorage.getItem('token');
+      getAllMentees(`cohortId=${selectedCohort.cohortId}`, token);
+    }
+  }, [selectedCohort]);
 
   const mentees = useSelector((state) => state.allMentees || []);
   const [order, setOrder] = React.useState('asc');
@@ -234,7 +236,6 @@ function MenteeTable({ getAllMentees, sendMenteeData }) {
   };
 
   const handleClick = (event, id) => {
-    console.log(`menteeId is ${id}`);
     window.location.href = `/applications/${id}`;
   };
 
@@ -266,7 +267,6 @@ function MenteeTable({ getAllMentees, sendMenteeData }) {
         .sort(getComparator(order, orderBy))
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
       setMenteesFetched(true);
-      console.log(`getVisRows ran, mentees fetched status: ${menteesFetched}`);
       return visibleRowsInput;
     } else {
       return [];
@@ -275,12 +275,12 @@ function MenteeTable({ getAllMentees, sendMenteeData }) {
 
   const visibleRows = useMemo(
     () => getVisibleRows(mentees),
-    [order, orderBy, page, rowsPerPage, mentees]
+    [order, orderBy, page, rowsPerPage, mentees, selectedCohort]
   );
 
   const sendMenteeAppData = useMemo(
     () => sendMenteeData(mentees, menteesFetched),
-    [mentees, menteesFetched]
+    [mentees, menteesFetched, selectedCohort]
   );
 
   return (

@@ -7,6 +7,7 @@ import mentee from './mentee';
 import allMentees from './allMentees';
 import questions from './questions';
 import reviews from './reviews';
+import cohorts from './cohorts';
 
 const reducer = combineReducers({
   auth,
@@ -14,6 +15,7 @@ const reducer = combineReducers({
   allMentees,
   questions,
   reviews,
+  cohorts,
 });
 const middleware = composeWithDevTools(
   applyMiddleware(thunkMiddleware, createLogger({ collapsed: true }))
