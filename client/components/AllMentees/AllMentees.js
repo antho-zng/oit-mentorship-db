@@ -2,8 +2,21 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { connect, useSelector } from 'react-redux';
 import MenteeTable from './menteeTable';
 import style from './AllMentees.module.css';
+import { getAllCohorts } from '../../store/cohorts';
 
-export default function AllMentees(props) {
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Skeleton from '@mui/material/Skeleton';
+import { current } from '@reduxjs/toolkit';
+
+function AllMentees(props) {
+  useEffect(() => {
+    props.getAllCohorts();
+  }, []);
+
   const initialScoreBreakdown = {
     'NOT ACCEPTED': 0,
     'STRONG ACCEPT': 0,
@@ -18,13 +31,51 @@ export default function AllMentees(props) {
   const [scoreBreakdown, setScoreBreakdown] = React.useState(
     initialScoreBreakdown
   );
+  const [selectedCohort, setSelectedCohort] = React.useState('');
+  const [currentCohort, setCurrentCohort] = React.useState('');
 
-  const currentCohort = 'SPRING 2023';
+  const cohorts = useSelector((state) => state.cohorts || []);
+
+  // const currentCohort = Array.isArray(cohorts)
+  //   ? cohorts.filter((cohort) => cohort.isCurrent === true)
+  //   : '';
+
+  const _findCurrentCohort = (cohorts) => {
+    if (Array.isArray(cohorts)) {
+      let returnCohort;
+      for (const cohort of cohorts) {
+        // console.log(`cohort`);
+        // console.log(cohort);
+        if (cohort.isCurrent === true) {
+          returnCohort = cohort;
+        }
+      }
+      return returnCohort;
+    } else {
+      return;
+    }
+  };
+
+  const findCurrentCohort = useMemo(
+    () => setCurrentCohort(_findCurrentCohort(cohorts)),
+    [cohorts]
+  );
+
+  const setInitialSelectedCohort = useMemo(
+    () => setSelectedCohort(_findCurrentCohort(cohorts)),
+    [cohorts]
+  );
+
+  // console.log('currentCohort');
+  // console.log(currentCohort);
+  // console.log(`selectedCohort`);
+  // console.log(selectedCohort);
+
   const reviewDeadline = 'JULY 23, 2023';
 
-  const sendMenteeData = (mentees, menteesFetched) => {
+  const sendMenteeData = (fetchedMentees, menteesFetched) => {
     if (menteesFetched == true) {
-      setMentees(mentees);
+      setMentees(fetchedMentees);
     } else {
       return;
     }
@@ -42,8 +93,6 @@ export default function AllMentees(props) {
           appStatusSummary[appStatus] = appStatusSummary[appStatus] + 1;
         }
       }
-      console.log(`app status summary`);
-      console.log(appStatusSummary);
       return appStatusSummary;
     } else {
       return initialScoreBreakdown;
@@ -52,8 +101,17 @@ export default function AllMentees(props) {
 
   const setMenteeAppData = useMemo(
     () => setScoreBreakdown(calculateAppBreakdown(mentees)),
-    [mentees]
+    [mentees, selectedCohort]
   );
+
+  const handleDropdownChange = (event) => {
+    for (const cohort of cohorts) {
+      if (cohort.name === event.target.value) {
+        setSelectedCohort(cohort);
+        return;
+      }
+    }
+  };
 
   return (
     <div className={style.container}>
@@ -61,9 +119,55 @@ export default function AllMentees(props) {
         <h2 className={style.header}>MENTEE APPLICATION DASHBOARD</h2>
         <p className={style.bodyText}>
           Hi! Mentee applications are currently being reviewed for the{' '}
-          <span className={style.variableText}>{currentCohort}</span> Cohort.
-          The deadline for review is{' '}
+          <span className={style.variableText}>
+            {currentCohort ? (
+              currentCohort.name
+            ) : (
+              <Skeleton
+                variant='rounded'
+                width={100}
+                height={20}
+                sx={{ display: 'inline-flex' }}
+              />
+            )}
+          </span>{' '}
+          Cohort. The deadline for review is{' '}
           <span className={style.variableText}>{reviewDeadline}</span>.
+        </p>
+        <p className={style.bodyText}>
+          Currently viewing mentee applications for:
+          <Box
+            sx={{ minWidth: 100, display: 'inline-flex', paddingLeft: '20px' }}
+          >
+            <FormControl className={style.dropdown}>
+              <InputLabel
+                className={style.inputLabel}
+                id='demo-simple-select-label'
+              >
+                Cohort
+              </InputLabel>
+              <Select
+                labelId='demo-simple-select-label'
+                id='demo-simple-select'
+                value={selectedCohort ? selectedCohort.name : ''}
+                label='Cohort'
+                onChange={(event) => {
+                  console.log(event);
+                  handleDropdownChange(event);
+                }}
+              >
+                {Array.isArray(cohorts)
+                  ? cohorts.map((cohort) => {
+                      return (
+                        <MenuItem value={cohort.name} key={cohort.cohortId}>
+                          {cohort.name}
+                        </MenuItem>
+                      );
+                    })
+                  : 'Fetching Cohorts..'}
+              </Select>
+            </FormControl>
+          </Box>
         </p>
 
         <div className={style.bodyTextNumbers}>
@@ -143,61 +247,17 @@ export default function AllMentees(props) {
         </div>
       </div>
       <div className={style.menteeTable}>
-        <MenteeTable sendMenteeData={sendMenteeData} />
+        <MenteeTable
+          sendMenteeData={sendMenteeData}
+          selectedCohort={selectedCohort}
+        />
       </div>
     </div>
   );
 }
 
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     getAllMentees: () => {
-//       dispatch(getAllMentees());
-//     },
-//   };
-// };
+const mapDispatch = {
+  getAllCohorts,
+};
 
-// export default connect(null, mapDispatchToProps)(AllMentees);
-
-/*
-        <p className={style.bodyTextCentered}>
-          Mentee applications by the numbers:
-        </p>
-        <br />
-        <br />
-        <span className={style.numbersRow}>
-          <div className={style.numberBox}>
-            <p className={style.appCount}>{totalMenteeApps}</p>
-            <p className={style.numberCaption}>TOTAL APPLICATIONS</p>
-          </div>
-        </span>
-        <br />
-        <span className={style.numbersRow}>
-          <div className={style.numberBox}>
-            <p className={style.number}>{scoreBreakdown['STRONG_ACCEPT']}</p>
-            <p className={style.numberCaption}>STRONG ACCEPT</p>
-          </div>
-          <div className={style.numberBox}>
-            <p className={style.number}>{scoreBreakdown['ACCEPT']}</p>
-            <p className={style.numberCaption}>ACCEPTED</p>
-          </div>
-          <div className={style.numberBox}>
-            <p className={style.number}>
-              {scoreBreakdown['LOW_PRIORITY_ACCEPT']}
-            </p>
-            <p className={style.numberCaption}>
-              ACCEPTED
-              <br />
-              (LOW PRIORITY)
-            </p>
-          </div>
-          <div className={style.numberBox}>
-            <p className={style.number}>{scoreBreakdown['WAITLIST']}</p>
-            <p className={style.numberCaption}>WAITLISTED</p>
-          </div>
-          <div className={style.numberBox}>
-            <p className={style.number}>{scoreBreakdown['DO_NOT_ACCEPT']}</p>
-            <p className={style.numberCaption}>REJECTED</p>
-          </div>
-        </span>
-*/
+export default connect(null, mapDispatch)(AllMentees);

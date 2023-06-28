@@ -94,8 +94,6 @@ const resetMenteeAcceptStatus = async (req, res, next) => {
 // GET /api/reviews
 router.get('/', requireUserToken, async (req, res, next) => {
   try {
-    console.log(`USERID IS, ${req.params.userId}`);
-    console.log(`params`);
     console.log(req.query);
     const reviews = await Review.findAll({
       where: req.query,
