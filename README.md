@@ -46,14 +46,10 @@ createdb oit-mentorship-db-test
 - Run `npm run start:dev` start the server and build client-side files with webpack.
 
 - Open your web browser and navigate to (http://localhost:8080/). For demo purposes, you can log in with any of the following dummy credentials created by the seed script:
-  _Username_: testAcc1
-  _Password_: test123
+    - _Username_: testAcc1 / _Password_: test123
 
-_Username_: testAcc2
-_Password_: test123
+    - _Username_: testAcc2 / _Password_: test123
 
-_Username_: testAcc3
-_Password_: test123
+    - _Username_: testAcc3 / _Password_: test123
 
-_Username_: testAcc4
-_Password_: test123
+    - _Username_: testAcc4 / _Password_: test123
