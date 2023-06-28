@@ -1,7 +1,7 @@
 {
   "name": "oit-mentorship-db",
   "version": "1.0.0",
-  "description": "boilerplate code (no auth)",
+  "description": "Application management system for Out-in-Tech mentorship program.",
   "main": "index.js",
   "scripts": {
     "build": "webpack",
