@@ -225,7 +225,7 @@ function UserProfile(props) {
                       mentee application dashboard.
                     </a>
                   </p>
-                ) : completeReviews[0].mentee.firstName !== undefined ? (
+                ) : completeReviews[0].mentee !== undefined ? (
                   completeReviews.map((review) => {
                     return (
                       <Grid
