@@ -95,6 +95,8 @@ async function bulkCreateQuestions(rows) {
   await Question.bulkCreate(questions, { ignoreDuplicates: true }).then(() =>
     console.log(`${questions.length} questions have been written into DB!`)
   );
+
+  // console.log(questions)
 }
 
 async function createQuestionsMap(rows) {
@@ -106,6 +108,8 @@ async function createQuestionsMap(rows) {
       (questionsMap[question.dataValues.text] = question.dataValues.id)
   );
 
+  // console.log(`questionsMap -------------------------------------------`);
+  // console.log(questionsMap);
   return questionsMap;
 }
 
@@ -133,7 +137,7 @@ async function createMenteeQATransactions(cohort) {
     process.exit(1);
   }
 
-  bulkCreateQuestions(rows);
+  await bulkCreateQuestions(rows);
   const questionsMap = await createQuestionsMap(rows);
 
   const answers = await getResponseData(rows);
@@ -167,6 +171,12 @@ async function createMenteeQATransactions(cohort) {
       for (const answerIndex in currentQuestionSet) {
         const currentQuestion = currentQuestionSet[answerIndex];
         const questionId = questionsMap[currentQuestion];
+
+        // console.log(`_________________________________________________`);
+        // console.log(`questionId and currentQuestion`);
+        // console.log(questionId);
+        // console.log(currentQuestion);
+        // console.log(`_________________________________________________`);
 
         const answer = await Answer.create(
           {

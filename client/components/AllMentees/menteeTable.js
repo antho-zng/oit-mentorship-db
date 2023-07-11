@@ -256,7 +256,7 @@ function MenteeTable({ getAllMentees, sendMenteeData, selectedCohort }) {
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - mentees.length) : 0;
 
   const getVisibleRows = (mentees) => {
     if (mentees === undefined) {
@@ -285,7 +285,7 @@ function MenteeTable({ getAllMentees, sendMenteeData, selectedCohort }) {
 
   return (
     <Box sx={{ width: '90%' }}>
-      <Paper sx={{ width: '100%', mb: 2, 'box-shadow': 'none' }}>
+      <Paper sx={{ width: '100%', mb: 2, boxShadow: 'none' }}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
           <Table aria-labelledby='tableTitle' size={dense ? 'small' : 'medium'}>

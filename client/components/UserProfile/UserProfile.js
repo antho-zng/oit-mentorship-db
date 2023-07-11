@@ -88,6 +88,9 @@ function UserProfile(props) {
     [reviews]
   );
 
+  console.log(`complete reviews`);
+  console.log(completeReviews);
+
   function filterReviews(reviews, filter) {
     const submitStatus = filter === 'complete';
 
@@ -222,7 +225,7 @@ function UserProfile(props) {
                       mentee application dashboard.
                     </a>
                   </p>
-                ) : (
+                ) : completeReviews[0].mentee.firstName !== undefined ? (
                   completeReviews.map((review) => {
                     return (
                       <Grid
@@ -261,6 +264,10 @@ function UserProfile(props) {
                       </Grid>
                     );
                   })
+                ) : (
+                  <div>
+                    <LoadingSkeleton />
+                  </div>
                 )
               ) : (
                 <div>
