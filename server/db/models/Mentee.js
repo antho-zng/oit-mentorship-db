@@ -72,14 +72,7 @@ module.exports = db.define(
       },
     },
     acceptedStatus: {
-      type: Sequelize.ENUM(
-        'PENDING',
-        'ACCEPTED',
-        'NOT ACCEPTED',
-        'STRONG ACCEPT',
-        'LOW PRIORITY ACCEPT',
-        'WAITLIST'
-      ),
+      type: Sequelize.STRING,
       allowNull: false,
       validate: {
         notEmpty: true,
@@ -96,3 +89,21 @@ module.exports = db.define(
     ],
   }
 );
+
+/**
+ *  acceptedStatus: {
+      type: Sequelize.STRING(
+        'PENDING',
+        'ACCEPTED',
+        'NOT ACCEPTED',
+        'STRONG ACCEPT',
+        'LOW PRIORITY ACCEPT',
+        'WAITLIST'
+      ),
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+      defaultValue: 'PENDING',
+    },
+ */

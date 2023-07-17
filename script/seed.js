@@ -65,61 +65,6 @@ async function seed() {
     }),
   ]);
 
-  /**
-   *
-   * CREATING MENTEES
-   *
-   */
-  // const mentees = await Promise.all(
-  //   [
-  //     Mentee.create({
-  //       firstName: 'Anthony',
-  //       lastName: 'Zhang',
-  //       email: 'zhang.anthony97@gmail.com',
-  //       pronouns: 'he/him',
-  //       phoneNum: '(294)203-2934',
-  //       location: 'Brooklyn, NY',
-  //       gendersAndSexualities: 'PoC, male, immigrant',
-  //       raceEthnicity: "I'd rather not say",
-  //       dateOfBirth: '06/01/1923',
-  //     }),
-  //     // Mentee.create({
-  //     //   firstName: 'Anthony',
-  //     //   lastName: 'Zhang',
-  //     //   email: 'zhang.anthony97@gmail.com',
-  //     //   pronouns: 'he/him',
-  //     //   phoneNum: '(294)203-2934',
-  //     //   location: 'Brooklyn, NY',
-  //     //   genSexID: 'PoC, male, immigrant',
-  //     //   raceEthnicity: "I'd rather not say",
-  //     //   dateOfBirth: '06/01/1923',
-  //     // }),
-  //     Mentee.create({
-  //       firstName: 'OIT',
-  //       lastName: 'Mentee',
-  //       email: 'oit-mentee@gmail.com',
-  //       pronouns: 'she/her',
-  //       phoneNum: '(123)203-4444',
-  //       location: 'Rochester, NY',
-  //       gendersAndSexualities: 'n/a',
-  //       raceEthnicity: "I'd rather not say",
-  //       dateOfBirth: '05/21/1972',
-  //     }),
-  //     Mentee.create({
-  //       firstName: 'Other',
-  //       lastName: 'Mentee',
-  //       email: 'other-mentee@gmail.com',
-  //       pronouns: 'they/them',
-  //       phoneNum: '(456)232-8888',
-  //       location: 'Maspeth, NY',
-  //       gendersAndSexualities: 'test',
-  //       raceEthnicity: "I'd rather not say",
-  //       dateOfBirth: '10/11/2022',
-  //     }),
-  //   ],
-  //   { ignoreDuplicates: true }
-  // );
-
   console.log(`Seeded ${users.length} users.`);
   console.log(`Seeded ${cohorts.length} cohorts.`);
 

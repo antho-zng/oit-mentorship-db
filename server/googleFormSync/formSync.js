@@ -220,6 +220,8 @@ async function runFormSync() {
     currentCohort = currentCohort[0];
   }
 
+  console.log('currentcohort is');
+  console.log(currentCohort);
   console.log(
     `Syncing with Google Forms for the ${currentCohort.name} mentee cohort!
     Spreadsheet ID is ${currentCohort.menteeApplicationFormID}`
