@@ -20,7 +20,6 @@ function AuthForm(props) {
     const password = event.target.password.value;
 
     if (formName === 'signup') {
-      console.log(`signup`);
       const firstName = event.target.firstName.value;
       const lastName = event.target.lastName.value;
       const email = event.target.email.value;
@@ -32,10 +31,7 @@ function AuthForm(props) {
         username: username,
         password: password,
       };
-
-      console.log(signupReq);
       props.authenticate(signupReq, formName);
-
       return;
     }
 

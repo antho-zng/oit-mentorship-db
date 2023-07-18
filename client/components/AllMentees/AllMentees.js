@@ -44,8 +44,6 @@ function AllMentees(props) {
     if (Array.isArray(cohorts)) {
       let returnCohort;
       for (const cohort of cohorts) {
-        // console.log(`cohort`);
-        // console.log(cohort);
         if (cohort.isCurrent === true) {
           returnCohort = cohort;
         }
@@ -65,11 +63,6 @@ function AllMentees(props) {
     () => setSelectedCohort(_findCurrentCohort(cohorts)),
     [cohorts]
   );
-
-  // console.log('currentCohort');
-  // console.log(currentCohort);
-  // console.log(`selectedCohort`);
-  // console.log(selectedCohort);
 
   const reviewDeadline = 'JULY 23, 2023';
 
@@ -152,7 +145,6 @@ function AllMentees(props) {
                 value={selectedCohort ? selectedCohort.name : ''}
                 label='Cohort'
                 onChange={(event) => {
-                  console.log(event);
                   handleDropdownChange(event);
                 }}
               >

@@ -269,9 +269,6 @@ function SingleMentee(props) {
   }
 
   function filterMyReviews(reviews) {
-    console.log(`userID is ${userId}`);
-    console.log(`reviews`);
-    console.log(reviews);
     const myReviews = reviews.filter((review) => review.userId === userId);
     if (myReviews.length > 0 && myReviews[0].submitStatus === false) {
       setReviewerAdded(true);

@@ -191,7 +191,6 @@ function MenteeTable({ getAllMentees, sendMenteeData, selectedCohort }) {
     if (selectedCohort === undefined) {
       return;
     } else {
-      console.log(`refetchmentees`);
       const token = window.localStorage.getItem('token');
       getAllMentees(`cohortId=${selectedCohort.cohortId}`, token);
     }
