@@ -88,9 +88,6 @@ function UserProfile(props) {
     [reviews]
   );
 
-  console.log(`complete reviews`);
-  console.log(completeReviews);
-
   function filterReviews(reviews, filter) {
     const submitStatus = filter === 'complete';
 
@@ -110,7 +107,6 @@ function UserProfile(props) {
     setTabValue(newTabValue);
   };
   const handleMenteeClick = (event, id) => {
-    console.log(`menteeId is ${id}`);
     window.location.href = `/applications/${id}`;
   };
   return (

@@ -45,7 +45,7 @@ async function getMenteeData(rows, cohortId) {
     const row = rows[rowIdx];
 
     mentees.push({
-      id: `MENTEE-${cohortId}-${rowIdx}`,
+      id: `MENTEE-${cohortId}-${+rowIdx + 1}`,
       firstName: row[menteeInfoIndexes[`firstNameIndex`]],
       lastName: row[menteeInfoIndexes['lastNameIndex']],
       pronouns: row[menteeInfoIndexes['pronounsIndex']].split(','),

@@ -7,8 +7,6 @@ import cornerLogo from './OIT-Logo-Black.png';
 
 function Navbar({ handleClick }) {
   const isLoggedIn = useSelector((state) => state.auth.id || null);
-  console.log(`login`);
-  console.log(isLoggedIn);
 
   return (
     <div className={style.container}>

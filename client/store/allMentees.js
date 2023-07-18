@@ -27,7 +27,6 @@ export const getAllMentees = (searchParams, token) => async (dispatch) => {
     });
     dispatch(_getAllMentees(data));
   } catch (error) {
-    console.log('Mentees not found!');
     throw error;
   }
 };
