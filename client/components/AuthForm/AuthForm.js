@@ -85,7 +85,8 @@ function AuthForm(props) {
             <div className={style.body}>
               <TextField
                 id='outlined-required'
-                label={error ? 'Error' : 'First Name'}
+                required
+                label='First Name'
                 name='firstName'
                 inputProps={{
                   className: style.textFieldInput,
@@ -96,7 +97,8 @@ function AuthForm(props) {
               />
               <TextField
                 id='outlined-required'
-                label={error ? 'Error' : 'Last Name'}
+                required
+                label='Last Name'
                 name='lastName'
                 inputProps={{
                   className: style.textFieldInput,
@@ -107,7 +109,8 @@ function AuthForm(props) {
               />
               <TextField
                 id='outlined-required'
-                label={error ? 'Error' : 'Email'}
+                required
+                label='Email'
                 name='email'
                 inputProps={{
                   className: style.textFieldInput,
@@ -123,6 +126,7 @@ function AuthForm(props) {
 
           <TextField
             id='outlined-required-error'
+            required
             error={error}
             label={error ? 'Error' : 'Username'}
             name='username'
@@ -136,6 +140,7 @@ function AuthForm(props) {
           />
           <TextField
             id='outlined-password-input-error'
+            required
             error={error}
             label={error ? 'Error' : 'Password'}
             name='password'
@@ -158,9 +163,11 @@ function AuthForm(props) {
               {displayName}
             </Button>
           </div>
-          {error && error.response && <div> {error.response.data} </div>}
         </div>
       </Box>
+      {error && error.response && (
+        <div className={style.errorMessage}> {error.response.data} </div>
+      )}
     </div>
   );
 }
