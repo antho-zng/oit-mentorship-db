@@ -19,13 +19,55 @@ function AuthForm(props) {
     const username = event.target.username.value;
     const password = event.target.password.value;
 
-    console.log(formName);
+    if (formName === 'signup') {
+      console.log(`signup`);
+      const firstName = event.target.firstName.value;
+      const lastName = event.target.lastName.value;
+      const email = event.target.email.value;
 
-    props.authenticate(username, password, formName);
+      const signupReq = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        username: username,
+        password: password,
+      };
+
+      console.log(signupReq);
+      props.authenticate(signupReq, formName);
+
+      return;
+    }
+
+    const loginReq = {
+      username: username,
+      password: password,
+    };
+
+    props.authenticate(loginReq, formName);
   };
 
   return (
     <div className={style.container}>
+      {name === 'login' ? (
+        <div className={style.loginMessage}>
+          Hi! For demo purposes, feel free to login with any of the following
+          demo credentials:
+          <ul>
+            <li>USERNAME: testAcc1 / PASSWORD: test123</li>
+            <li>USERNAME: testAcc2 / PASSWORD: test123</li>
+            <li>USERNAME: testAcc3 / PASSWORD: test123</li>
+            <li>USERNAME: testAcc4 / PASSWORD: test123</li>
+          </ul>
+          You are also welcome to{' '}
+          <a href='/signup' className={style.linkText}>
+            sign up
+          </a>{' '}
+          with your own credentials.
+        </div>
+      ) : (
+        ''
+      )}
       <Box
         component='form'
         name={name}
@@ -38,8 +80,47 @@ function AuthForm(props) {
         onSubmit={handleSubmit}
       >
         <h2 className={style.header}>{displayName}</h2>
-
         <div className={style.body}>
+          {name === 'signup' ? (
+            <div className={style.body}>
+              <TextField
+                id='outlined-required'
+                label={error ? 'Error' : 'First Name'}
+                name='firstName'
+                inputProps={{
+                  className: style.textFieldInput,
+                }}
+                InputProps={{
+                  className: style.textFieldBox,
+                }}
+              />
+              <TextField
+                id='outlined-required'
+                label={error ? 'Error' : 'Last Name'}
+                name='lastName'
+                inputProps={{
+                  className: style.textFieldInput,
+                }}
+                InputProps={{
+                  className: style.textFieldBox,
+                }}
+              />
+              <TextField
+                id='outlined-required'
+                label={error ? 'Error' : 'Email'}
+                name='email'
+                inputProps={{
+                  className: style.textFieldInput,
+                }}
+                InputProps={{
+                  className: style.textFieldBox,
+                }}
+              />
+            </div>
+          ) : (
+            ''
+          )}
+
           <TextField
             id='outlined-required-error'
             error={error}

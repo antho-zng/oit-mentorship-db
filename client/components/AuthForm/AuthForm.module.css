@@ -2,6 +2,20 @@
   display: grid;
   grid-template-columns: [left] 1fr [body] 1fr [right] 1fr;
 }
+.loginMessage{
+  grid-column-start: body;
+  justify-self:center;
+
+  font-size: 14px;
+  background: #e7faed;
+  border: solid #4caf50;
+  padding: 20px;
+  border-radius: 30px;
+  margin-top: 20px;
+}
+.loginMessage li {
+  font-style: italic;
+}
 .bodyContainer{
   grid-column-start: body;
   margin-top: 20px;
