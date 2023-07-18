@@ -49,6 +49,25 @@ function AuthForm(props) {
 
   return (
     <div className={style.container}>
+      {name === 'login' ? (
+        <div className={style.loginMessage}>
+          Hi! For demo purposes, feel free to login with any of the following
+          demo credentials:
+          <ul>
+            <li>USERNAME: testAcc1 / PASSWORD: test123</li>
+            <li>USERNAME: testAcc2 / PASSWORD: test123</li>
+            <li>USERNAME: testAcc3 / PASSWORD: test123</li>
+            <li>USERNAME: testAcc4 / PASSWORD: test123</li>
+          </ul>
+          You are also welcome to{' '}
+          <a href='/signup' className={style.linkText}>
+            sign up
+          </a>{' '}
+          with your own credentials.
+        </div>
+      ) : (
+        ''
+      )}
       <Box
         component='form'
         name={name}
