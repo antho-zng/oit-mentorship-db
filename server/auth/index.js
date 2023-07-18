@@ -5,7 +5,6 @@ const {
 module.exports = router;
 
 router.post('/login', async (req, res, next) => {
-  console.log('________-------________-------');
   try {
     res.send({ token: await User.authenticate(req.body) });
   } catch (err) {
@@ -15,13 +14,22 @@ router.post('/login', async (req, res, next) => {
 
 router.post('/signup', async (req, res, next) => {
   try {
-    console.log(`signup`);
-    console.log(req.body);
     const user = await User.create(req.body);
     res.send({ token: await user.generateToken() });
   } catch (err) {
+    console.log(err);
     if (err.name === 'SequelizeUniqueConstraintError') {
-      res.status(401).send('User already exists');
+      if (err.errors[0].path === 'username') {
+        res
+          .status(401)
+          .send(
+            'This username is already in use. Please select a new username or log in.'
+          );
+      } else if (err.errors[0].path === 'email') {
+        res.status(401).send('This email is already in use. Please log in.');
+      }
+    } else if (err.name === 'SequelizeValidationError') {
+      res.status(401).send('Please enter a valid email.');
     } else {
       next(err);
     }

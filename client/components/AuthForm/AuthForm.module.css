@@ -46,3 +46,14 @@
 .textFieldInput{
   font-size:13px;
 }
+.errorMessage{
+  grid-column-start: body;
+  justify-self:center;
+
+  font-size: 14px;
+  background: #fcf0f0;
+  border: solid #ef5350;
+  padding: 20px;
+  border-radius: 30px;
+  margin-top: 20px;
+}
