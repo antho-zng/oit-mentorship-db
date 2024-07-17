@@ -1,18 +1,25 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
-import history from './history';
-import store from './store';
-import App from './App';
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import { BrowserRouter as Router } from "react-router-dom";
+import history from "./history";
+import store from "./store";
+import App from "./App";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-const root = createRoot(document.getElementById('app'));
+const queryClient = new QueryClient();
+
+const root = createRoot(document.getElementById("app"));
 root.render(
   <Provider store={store}>
-    <Router history={history}>
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <Router history={history}>
+        <React.StrictMode>
+          <ReactQueryDevtools />
+          <App />
+        </React.StrictMode>
+      </Router>
+    </QueryClientProvider>
   </Provider>
 );
