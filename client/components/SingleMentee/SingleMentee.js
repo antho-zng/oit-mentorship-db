@@ -454,41 +454,41 @@ function SingleMentee(props) {
               )}
             </h2>
             <p>
-              <span className={style.sidearSubhead}>PRONOUNS</span>
+              <span className={style.sidebarSubhead}>PRONOUNS</span>
               <br></br>
               {pronouns.map((pronoun, idx) => {
                 return (
-                  <span key={idx}>
+                  <p className={style.sidebarText} key={idx}>
                     {pronoun}
                     <br></br>
-                  </span>
+                  </p>
                 );
               })}
             </p>
             <p>
-              <span className={style.sidearSubhead}>DATE OF BIRTH</span>
+              <span className={style.sidebarSubhead}>DATE OF BIRTH</span>
               <br></br>
-              {mentee.dateOfBirth}
+              <p className={style.sidebarText}>{mentee.dateOfBirth}</p>
             </p>
             <p>
-              <span className={style.sidearSubhead}>EMAIL</span>
+              <span className={style.sidebarSubhead}>EMAIL</span>
               <br></br>
-              {mentee.email}
+              <p className={style.sidebarText}>{mentee.email}</p>
             </p>
             <p>
-              <span className={style.sidearSubhead}>PHONE</span>
+              <span className={style.sidebarSubhead}>PHONE</span>
               <br></br>
-              {mentee.phoneNum}
+              <p className={style.sidebarText}>{mentee.phoneNum}</p>
             </p>
             <p>
-              <span className={style.sidearSubhead}>LOCATION</span>
+              <span className={style.sidebarSubhead}>LOCATION</span>
               <br></br>
-              {mentee.location}
+              <p className={style.sidebarText}>{mentee.location}</p>
             </p>
             <p>
-              <span className={style.sidearSubhead}>COHORT</span>
+              <span className={style.sidebarSubhead}>COHORT</span>
               <br></br>
-              {cohort?.name}
+              <p className={style.sidebarText}>{cohort?.name}</p>
             </p>
           </CardContent>
         </Card>
