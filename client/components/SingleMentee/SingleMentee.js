@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo } from "react";
 import { connect, useSelector } from "react-redux";
 import style from "./SingleMentee.module.css";
-import { getMentee } from "../../store/mentee";
+// import { getMentee } from "../../store/mentee";
+import { getMentee } from "../../services/mentee-service";
 import {
   getReviews,
   addReview,
@@ -75,23 +76,74 @@ function getLabelText(score) {
 }
 
 function SingleMentee(props) {
-  useEffect(() => {
-    props.getMentee(props.match.params.id);
-  }, []);
-
-  const mentee = useSelector((state) => state.mentee);
-  const menteeId = useSelector((state) => state.mentee.id || []);
-  const pronouns = useSelector((state) => state.mentee.pronouns || []);
-  const firstName = useSelector((state) => state.mentee.firstName || []);
-  const lastName = useSelector((state) => state.mentee.lastName || []);
-  const cohort = useSelector((state) => state.mentee.cohort || []);
+  const queryClient = useQueryClient();
+  const menteeId = props.match.params.id;
   const userId = useSelector((state) => state.auth.id || []);
 
-  const allQuestionsAndAnswers = useSelector(
-    (state) => state.mentee.questions || []
-  );
+  const [score, setScore] = React.useState(3);
+  const [hover, setHover] = React.useState(-1);
+  const [textFieldInput, setTextFieldInput] = React.useState("");
+  const [expanded, setExpanded] = React.useState(false);
+  const [reviewAccordionMessage, setReviewAccordionMessage] =
+    React.useState("");
+  const [reviewStatus, setReviewStatus] = React.useState({
+    reviewerAdded: false,
+    reviewDisabled: true,
+    reviewSubmitted: false,
+    editingMode: false,
+    reviewAccordionMessage: "",
+  });
+  const [tabValue, setTabValue] = React.useState(0);
 
-  const questionsAndAnswers = allQuestionsAndAnswers.slice(questionCutoff);
+  const initialMenteeData = {
+    id: "",
+    firstName: "",
+    lastName: "",
+    pronouns: [],
+    cohort: { name: "" },
+    acceptedStatus: "",
+    dateOfBirth: "",
+    email: "",
+    phoneNum: "",
+    location: "",
+    gendersAndSexualities: {},
+    raceEthnicity: {},
+    questions: [],
+  };
+
+  const {
+    isPending: menteePending,
+    error: menteeError,
+    data: mentee,
+  } = useQuery({
+    queryKey: ["mentee", menteeId],
+    queryFn: async () => {
+      const menteeData = await getMentee(menteeId);
+      return menteeData;
+    },
+    placeholderData: initialMenteeData,
+  });
+
+  const {
+    isPending: reviewsPending,
+    error: reviewsError,
+    data: reviews,
+  } = useQuery({
+    queryKey: ["reviews", menteeId],
+    queryFn: () => {
+      const token = window.localStorage.getItem("token");
+      const getReviewsResponse = getReviews(menteeId, token);
+      return getReviewsResponse;
+    },
+    enabled: menteeId !== "",
+    refetchInterval: 10000, // Will check for updates every 10 sec
+  });
+
+  const pronouns = mentee?.pronouns ?? [""];
+  const firstName = mentee?.firstName ?? "";
+  const lastName = mentee?.lastName ?? "";
+  const cohort = mentee?.cohort ?? "";
+  const allQuestionsAndAnswers = mentee.questions;
   const generalInfoQA = allQuestionsAndAnswers.slice(
     questionCutoff,
     generalInfoQuestionsCutoff
@@ -101,35 +153,6 @@ function SingleMentee(props) {
     essayResponseCutoff
   );
   const miscQA = allQuestionsAndAnswers.slice(essayResponseCutoff);
-
-  const [score, setScore] = React.useState(3);
-  const [hover, setHover] = React.useState(-1);
-  const [textFieldInput, setTextFieldInput] = React.useState("");
-  const [expanded, setExpanded] = React.useState(false);
-  const [reviewerAdded, setReviewerAdded] = React.useState(false);
-  const [reviewDisabled, setReviewDisabled] = React.useState(true);
-  const [reviewSubmitted, setReviewSubmitted] = React.useState(false);
-  const [editingMode, setEditingMode] = React.useState(false);
-  const [reviewAccordionMessage, setReviewAccordionMessage] =
-    React.useState("");
-  const [tabValue, setTabValue] = React.useState(0);
-
-  const {
-    isPending: reviewsPending,
-    error: reviewsError,
-    data: reviews,
-    isFetching: reviewsFetching,
-  } = useQuery({
-    queryKey: ["reviews", menteeId],
-    queryFn: () => {
-      const token = window.localStorage.getItem("token");
-      const getReviewsResponse = getReviews(menteeId, token);
-      return getReviewsResponse;
-    },
-    refetchInterval: 10000, // Will check for updates every 10 sec
-  });
-
-  const queryClient = useQueryClient();
 
   const handleTabChange = (event, newTabValue) => {
     setTabValue(newTabValue);
@@ -153,8 +176,11 @@ function SingleMentee(props) {
 
   const handleEnableReview = (event) => {
     event.preventDefault();
-    setReviewDisabled(false);
-    setEditingMode(true);
+    setReviewStatus((prev) => ({
+      ...prev,
+      reviewDisabled: false,
+      editingMode: true,
+    }));
   };
 
   const handleTextFieldChange = (event) => {
@@ -173,13 +199,16 @@ function SingleMentee(props) {
       return addReview(review, token);
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: ["reviews", menteeId] });
-      setReviewerAdded(true);
-      setReviewDisabled(false);
-      setEditingMode(true);
+      setReviewStatus((prev) => ({
+        ...prev,
+        reviewerAdded: true,
+        reviewDisabled: false,
+        editingMode: true,
+      }));
       setReviewAccordionMessage(
         "You have been added as a reviewer for this mentee application. Please leave your comments and score below." //TODO: move to constants
       );
+      queryClient.invalidateQueries({ queryKey: ["reviews", menteeId] });
     },
   });
 
@@ -189,9 +218,12 @@ function SingleMentee(props) {
       return editReview(review, menteeId, token);
     },
     onSuccess: async () => {
-      setReviewDisabled(true);
-      setReviewSubmitted(true);
-      setEditingMode(false);
+      setReviewStatus((prev) => ({
+        ...prev,
+        reviewDisabled: true,
+        reviewSubmitted: true,
+        editingMode: false,
+      }));
       queryClient.invalidateQueries({ queryKey: ["reviews", menteeId] });
     },
   });
@@ -202,11 +234,15 @@ function SingleMentee(props) {
       return deleteReview(userId, menteeId, token);
     },
     onSuccess: async () => {
-      setReviewSubmitted(false);
-      setReviewDisabled(true);
-      setEditingMode(false);
-      setReviewerAdded(false);
+      setReviewStatus((prev) => ({
+        ...prev,
+        reviewSubmitted: false,
+        reviewDisabled: true,
+        editingMode: false,
+        reviewerAdded: false,
+      }));
       queryClient.invalidateQueries({ queryKey: ["reviews", menteeId] });
+      queryClient.invalidateQueries({ queryKey: ["mentee", menteeId] });
     },
   });
 
@@ -221,23 +257,6 @@ function SingleMentee(props) {
 
     const reviewerComments = textFieldInput;
     const reviewerScore = score;
-    const submitStatus = true;
-
-    const review = {
-      userId: userId,
-      reviewerComments: reviewerComments,
-      reviewerScore: reviewerScore,
-      submitStatus: submitStatus,
-    };
-
-    editReviewMutation.mutate(review);
-  };
-
-  const handleUpdateReview = (event) => {
-    event.preventDefault();
-
-    const reviewerComments = textFieldInput;
-    const reviewerScore = score;
 
     const review = {
       userId: userId,
@@ -245,16 +264,28 @@ function SingleMentee(props) {
       reviewerScore: reviewerScore,
       submitStatus: true,
     };
-
-    props.editReview(review, menteeId, token);
+    editReviewMutation.mutate(review);
 
     setTextFieldInput(reviewerComments);
     setScore(reviewerScore);
-
-    setEditingMode(false);
-    setReviewDisabled(true);
-    setReviewSubmitted(true);
   };
+
+  // const handleUpdateReview = (event) => {
+  //   event.preventDefault();
+
+  //   const reviewerComments = textFieldInput;
+  //   const reviewerScore = score;
+
+  //   const review = {
+  //     userId: userId,
+  //     reviewerComments: reviewerComments,
+  //     reviewerScore: reviewerScore,
+  //     submitStatus: true,
+  //   };
+
+  //   editReviewMutation.mutate(review);
+
+  // };
 
   const handleDeleteReview = (event) => {
     event.preventDefault();
@@ -263,14 +294,14 @@ function SingleMentee(props) {
 
   useEffect(() => {
     reviewCheck(reviews);
-  }, [reviews, mentee.acceptedStatus]);
+  }, [reviews]);
 
   function reviewCheck(reviews) {
     if (reviews === undefined) {
       return;
-    } else if (Array.isArray(reviews) && !editingMode) {
+    } else if (Array.isArray(reviews) && !reviewStatus.editingMode) {
       maxReviewCheck(reviews);
-      reviewScoreCheck(reviews);
+      reviewScoreCheck();
       filterMyReviews(reviews);
     } else {
       return;
@@ -280,7 +311,10 @@ function SingleMentee(props) {
   function maxReviewCheck(reviews) {
     if (reviews.length > 1) {
       setReviewAccordionMessage("This application has already been reviewed.");
-      setReviewDisabled(true);
+      setReviewStatus((prev) => ({
+        ...prev,
+        reviewDisabled: true,
+      }));
       return;
     } else if (reviews.length === 0) {
       setReviewAccordionMessage(
@@ -291,33 +325,39 @@ function SingleMentee(props) {
     }
   }
 
-  function reviewScoreCheck(reviews) {
-    if (mentee.acceptedStatus !== "PENDING") {
+  function reviewScoreCheck() {
+    if (mentee?.acceptedStatus !== "PENDING") {
       setReviewAccordionMessage(
         `This application has already been reviewed and is currently marked as ${mentee.acceptedStatus}. No further reviews are needed.`
       );
-      setReviewDisabled(true);
+      setReviewStatus((prev) => ({
+        ...prev,
+        reviewDisabled: true,
+      }));
       return;
     }
   }
 
   function filterMyReviews(reviews) {
-    console.log({ reviews });
     const myReviews = reviews.filter((review) => review.userId === userId);
     if (myReviews.length > 0 && myReviews[0].submitStatus === false) {
-      console.log("ping!"); //TODO: this shouldnt be hitting
-      console.log({ myReviews });
-      setReviewerAdded(true);
-      setReviewDisabled(false);
-      setEditingMode(true);
+      setReviewStatus((prev) => ({
+        ...prev,
+        reviewerAdded: true,
+        reviewDisabled: false,
+        editingMode: true,
+      }));
       setReviewAccordionMessage(
         "You have been added as a reviewer for this mentee application. Please leave your comments and score below."
       );
       return;
     } else if (myReviews.length > 0) {
-      setReviewDisabled(true);
-      setReviewSubmitted(true);
-      setReviewerAdded(true);
+      setReviewStatus((prev) => ({
+        ...prev,
+        reviewerAdded: true,
+        reviewDisabled: true,
+        reviewSubmitted: true,
+      }));
       setReviewAccordionMessage(
         `You've already submitted a review for this application on ${new Date(
           myReviews[0].updatedAt
@@ -352,49 +392,54 @@ function SingleMentee(props) {
           className={style.sidebarCard}
         >
           <CardContent className={style.cardContent}>
-            <p>Mentee ({mentee.acceptedStatus})</p>
-
-            <h2 className={style.menteeName}>
-              {firstName} <br></br>
-              {lastName}
-            </h2>
-            <p>
-              <span className={style.sidearSubhead}>PRONOUNS</span>
-              <br></br>
-              {pronouns.map((pronoun, idx) => {
-                return (
-                  <span key={idx}>
-                    {pronoun}
-                    <br></br>
-                  </span>
-                );
-              })}
-            </p>
-            <p>
-              <span className={style.sidearSubhead}>DATE OF BIRTH</span>
-              <br></br>
-              {mentee.dateOfBirth}
-            </p>
-            <p>
-              <span className={style.sidearSubhead}>EMAIL</span>
-              <br></br>
-              {mentee.email}
-            </p>
-            <p>
-              <span className={style.sidearSubhead}>PHONE</span>
-              <br></br>
-              {mentee.phoneNum}
-            </p>
-            <p>
-              <span className={style.sidearSubhead}>LOCATION</span>
-              <br></br>
-              {mentee.location}
-            </p>
-            <p>
-              <span className={style.sidearSubhead}>COHORT</span>
-              <br></br>
-              {cohort.name}
-            </p>
+            {menteePending && !menteeError ? (
+              <p>test</p>
+            ) : (
+              <>
+                <p>Mentee ({mentee?.acceptedStatus})</p>
+                <h2 className={style.menteeName}>
+                  {firstName} <br></br>
+                  {lastName}
+                </h2>
+                <p>
+                  <span className={style.sidearSubhead}>PRONOUNS</span>
+                  <br></br>
+                  {pronouns.map((pronoun, idx) => {
+                    return (
+                      <span key={idx}>
+                        {pronoun}
+                        <br></br>
+                      </span>
+                    );
+                  })}
+                </p>
+                <p>
+                  <span className={style.sidearSubhead}>DATE OF BIRTH</span>
+                  <br></br>
+                  {mentee?.dateOfBirth}
+                </p>
+                <p>
+                  <span className={style.sidearSubhead}>EMAIL</span>
+                  <br></br>
+                  {mentee?.email}
+                </p>
+                <p>
+                  <span className={style.sidearSubhead}>PHONE</span>
+                  <br></br>
+                  {mentee?.phoneNum}
+                </p>
+                <p>
+                  <span className={style.sidearSubhead}>LOCATION</span>
+                  <br></br>
+                  {mentee?.location}
+                </p>
+                <p>
+                  <span className={style.sidearSubhead}>COHORT</span>
+                  <br></br>
+                  {cohort?.name}
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -472,7 +517,7 @@ function SingleMentee(props) {
               backgroundColor: "aliceblue",
               borderRadius: "30px",
             }}
-            disabled={!reviewerAdded && !reviewsPending}
+            disabled={!reviewStatus.reviewerAdded && !reviewsPending}
           >
             <AccordionSummary
               expandIcon={<ExpandMoreIcon className={style.expandMoreIcon} />}
@@ -492,7 +537,7 @@ function SingleMentee(props) {
               )}
             </AccordionSummary>
             <AccordionDetails>
-              {!reviewDisabled ? (
+              {!reviewStatus.reviewDisabled ? (
                 ""
               ) : (
                 <div className={style.enableReviewLink}>
@@ -502,7 +547,7 @@ function SingleMentee(props) {
                       handleEnableReview(event);
                     }}
                   >
-                    {reviewSubmitted ? (
+                    {reviewStatus.reviewSubmitted ? (
                       <span className={style.enableReviewButton}>
                         <EditIcon className={style.editIcon} />{" "}
                         <p>Edit My Review</p>
@@ -522,7 +567,7 @@ function SingleMentee(props) {
                 rows={4}
                 placeholder="Your comments here..."
                 value={textFieldInput}
-                disabled={reviewDisabled}
+                disabled={reviewStatus.reviewDisabled}
                 inputProps={{
                   className: style.textFieldInput,
                 }}
@@ -539,7 +584,7 @@ function SingleMentee(props) {
                   getLabelText={(score) =>
                     `${score} Heart${score !== 1 ? "s" : ""}`
                   }
-                  disabled={reviewDisabled}
+                  disabled={reviewStatus.reviewDisabled}
                   onChange={(event, newScore) => {
                     handleScoreChange(event, newScore);
                   }}
@@ -561,10 +606,12 @@ function SingleMentee(props) {
               </div>
             </AccordionDetails>
             <div className={style.submitReviewButton}>
-              {editingMode && reviewSubmitted ? (
+              {reviewStatus.editingMode && reviewStatus.reviewSubmitted ? (
                 <Button
                   startIcon={<ArrowCircleUpOutlinedIcon />}
-                  onClick={(event) => handleUpdateReview(event)}
+                  onClick={(event) => handleSubmitReview(event)}
+                  disabled={reviewStatus.editingMode}
+                  value="update"
                 >
                   UPDATE REVIEW
                 </Button>
@@ -572,14 +619,15 @@ function SingleMentee(props) {
                 <Button
                   startIcon={<AddCircleOutlineOutlinedIcon />}
                   onClick={(event) => handleSubmitReview(event)}
-                  disabled={reviewSubmitted}
+                  disabled={reviewStatus.reviewSubmitted}
+                  value="submit"
                 >
                   SUBMIT REVIEW
                 </Button>
               )}
             </div>
           </Accordion>
-          {reviewerAdded ? (
+          {reviewStatus.reviewerAdded ? (
             <div className={style.deleteReviewButton}>
               <Button
                 size="small"
@@ -589,7 +637,7 @@ function SingleMentee(props) {
               >
                 <span className={style.deleteReviewButton}>
                   <DeleteIcon className={style.editIcon} />{" "}
-                  {reviewSubmitted ? (
+                  {reviewStatus.reviewSubmitted ? (
                     <p>Remove My Review</p>
                   ) : (
                     <p>Remove Me As Reviewer</p>
@@ -601,7 +649,7 @@ function SingleMentee(props) {
             ""
           )}
           <div>
-            {reviewerAdded ? (
+            {reviewStatus.reviewerAdded ? (
               ""
             ) : (
               <div className={style.addReviewButton}>
@@ -611,7 +659,7 @@ function SingleMentee(props) {
                   color="primary"
                   aria-label="add"
                   onClick={(event) => handleAddReviewer(event)}
-                  disabled={mentee.acceptedStatus !== "PENDING"}
+                  disabled={mentee?.acceptedStatus !== "PENDING"}
                 >
                   <AddCircleOutlineOutlinedIcon sx={{ mr: 1 }} />
                   Add review
