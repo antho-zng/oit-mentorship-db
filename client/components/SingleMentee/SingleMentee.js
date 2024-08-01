@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import { connect, useSelector } from "react-redux";
 import style from "./SingleMentee.module.css";
-// import { getMentee } from "../../store/mentee";
 import { getMentee } from "../../services/mentee-service";
 import {
   getReviews,
@@ -11,6 +10,7 @@ import {
 } from "../../services/reviews-service";
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import PropTypes from "prop-types";
+import AlertSnackbar from "../Common/AlertSnackbar";
 import Typography from "@mui/material/Typography";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -31,9 +31,8 @@ import ArrowCircleUpOutlinedIcon from "@mui/icons-material/ArrowCircleUpOutlined
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CircularProgress from "@mui/material/CircularProgress";
-import { token } from "morgan";
-import finalPropsSelectorFactory from "react-redux/es/connect/selectorFactory";
 
+//CONSTANTS
 const questionCutoff = 8;
 const generalInfoQuestionsCutoff = 15;
 const essayResponseCutoff = 29;
@@ -94,6 +93,11 @@ function SingleMentee(props) {
     reviewAccordionMessage: "",
   });
   const [tabValue, setTabValue] = React.useState(0);
+  const [snackbarState, setSnackbarState] = React.useState({
+    open: false,
+    alertSeverity: "info",
+    alertMessage: "",
+  });
 
   const initialMenteeData = {
     id: "",
@@ -131,18 +135,18 @@ function SingleMentee(props) {
   } = useQuery({
     queryKey: ["reviews", menteeId],
     queryFn: () => {
-      const token = window.localStorage.getItem("token");
-      const getReviewsResponse = getReviews(menteeId, token);
+      const getReviewsResponse = getReviews(menteeId);
       return getReviewsResponse;
     },
     enabled: menteeId !== "",
+    retry: 10,
     refetchInterval: 10000, // Will check for updates every 10 sec
   });
 
-  const pronouns = mentee?.pronouns ?? [""];
-  const firstName = mentee?.firstName ?? "";
-  const lastName = mentee?.lastName ?? "";
-  const cohort = mentee?.cohort ?? "";
+  const pronouns = mentee.pronouns;
+  const firstName = mentee.firstName;
+  const lastName = mentee.lastName;
+  const cohort = mentee.cohort;
   const allQuestionsAndAnswers = mentee.questions;
   const generalInfoQA = allQuestionsAndAnswers.slice(
     questionCutoff,
@@ -183,6 +187,7 @@ function SingleMentee(props) {
     }));
   };
 
+  console.log({ reviewStatus });
   const handleTextFieldChange = (event) => {
     event.preventDefault();
     setTextFieldInput(event.target.value);
@@ -195,8 +200,7 @@ function SingleMentee(props) {
 
   const addReviewMutation = useMutation({
     mutationFn: (review) => {
-      const token = window.localStorage.getItem("token");
-      return addReview(review, token);
+      return addReview(review);
     },
     onSuccess: async () => {
       setReviewStatus((prev) => ({
@@ -205,17 +209,31 @@ function SingleMentee(props) {
         reviewDisabled: false,
         editingMode: true,
       }));
+      setSnackbarState((prev) => ({
+        ...prev,
+        open: true,
+        alertSeverity: "success",
+        alertMessage: "You've been added as a reviewer for this application.",
+      }));
+      setExpanded(true);
       setReviewAccordionMessage(
         "You have been added as a reviewer for this mentee application. Please leave your comments and score below." //TODO: move to constants
       );
       queryClient.invalidateQueries({ queryKey: ["reviews", menteeId] });
     },
+    onError: async (error) => {
+      setSnackbarState({
+        open: true,
+        alertSeverity: "error",
+        alertMessage:
+          "Unable to add you as a reviewer. Please refresh and try again!",
+      });
+    },
   });
 
   const editReviewMutation = useMutation({
     mutationFn: (review) => {
-      const token = window.localStorage.getItem("token");
-      return editReview(review, menteeId, token);
+      return editReview(review, menteeId);
     },
     onSuccess: async () => {
       setReviewStatus((prev) => ({
@@ -224,14 +242,26 @@ function SingleMentee(props) {
         reviewSubmitted: true,
         editingMode: false,
       }));
+      setSnackbarState((prev) => ({
+        ...prev,
+        open: true,
+        alertSeverity: "success",
+        alertMessage: "Thank you for submitting your review!",
+      }));
       queryClient.invalidateQueries({ queryKey: ["reviews", menteeId] });
+    },
+    onError: async (error) => {
+      setSnackbarState({
+        open: true,
+        alertSeverity: "error",
+        alertMessage: "Unable to submit review. Please refresh and try again.",
+      });
     },
   });
 
   const deleteReviewMutation = useMutation({
     mutationFn: () => {
-      const token = window.localStorage.getItem("token");
-      return deleteReview(userId, menteeId, token);
+      return deleteReview(userId, menteeId);
     },
     onSuccess: async () => {
       setReviewStatus((prev) => ({
@@ -241,8 +271,25 @@ function SingleMentee(props) {
         editingMode: false,
         reviewerAdded: false,
       }));
+      setExpanded(false);
+      setTextFieldInput("");
+      setScore(3);
       queryClient.invalidateQueries({ queryKey: ["reviews", menteeId] });
       queryClient.invalidateQueries({ queryKey: ["mentee", menteeId] });
+      setSnackbarState((prev) => ({
+        ...prev,
+        open: true,
+        alertSeverity: "success",
+        alertMessage: "Your review has been successfully deleted.",
+      }));
+    },
+    onError: async (error) => {
+      setSnackbarState({
+        open: true,
+        alertSeverity: "error",
+        alertMessage:
+          "Unable to delete your review. Please refresh and try again.",
+      });
     },
   });
 
@@ -270,27 +317,28 @@ function SingleMentee(props) {
     setScore(reviewerScore);
   };
 
-  // const handleUpdateReview = (event) => {
-  //   event.preventDefault();
-
-  //   const reviewerComments = textFieldInput;
-  //   const reviewerScore = score;
-
-  //   const review = {
-  //     userId: userId,
-  //     reviewerComments: reviewerComments,
-  //     reviewerScore: reviewerScore,
-  //     submitStatus: true,
-  //   };
-
-  //   editReviewMutation.mutate(review);
-
-  // };
-
   const handleDeleteReview = (event) => {
     event.preventDefault();
     deleteReviewMutation.mutate();
   };
+
+  useEffect(() => {
+    if (menteeError) {
+      setSnackbarState({
+        open: true,
+        alertSeverity: "error",
+        alertMessage:
+          "Unable to fetch mentee data. Please refresh the page and try again.",
+      });
+    } else if (reviewsError) {
+      setSnackbarState({
+        open: true,
+        alertSeverity: "error",
+        alertMessage:
+          "Unable to fetch reviews. Please refresh the page and try again.",
+      });
+    }
+  }, [menteeError, reviewsError]);
 
   useEffect(() => {
     reviewCheck(reviews);
@@ -326,7 +374,7 @@ function SingleMentee(props) {
   }
 
   function reviewScoreCheck() {
-    if (mentee?.acceptedStatus !== "PENDING") {
+    if (mentee.acceptedStatus !== "PENDING" && mentee.acceptedStatus !== "") {
       setReviewAccordionMessage(
         `This application has already been reviewed and is currently marked as ${mentee.acceptedStatus}. No further reviews are needed.`
       );
@@ -392,58 +440,64 @@ function SingleMentee(props) {
           className={style.sidebarCard}
         >
           <CardContent className={style.cardContent}>
-            {menteePending && !menteeError ? (
-              <p>test</p>
-            ) : (
-              <>
-                <p>Mentee ({mentee?.acceptedStatus})</p>
-                <h2 className={style.menteeName}>
+            <p>Mentee ({mentee.acceptedStatus})</p>
+            <h2 className={style.menteeName}>
+              {menteePending || menteeError ? (
+                <CircularProgress
+                  style={{ justifySelf: "center", alignSelf: "center" }}
+                />
+              ) : (
+                <>
                   {firstName} <br></br>
                   {lastName}
-                </h2>
-                <p>
-                  <span className={style.sidearSubhead}>PRONOUNS</span>
-                  <br></br>
-                  {pronouns.map((pronoun, idx) => {
-                    return (
-                      <span key={idx}>
-                        {pronoun}
-                        <br></br>
-                      </span>
-                    );
-                  })}
-                </p>
-                <p>
-                  <span className={style.sidearSubhead}>DATE OF BIRTH</span>
-                  <br></br>
-                  {mentee?.dateOfBirth}
-                </p>
-                <p>
-                  <span className={style.sidearSubhead}>EMAIL</span>
-                  <br></br>
-                  {mentee?.email}
-                </p>
-                <p>
-                  <span className={style.sidearSubhead}>PHONE</span>
-                  <br></br>
-                  {mentee?.phoneNum}
-                </p>
-                <p>
-                  <span className={style.sidearSubhead}>LOCATION</span>
-                  <br></br>
-                  {mentee?.location}
-                </p>
-                <p>
-                  <span className={style.sidearSubhead}>COHORT</span>
-                  <br></br>
-                  {cohort?.name}
-                </p>
-              </>
-            )}
+                </>
+              )}
+            </h2>
+            <p>
+              <span className={style.sidearSubhead}>PRONOUNS</span>
+              <br></br>
+              {pronouns.map((pronoun, idx) => {
+                return (
+                  <span key={idx}>
+                    {pronoun}
+                    <br></br>
+                  </span>
+                );
+              })}
+            </p>
+            <p>
+              <span className={style.sidearSubhead}>DATE OF BIRTH</span>
+              <br></br>
+              {mentee.dateOfBirth}
+            </p>
+            <p>
+              <span className={style.sidearSubhead}>EMAIL</span>
+              <br></br>
+              {mentee.email}
+            </p>
+            <p>
+              <span className={style.sidearSubhead}>PHONE</span>
+              <br></br>
+              {mentee.phoneNum}
+            </p>
+            <p>
+              <span className={style.sidearSubhead}>LOCATION</span>
+              <br></br>
+              {mentee.location}
+            </p>
+            <p>
+              <span className={style.sidearSubhead}>COHORT</span>
+              <br></br>
+              {cohort?.name}
+            </p>
           </CardContent>
         </Card>
       </div>
       <div className={style.questionsContainer}>
+        <AlertSnackbar
+          snackbarState={snackbarState}
+          setSnackbarState={setSnackbarState}
+        />
         <h2>APPLICATION RESPONSES</h2>
         <Box sx={{ width: "100%" }}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -469,42 +523,52 @@ function SingleMentee(props) {
               <Tab className={style.tabLabel} label="MISC" {...a11yProps(2)} />
             </Tabs>
           </Box>
-          <TabPanel value={tabValue} index={0}>
-            {generalInfoQA.map((qaPair, idx) => {
-              return (
-                <div key={idx} className={style.qaCard}>
-                  <span className={style.question}>{qaPair.text}</span>
-                  <br></br>
-                  <br></br>
-                  {qaPair.answer.text}
-                </div>
-              );
-            })}
-          </TabPanel>
-          <TabPanel value={tabValue} index={1}>
-            {essayRespQA.map((qaPair, idx) => {
-              return (
-                <div key={idx} className={style.qaCard}>
-                  <span className={style.question}>{qaPair.text}</span>
-                  <br></br>
-                  <br></br>
-                  {qaPair.answer.text}
-                </div>
-              );
-            })}
-          </TabPanel>
-          <TabPanel value={tabValue} index={2}>
-            {miscQA.map((qaPair, idx) => {
-              return (
-                <div key={idx} className={style.qaCard}>
-                  <span className={style.question}>{qaPair.text}</span>
-                  <br></br>
-                  <br></br>
-                  {qaPair.answer.text}
-                </div>
-              );
-            })}
-          </TabPanel>
+          {menteePending || menteeError ? (
+            <Box style={{ width: "100%", height: "100vh", display: "grid" }}>
+              <CircularProgress
+                style={{ justifySelf: "center", alignSelf: "center" }}
+              />
+            </Box>
+          ) : (
+            <>
+              <TabPanel value={tabValue} index={0}>
+                {generalInfoQA.map((qaPair, idx) => {
+                  return (
+                    <div key={idx} className={style.qaCard}>
+                      <span className={style.question}>{qaPair.text}</span>
+                      <br></br>
+                      <br></br>
+                      {qaPair.answer.text}
+                    </div>
+                  );
+                })}
+              </TabPanel>
+              <TabPanel value={tabValue} index={1}>
+                {essayRespQA.map((qaPair, idx) => {
+                  return (
+                    <div key={idx} className={style.qaCard}>
+                      <span className={style.question}>{qaPair.text}</span>
+                      <br></br>
+                      <br></br>
+                      {qaPair.answer.text}
+                    </div>
+                  );
+                })}
+              </TabPanel>
+              <TabPanel value={tabValue} index={2}>
+                {miscQA.map((qaPair, idx) => {
+                  return (
+                    <div key={idx} className={style.qaCard}>
+                      <span className={style.question}>{qaPair.text}</span>
+                      <br></br>
+                      <br></br>
+                      {qaPair.answer.text}
+                    </div>
+                  );
+                })}
+              </TabPanel>
+            </>
+          )}
         </Box>
       </div>
       <div className={style.reviewBar}>
@@ -530,7 +594,7 @@ function SingleMentee(props) {
               }}
             >
               <h4 className={style.reviewHeader}>REVIEW</h4>
-              {reviewsPending ? (
+              {reviewsPending || reviewsError ? (
                 <CircularProgress />
               ) : (
                 <p>{reviewAccordionMessage}</p>
@@ -610,7 +674,7 @@ function SingleMentee(props) {
                 <Button
                   startIcon={<ArrowCircleUpOutlinedIcon />}
                   onClick={(event) => handleSubmitReview(event)}
-                  disabled={reviewStatus.editingMode}
+                  disabled={!reviewStatus.editingMode}
                   value="update"
                 >
                   UPDATE REVIEW
@@ -659,7 +723,7 @@ function SingleMentee(props) {
                   color="primary"
                   aria-label="add"
                   onClick={(event) => handleAddReviewer(event)}
-                  disabled={mentee?.acceptedStatus !== "PENDING"}
+                  disabled={mentee.acceptedStatus !== "PENDING"}
                 >
                   <AddCircleOutlineOutlinedIcon sx={{ mr: 1 }} />
                   Add review

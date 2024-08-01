@@ -1,6 +1,8 @@
 node_modules
 public/bundle.js
 public/bundle.js.map
+public/vendors-node_modules_tanstack_query-devtools_build_Devtools_Q436JGP5_js.bundle.js
+public/vendors-node_modules_tanstack_query-devtools_build_Devtools_Q436JGP5_js.bundle.js.map
 .DS_Store
 npm-debug.log
 yarn-error.log

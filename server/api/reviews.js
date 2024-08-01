@@ -6,10 +6,14 @@ const Mentee = require("../db/models/Mentee");
 
 const requireUserToken = async (req, res, next) => {
   try {
-    const token = req.headers.authorization || req.body.headers.authorization;
-    const user = await User.findByToken(token);
-    req.user = user;
-    next();
+    const authHeader = req.headers.authorization;
+
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      const user = await User.findByToken(token);
+      req.user = user;
+      next();
+    }
   } catch (error) {
     next(error);
   }
@@ -94,7 +98,6 @@ const resetMenteeAcceptStatus = async (req, res, next) => {
 // GET /api/reviews
 router.get("/", requireUserToken, async (req, res, next) => {
   try {
-    console.log(req.query);
     const reviews = await Review.findAll({
       where: req.query,
       include: [Mentee],

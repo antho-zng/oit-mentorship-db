@@ -1,13 +1,12 @@
-import axios from "axios";
+import axiosInstance from "../AxiosWrapper";
 
 const getMentee = async (menteeId) => {
   try {
-    const { data: mentee } = await axios.get(`/api/mentees/${menteeId}`);
+    const { data: mentee } = await axiosInstance.get(`/mentees/${menteeId}`);
     return mentee;
   } catch (error) {
-    // TODO: better error handling
-    console.error(error);
-    return;
+    const { status } = error;
+    throw new Error(`${status}: Error getting mentee data.`);
   }
 };
 

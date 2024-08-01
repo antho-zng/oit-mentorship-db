@@ -75,6 +75,7 @@
   font-style: italic;
 }
 .menteeName{
+  display: grid;
   text-transform: uppercase;
   padding-bottom:60px
 }

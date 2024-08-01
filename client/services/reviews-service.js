@@ -1,65 +1,54 @@
+import axiosInstance from "../AxiosWrapper";
 import axios from "axios";
 
-const getReviews = async (menteeId, token) => {
-  const searchParams = `menteeId=${menteeId}`;
-  const params = new URLSearchParams(searchParams);
+const getReviews = async (menteeId) => {
+  const searchParams = new URLSearchParams(`menteeId=${menteeId}`);
   try {
-    const { data: reviews } = await axios.get(`/api/reviews`, {
-      headers: {
-        authorization: token,
-      },
-      params,
+    const { data: reviews } = await axiosInstance.get(`/reviews`, {
+      params: searchParams,
     });
+    // const { data: reviews } = await axios.get(`/api/reviews`, {
+    //   headers: {
+    //     authorization: token,
+    //   },
+    //   params,
+    // });
     return reviews;
   } catch (error) {
-    // TODO: better error handling
-    console.error(error);
-    return;
+    const { status } = error;
+    throw new Error(`${status}: Error getting reviews`);
   }
 };
 
-const addReview = async (review, token) => {
+const addReview = async (review) => {
   try {
-    const { data } = await axios.post(`/api/reviews`, {
-      review,
-      headers: {
-        authorization: token,
-        "content-type": "application/json",
-      },
-    });
-    return data;
+    const response = await axiosInstance.post(`/reviews`, { review });
+    return response;
   } catch (error) {
-    console.error(error);
-    return;
+    const { status } = error;
+    throw new Error(`${status}: Error adding review`);
   }
 };
 
-const editReview = async (review, id, token) => {
+const editReview = async (review, id) => {
   try {
-    const { data } = await axios.put(`/api/reviews/${id}`, {
-      review,
-      headers: {
-        authorization: token,
-        "content-type": "application/json",
-      },
-    });
-    return data;
+    const response = await axiosInstance.put(`/reviews/${id}`, { review });
+    return response;
   } catch (error) {
-    console.error(error);
+    const { status } = error;
+    throw new Error(`${status}: Error editing review`);
   }
 };
 
-const deleteReview = async (userId, menteeId, token) => {
+const deleteReview = async (userId, menteeId) => {
   try {
-    const response = await axios.delete(`/api/reviews/${menteeId}`, {
-      headers: {
-        authorization: token,
-      },
-      data: { userId: userId },
+    const response = await axiosInstance.delete(`/reviews/${menteeId}`, {
+      data: { userId },
     });
     return response;
   } catch (error) {
-    console.error(error);
+    const { status } = error;
+    throw new Error(`${status}: Error deleting review`);
   }
 };
 
