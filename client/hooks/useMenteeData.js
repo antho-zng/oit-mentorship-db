@@ -22,6 +22,7 @@ export const useMenteeData = (menteeId) => {
     isPending: menteePending,
     error: menteeError,
     data: mentee,
+    isFetching: menteeFetching,
   } = useQuery({
     queryKey: ["mentee", menteeId],
     queryFn: async () => {
@@ -30,5 +31,5 @@ export const useMenteeData = (menteeId) => {
     },
     placeholderData: initialMenteeData,
   });
-  return { menteePending, menteeError, mentee };
+  return { menteePending, menteeError, mentee, menteeFetching };
 };

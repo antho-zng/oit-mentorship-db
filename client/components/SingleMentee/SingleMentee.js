@@ -8,6 +8,7 @@ import {
   deleteReview,
 } from "../../services/reviews-service";
 import { useMenteeData } from "../../hooks/useMenteeData";
+import { useReviewsData } from "../../hooks/useReviewsData";
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import PropTypes from "prop-types";
 import AlertSnackbar from "../Common/AlertSnackbar";
@@ -115,24 +116,9 @@ function SingleMentee(props) {
     questions: [],
   };
 
-  const { menteePending, menteeError, mentee } = useMenteeData(menteeId);
-
-  console.log("mentee is", { mentee });
-
-  const {
-    isPending: reviewsPending,
-    error: reviewsError,
-    data: reviews,
-  } = useQuery({
-    queryKey: ["reviews", menteeId],
-    queryFn: () => {
-      const getReviewsResponse = getReviews(menteeId);
-      return getReviewsResponse;
-    },
-    enabled: menteeId !== "",
-    retry: 10,
-    refetchInterval: 10000, // Will check for updates every 10 sec
-  });
+  const { menteePending, menteeFetching, menteeError, mentee } =
+    useMenteeData(menteeId);
+  const { reviewsPending, reviewsError, reviews } = useReviewsData(menteeId);
 
   const pronouns = mentee.pronouns;
   const firstName = mentee.firstName;
@@ -432,7 +418,7 @@ function SingleMentee(props) {
           <CardContent className={style.cardContent}>
             <p>Mentee ({mentee.acceptedStatus})</p>
             <h2 className={style.menteeName}>
-              {menteePending || menteeError ? (
+              {menteePending || menteeError || menteeFetching ? (
                 <CircularProgress
                   style={{ justifySelf: "center", alignSelf: "center" }}
                 />
@@ -727,16 +713,4 @@ function SingleMentee(props) {
   );
 }
 
-/**
- * CONTAINER
- */
-
-const mapDispatch = {
-  getMentee,
-  getReviews,
-  addReview,
-  editReview,
-  deleteReview,
-};
-
-export default connect(null, mapDispatch)(SingleMentee);
+export default SingleMentee;
