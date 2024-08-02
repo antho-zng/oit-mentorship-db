@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo } from "react";
 import { connect, useSelector } from "react-redux";
 import style from "./SingleMentee.module.css";
-import { getMentee } from "../../services/mentee-service";
 import {
   getReviews,
   addReview,
   editReview,
   deleteReview,
 } from "../../services/reviews-service";
+import { useMenteeData } from "../../hooks/useMenteeData";
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import PropTypes from "prop-types";
 import AlertSnackbar from "../Common/AlertSnackbar";
@@ -115,18 +115,9 @@ function SingleMentee(props) {
     questions: [],
   };
 
-  const {
-    isPending: menteePending,
-    error: menteeError,
-    data: mentee,
-  } = useQuery({
-    queryKey: ["mentee", menteeId],
-    queryFn: async () => {
-      const menteeData = await getMentee(menteeId);
-      return menteeData;
-    },
-    placeholderData: initialMenteeData,
-  });
+  const { menteePending, menteeError, mentee } = useMenteeData(menteeId);
+
+  console.log("mentee is", { mentee });
 
   const {
     isPending: reviewsPending,
@@ -187,7 +178,6 @@ function SingleMentee(props) {
     }));
   };
 
-  console.log({ reviewStatus });
   const handleTextFieldChange = (event) => {
     event.preventDefault();
     setTextFieldInput(event.target.value);
