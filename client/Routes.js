@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { connect, useSelector } from 'react-redux';
+import React, { useEffect, useState } from "react";
+import { connect, useSelector } from "react-redux";
 import {
   withRouter,
   Route,
   Switch,
   Redirect,
   useLocation,
-} from 'react-router-dom';
-import { me } from './store';
-import style from './Routes.module.css';
+} from "react-router-dom";
+import { me } from "./store";
+import style from "./Routes.module.css";
 
-import { Login, Signup } from './components/AuthForm/AuthForm';
-import Home from './components/Home';
-import SingleMentee from './components/SingleMentee/SingleMentee';
-import AllMentees from './components/AllMentees/AllMentees';
-import UserProfile from './components/UserProfile/UserProfile';
+import { Login, Signup } from "./components/AuthForm/AuthForm";
+import SingleMentee from "./components/SingleMentee/SingleMentee";
+import AllMentees from "./components/AllMentees/AllMentees";
+import UserProfile from "./components/UserProfile/UserProfile";
 
 /**
  * COMPONENT
@@ -32,22 +31,22 @@ function Routes(props) {
       {isLoggedIn ? (
         <Switch>
           <Route
-            path='/home'
+            path="/home"
             render={(props) => <UserProfile userId={isLoggedIn} />}
           />
-          <Route path='/applications/:id' component={SingleMentee} />
-          <Route exact path='/applications' component={AllMentees} />
+          <Route path="/applications/:id" component={SingleMentee} />
+          <Route exact path="/applications" component={AllMentees} />
           <Route
             exact
-            path='/'
+            path="/"
             render={(props) => <UserProfile userId={isLoggedIn} />}
           />
         </Switch>
       ) : (
         <Switch>
-          <Route path='/' exact component={Login} />
-          <Route path='/login' component={Login} />
-          <Route path='/signup' component={Signup} />
+          <Route path="/" exact component={Login} />
+          <Route path="/login" component={Login} />
+          <Route path="/signup" component={Signup} />
         </Switch>
       )}
     </div>
