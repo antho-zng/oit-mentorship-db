@@ -24,7 +24,6 @@ const addReview = async (review) => {
 };
 
 const editReview = async (review, id) => {
-  console.log({ review });
   try {
     const response = await axiosInstance.put(`/reviews/${id}`, { review });
     return response;

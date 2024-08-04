@@ -8,10 +8,16 @@ import {
   editReviewMutation,
   deleteReviewMutation,
 } from "../../hooks/useReviewsMutations";
+import {
+  QUESTION_CUTOFF,
+  GENERAL_INFO_QUESTIONS_CUTOFF,
+  ESSAY_RESPONSE_CUTOFF,
+  SCORE_LABELS,
+  REVIEW_ACCORDION_MESSAGES,
+} from "../../constants";
 import { useQueryClient } from "@tanstack/react-query";
 import PropTypes from "prop-types";
 import AlertSnackbar from "../Common/AlertSnackbar";
-import Typography from "@mui/material/Typography";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Card from "@mui/material/Card";
@@ -48,11 +54,7 @@ function TabPanel(props) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   );
 }
@@ -71,7 +73,7 @@ function a11yProps(index) {
 }
 
 function getLabelText(score) {
-  return `${score} Star${score !== 1 ? "s" : ""}, ${scoreLabels[score]}`;
+  return `${score} Star${score !== 1 ? "s" : ""}, ${SCORE_LABELS[score]}`;
 }
 
 function SingleMentee(props) {
@@ -113,12 +115,12 @@ function SingleMentee(props) {
   const cohort = mentee.cohort;
   const allQuestionsAndAnswers = mentee.questions;
   const generalInfoQA = allQuestionsAndAnswers.slice(
-    questionCutoff,
-    generalInfoQuestionsCutoff
+    QUESTION_CUTOFF,
+    GENERAL_INFO_QUESTIONS_CUTOFF
   );
   const essayRespQA = allQuestionsAndAnswers.slice(
-    generalInfoQuestionsCutoff,
-    essayResponseCutoff
+    GENERAL_INFO_QUESTIONS_CUTOFF,
+    ESSAY_RESPONSE_CUTOFF
   );
   const miscQA = allQuestionsAndAnswers.slice(essayResponseCutoff);
 
@@ -126,7 +128,6 @@ function SingleMentee(props) {
     setTabValue(newTabValue);
   };
 
-  console.log({ score });
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
@@ -180,9 +181,7 @@ function SingleMentee(props) {
         alertMessage: "You've been added as a reviewer for this application.",
       }));
       setExpanded(true);
-      setReviewAccordionMessage(
-        "You have been added as a reviewer for this mentee application. Please leave your comments and score below." //TODO: move to constants
-      );
+      setReviewAccordionMessage(REVIEW_ACCORDION_MESSAGES.ADDED_AS_REVIEWER);
       queryClient.invalidateQueries({ queryKey: ["reviews", menteeId] });
     };
 
@@ -278,7 +277,7 @@ function SingleMentee(props) {
   };
 
   function reviewCheck(reviews) {
-    if (reviews === undefined) {
+    if (reviews === undefined || reviewsPending || reviewsError) {
       return;
     } else if (Array.isArray(reviews) && !reviewStatus.editingMode) {
       maxReviewCheck(reviews);
@@ -291,7 +290,7 @@ function SingleMentee(props) {
 
   function maxReviewCheck(reviews) {
     if (reviews.length > 1) {
-      setReviewAccordionMessage("This application has already been reviewed.");
+      setReviewAccordionMessage(REVIEW_ACCORDION_MESSAGES.ALREADY_REVIEWED);
       setReviewStatus((prev) => ({
         ...prev,
         reviewDisabled: true,
@@ -299,7 +298,7 @@ function SingleMentee(props) {
       return;
     } else if (reviews.length === 0) {
       setReviewAccordionMessage(
-        "Add yourself as a reviewer to leave score and comments for this application."
+        REVIEW_ACCORDION_MESSAGES.ADD_YOURSELF_AS_REVIEWER
       );
     } else {
       return;
@@ -309,7 +308,7 @@ function SingleMentee(props) {
   function reviewScoreCheck() {
     if (mentee.acceptedStatus !== "PENDING" && mentee.acceptedStatus !== "") {
       setReviewAccordionMessage(
-        `This application has already been reviewed and is currently marked as ${mentee.acceptedStatus}. No further reviews are needed.`
+        REVIEW_ACCORDION_MESSAGES.NO_FURTHER_REVIEWS_NEEDED
       );
       setReviewStatus((prev) => ({
         ...prev,
@@ -328,9 +327,7 @@ function SingleMentee(props) {
         reviewDisabled: false,
         editingMode: true,
       }));
-      setReviewAccordionMessage(
-        "You have been added as a reviewer for this mentee application. Please leave your comments and score below."
-      );
+      setReviewAccordionMessage(REVIEW_ACCORDION_MESSAGES.ADDED_AS_REVIEWER);
       return;
     } else if (myReviews.length > 0) {
       setReviewStatus((prev) => ({
@@ -339,24 +336,11 @@ function SingleMentee(props) {
         reviewDisabled: true,
         reviewSubmitted: true,
       }));
-      setReviewAccordionMessage(
-        `You've already submitted a review for this application on ${new Date(
-          myReviews[0].updatedAt
-        )}.`
-      );
-      console.log({ myReviews });
+      setReviewAccordionMessage(REVIEW_ACCORDION_MESSAGES.REVIEW_SUBMITTED);
       setTextFieldInput(myReviews[0].reviewerComments);
       setScore(myReviews[0].reviewerScore);
     }
   }
-
-  const scoreLabels = {
-    1: "Reject",
-    2: "Waitlist",
-    3: "Interview (Low Priority)",
-    4: "Interview",
-    5: "Questionnaire (Strong Accept)",
-  };
   /**
    * 1 Do Not Accept -> Reject
 1 Strong Accept -> Questionnaire
@@ -385,6 +369,10 @@ function SingleMentee(props) {
 
   useEffect(() => {
     reviewCheck(reviews);
+
+    return () => {
+      console.log("Cleaning up...");
+    };
   }, [reviews]);
 
   return (
@@ -395,7 +383,9 @@ function SingleMentee(props) {
           className={style.sidebarCard}
         >
           <CardContent className={style.cardContent}>
-            <p>Mentee ({mentee.acceptedStatus})</p>
+            <p>
+              Mentee {mentee.acceptedStatus ? `(${mentee.acceptedStatus})` : ""}
+            </p>
             <h2 className={style.menteeName}>
               {menteePending || menteeError || menteeFetching ? (
                 <CircularProgress
@@ -618,32 +608,33 @@ function SingleMentee(props) {
                 {score !== null && (
                   <Box sx={{ ml: 3 }}>
                     <p className={style.scoreLabels}>
-                      {scoreLabels[hover !== -1 ? hover : score]}
+                      {SCORE_LABELS[hover !== -1 ? hover : score]}
                     </p>
                   </Box>
                 )}
               </div>
             </AccordionDetails>
             <div className={style.submitReviewButton}>
-              {reviewStatus.editingMode && reviewStatus.reviewSubmitted ? (
-                <Button
-                  startIcon={<ArrowCircleUpOutlinedIcon />}
-                  onClick={(event) => handleSubmitReview(event)}
-                  disabled={!reviewStatus.editingMode}
-                  value="update"
-                >
-                  UPDATE REVIEW
-                </Button>
-              ) : (
-                <Button
-                  startIcon={<AddCircleOutlineOutlinedIcon />}
-                  onClick={(event) => handleSubmitReview(event)}
-                  disabled={reviewStatus.reviewSubmitted}
-                  value="submit"
-                >
-                  SUBMIT REVIEW
-                </Button>
-              )}
+              {!reviewStatus.reviewDisabled &&
+                (reviewStatus.editingMode && reviewStatus.reviewSubmitted ? (
+                  <Button
+                    startIcon={<ArrowCircleUpOutlinedIcon />}
+                    onClick={(event) => handleSubmitReview(event)}
+                    disabled={!reviewStatus.editingMode}
+                    value="update"
+                  >
+                    UPDATE REVIEW
+                  </Button>
+                ) : (
+                  <Button
+                    startIcon={<AddCircleOutlineOutlinedIcon />}
+                    onClick={(event) => handleSubmitReview(event)}
+                    disabled={reviewStatus.reviewSubmitted}
+                    value="submit"
+                  >
+                    SUBMIT REVIEW
+                  </Button>
+                ))}
             </div>
           </Accordion>
           {reviewStatus.reviewerAdded ? (
