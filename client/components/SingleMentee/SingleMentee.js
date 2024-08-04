@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo } from "react";
-import { connect, useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 import style from "./SingleMentee.module.css";
 import { useMenteeData } from "../../hooks/useMenteeData";
 import { useReviewsData } from "../../hooks/useReviewsData";
@@ -226,6 +226,7 @@ function SingleMentee(props) {
 
       setTextFieldInput(reviewerComments);
       setScore(reviewerScore);
+      setExpanded(false);
       queryClient.invalidateQueries({ queryKey: ["reviews", menteeId] });
     };
 
@@ -368,12 +369,15 @@ function SingleMentee(props) {
   }, [menteeError, reviewsError]);
 
   useEffect(() => {
+    if (reviewsPending || menteePending || menteeFetching) {
+      return;
+    }
     reviewCheck(reviews);
 
     return () => {
       console.log("Cleaning up...");
     };
-  }, [reviews]);
+  }, [reviews, reviewsPending, menteePending, menteeFetching]);
 
   return (
     <div className={style.menteeProfile}>

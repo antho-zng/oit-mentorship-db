@@ -84,8 +84,6 @@ const resetMenteeAcceptStatus = async (req, res, next) => {
       if (rev.reviewerScore !== 4 && rev.userId === req.body.userId) {
         mentee.acceptedStatus = "PENDING";
         mentee.save();
-        console.log(`reset to pending`);
-        console.log(mentee);
       }
     }
 
