@@ -1,5 +1,4 @@
 import axiosInstance from "../AxiosWrapper";
-import axios from "axios";
 
 const getReviews = async (menteeId) => {
   const searchParams = new URLSearchParams(`menteeId=${menteeId}`);
@@ -7,12 +6,6 @@ const getReviews = async (menteeId) => {
     const { data: reviews } = await axiosInstance.get(`/reviews`, {
       params: searchParams,
     });
-    // const { data: reviews } = await axios.get(`/api/reviews`, {
-    //   headers: {
-    //     authorization: token,
-    //   },
-    //   params,
-    // });
     return reviews;
   } catch (error) {
     const { status } = error;
@@ -31,6 +24,7 @@ const addReview = async (review) => {
 };
 
 const editReview = async (review, id) => {
+  console.log({ review });
   try {
     const response = await axiosInstance.put(`/reviews/${id}`, { review });
     return response;

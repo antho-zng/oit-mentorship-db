@@ -1,15 +1,14 @@
 import React, { useEffect, useMemo } from "react";
 import { connect, useSelector } from "react-redux";
 import style from "./SingleMentee.module.css";
-import {
-  getReviews,
-  addReview,
-  editReview,
-  deleteReview,
-} from "../../services/reviews-service";
 import { useMenteeData } from "../../hooks/useMenteeData";
 import { useReviewsData } from "../../hooks/useReviewsData";
-import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
+import {
+  addReviewMutation,
+  editReviewMutation,
+  deleteReviewMutation,
+} from "../../hooks/useReviewsMutations";
+import { useQueryClient } from "@tanstack/react-query";
 import PropTypes from "prop-types";
 import AlertSnackbar from "../Common/AlertSnackbar";
 import Typography from "@mui/material/Typography";
@@ -100,25 +99,13 @@ function SingleMentee(props) {
     alertMessage: "",
   });
 
-  const initialMenteeData = {
-    id: "",
-    firstName: "",
-    lastName: "",
-    pronouns: [],
-    cohort: { name: "" },
-    acceptedStatus: "",
-    dateOfBirth: "",
-    email: "",
-    phoneNum: "",
-    location: "",
-    gendersAndSexualities: {},
-    raceEthnicity: {},
-    questions: [],
-  };
-
   const { menteePending, menteeFetching, menteeError, mentee } =
     useMenteeData(menteeId);
   const { reviewsPending, reviewsError, reviews } = useReviewsData(menteeId);
+
+  const { mutate: addReviewMutate } = addReviewMutation();
+  const { mutate: editReviewMutate } = editReviewMutation();
+  const { mutate: deleteReviewMutate } = deleteReviewMutation();
 
   const pronouns = mentee.pronouns;
   const firstName = mentee.firstName;
@@ -139,6 +126,7 @@ function SingleMentee(props) {
     setTabValue(newTabValue);
   };
 
+  console.log({ score });
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
@@ -174,11 +162,11 @@ function SingleMentee(props) {
     setScore(newScore);
   };
 
-  const addReviewMutation = useMutation({
-    mutationFn: (review) => {
-      return addReview(review);
-    },
-    onSuccess: async () => {
+  const handleAddReviewer = (event) => {
+    event.preventDefault();
+    const review = newReview(userId, menteeId);
+
+    const onSuccess = async () => {
       setReviewStatus((prev) => ({
         ...prev,
         reviewerAdded: true,
@@ -196,22 +184,34 @@ function SingleMentee(props) {
         "You have been added as a reviewer for this mentee application. Please leave your comments and score below." //TODO: move to constants
       );
       queryClient.invalidateQueries({ queryKey: ["reviews", menteeId] });
-    },
-    onError: async (error) => {
+    };
+
+    const onError = async (error) => {
       setSnackbarState({
         open: true,
         alertSeverity: "error",
         alertMessage:
           "Unable to add you as a reviewer. Please refresh and try again!",
       });
-    },
-  });
+    };
 
-  const editReviewMutation = useMutation({
-    mutationFn: (review) => {
-      return editReview(review, menteeId);
-    },
-    onSuccess: async () => {
+    addReviewMutate(review, { onSuccess, onError });
+  };
+
+  const handleSubmitReview = (event) => {
+    event.preventDefault();
+
+    const reviewerComments = textFieldInput;
+    const reviewerScore = score;
+
+    const review = {
+      userId: userId,
+      reviewerComments: reviewerComments,
+      reviewerScore: reviewerScore,
+      submitStatus: true,
+    };
+
+    const onSuccess = async () => {
       setReviewStatus((prev) => ({
         ...prev,
         reviewDisabled: true,
@@ -224,22 +224,29 @@ function SingleMentee(props) {
         alertSeverity: "success",
         alertMessage: "Thank you for submitting your review!",
       }));
+
+      setTextFieldInput(reviewerComments);
+      setScore(reviewerScore);
       queryClient.invalidateQueries({ queryKey: ["reviews", menteeId] });
-    },
-    onError: async (error) => {
+    };
+
+    const onError = async () => {
       setSnackbarState({
         open: true,
         alertSeverity: "error",
         alertMessage: "Unable to submit review. Please refresh and try again.",
       });
-    },
-  });
 
-  const deleteReviewMutation = useMutation({
-    mutationFn: () => {
-      return deleteReview(userId, menteeId);
-    },
-    onSuccess: async () => {
+      setTextFieldInput(reviewerComments);
+      setScore(reviewerScore);
+    };
+
+    editReviewMutate({ review, menteeId }, { onSuccess, onError });
+  };
+
+  const handleDeleteReview = (event) => {
+    event.preventDefault();
+    const onSuccess = async () => {
       setReviewStatus((prev) => ({
         ...prev,
         reviewSubmitted: false,
@@ -258,67 +265,17 @@ function SingleMentee(props) {
         alertSeverity: "success",
         alertMessage: "Your review has been successfully deleted.",
       }));
-    },
-    onError: async (error) => {
+    };
+    const onError = async () => {
       setSnackbarState({
         open: true,
         alertSeverity: "error",
         alertMessage:
           "Unable to delete your review. Please refresh and try again.",
       });
-    },
-  });
-
-  const handleAddReviewer = (event) => {
-    event.preventDefault();
-    const review = newReview(userId, menteeId);
-    addReviewMutation.mutate(review);
-  };
-
-  const handleSubmitReview = (event) => {
-    event.preventDefault();
-
-    const reviewerComments = textFieldInput;
-    const reviewerScore = score;
-
-    const review = {
-      userId: userId,
-      reviewerComments: reviewerComments,
-      reviewerScore: reviewerScore,
-      submitStatus: true,
     };
-    editReviewMutation.mutate(review);
-
-    setTextFieldInput(reviewerComments);
-    setScore(reviewerScore);
+    deleteReviewMutate({ userId, menteeId }, { onSuccess, onError });
   };
-
-  const handleDeleteReview = (event) => {
-    event.preventDefault();
-    deleteReviewMutation.mutate();
-  };
-
-  useEffect(() => {
-    if (menteeError) {
-      setSnackbarState({
-        open: true,
-        alertSeverity: "error",
-        alertMessage:
-          "Unable to fetch mentee data. Please refresh the page and try again.",
-      });
-    } else if (reviewsError) {
-      setSnackbarState({
-        open: true,
-        alertSeverity: "error",
-        alertMessage:
-          "Unable to fetch reviews. Please refresh the page and try again.",
-      });
-    }
-  }, [menteeError, reviewsError]);
-
-  useEffect(() => {
-    reviewCheck(reviews);
-  }, [reviews]);
 
   function reviewCheck(reviews) {
     if (reviews === undefined) {
@@ -387,6 +344,7 @@ function SingleMentee(props) {
           myReviews[0].updatedAt
         )}.`
       );
+      console.log({ myReviews });
       setTextFieldInput(myReviews[0].reviewerComments);
       setScore(myReviews[0].reviewerScore);
     }
@@ -407,6 +365,27 @@ function SingleMentee(props) {
 1 Accept with low priority -> Interview (Low Priority)(allow 2)
 
    */
+  useEffect(() => {
+    if (menteeError) {
+      setSnackbarState({
+        open: true,
+        alertSeverity: "error",
+        alertMessage:
+          "Unable to fetch mentee data. Please refresh the page and try again.",
+      });
+    } else if (reviewsError) {
+      setSnackbarState({
+        open: true,
+        alertSeverity: "error",
+        alertMessage:
+          "Unable to fetch reviews. Please refresh the page and try again.",
+      });
+    }
+  }, [menteeError, reviewsError]);
+
+  useEffect(() => {
+    reviewCheck(reviews);
+  }, [reviews]);
 
   return (
     <div className={style.menteeProfile}>
@@ -499,7 +478,7 @@ function SingleMentee(props) {
               <Tab className={style.tabLabel} label="MISC" {...a11yProps(2)} />
             </Tabs>
           </Box>
-          {menteePending || menteeError ? (
+          {menteePending || menteeError || menteeFetching ? (
             <Box style={{ width: "100%", height: "100vh", display: "grid" }}>
               <CircularProgress
                 style={{ justifySelf: "center", alignSelf: "center" }}
