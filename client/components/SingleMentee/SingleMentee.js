@@ -14,6 +14,8 @@ import {
   ESSAY_RESPONSE_CUTOFF,
   SCORE_LABELS,
   REVIEW_ACCORDION_MESSAGES,
+  REVIEWS_MUTATION_SNACKBAR_MESSAGES,
+  FETCHING_SNACKBAR_MESSAGES,
 } from "../../constants";
 import { useQueryClient } from "@tanstack/react-query";
 import PropTypes from "prop-types";
@@ -178,7 +180,7 @@ function SingleMentee(props) {
         ...prev,
         open: true,
         alertSeverity: "success",
-        alertMessage: "You've been added as a reviewer for this application.",
+        alertMessage: REVIEWS_MUTATION_SNACKBAR_MESSAGES.REVIEWER_ADD_SUCCESS,
       }));
       setExpanded(true);
       setReviewAccordionMessage(REVIEW_ACCORDION_MESSAGES.ADDED_AS_REVIEWER);
@@ -189,8 +191,7 @@ function SingleMentee(props) {
       setSnackbarState({
         open: true,
         alertSeverity: "error",
-        alertMessage:
-          "Unable to add you as a reviewer. Please refresh and try again!",
+        alertMessage: REVIEWS_MUTATION_SNACKBAR_MESSAGES.REVIEWER_ADD_ERROR,
       });
     };
 
@@ -221,7 +222,7 @@ function SingleMentee(props) {
         ...prev,
         open: true,
         alertSeverity: "success",
-        alertMessage: "Thank you for submitting your review!",
+        alertMessage: REVIEWS_MUTATION_SNACKBAR_MESSAGES.REVIEW_SUBMIT_SUCCESS,
       }));
 
       setTextFieldInput(reviewerComments);
@@ -234,7 +235,7 @@ function SingleMentee(props) {
       setSnackbarState({
         open: true,
         alertSeverity: "error",
-        alertMessage: "Unable to submit review. Please refresh and try again.",
+        alertMessage: REVIEWS_MUTATION_SNACKBAR_MESSAGES.REVIEW_SUBMIT_ERROR,
       });
 
       setTextFieldInput(reviewerComments);
@@ -263,15 +264,14 @@ function SingleMentee(props) {
         ...prev,
         open: true,
         alertSeverity: "success",
-        alertMessage: "Your review has been successfully deleted.",
+        alertMessage: REVIEWS_MUTATION_SNACKBAR_MESSAGES.REVIEW_DELETE_SUCCESS,
       }));
     };
     const onError = async () => {
       setSnackbarState({
         open: true,
         alertSeverity: "error",
-        alertMessage:
-          "Unable to delete your review. Please refresh and try again.",
+        alertMessage: REVIEWS_MUTATION_SNACKBAR_MESSAGES.REVIEW_DELETE_ERROR,
       });
     };
     deleteReviewMutate({ userId, menteeId }, { onSuccess, onError });
@@ -355,15 +355,13 @@ function SingleMentee(props) {
       setSnackbarState({
         open: true,
         alertSeverity: "error",
-        alertMessage:
-          "Unable to fetch mentee data. Please refresh the page and try again.",
+        alertMessage: FETCHING_SNACKBAR_MESSAGES.MENTEE_FETCH_ERROR,
       });
     } else if (reviewsError) {
       setSnackbarState({
         open: true,
         alertSeverity: "error",
-        alertMessage:
-          "Unable to fetch reviews. Please refresh the page and try again.",
+        alertMessage: FETCHING_SNACKBAR_MESSAGES.REVIEWS_FETCH_ERROR,
       });
     }
   }, [menteeError, reviewsError]);
