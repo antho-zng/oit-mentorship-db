@@ -1,7 +1,7 @@
-const Sequelize = require('sequelize');
-const db = require('../db');
+const Sequelize = require("sequelize");
+const db = require("../db");
 module.exports = db.define(
-  'review',
+  "review",
   {
     id: {
       type: Sequelize.INTEGER,
@@ -16,6 +16,10 @@ module.exports = db.define(
     reviewerScore: {
       type: Sequelize.INTEGER,
       allowNull: true,
+      get() {
+        const rawValue = this.getDataValue("reviewerScore");
+        return rawValue !== null ? parseInt(rawValue, 10) : null;
+      },
     },
     submitStatus: {
       type: Sequelize.BOOLEAN,
@@ -25,7 +29,7 @@ module.exports = db.define(
   {
     indexes: [
       {
-        fields: ['reviewerScore'],
+        fields: ["reviewerScore"],
       },
     ],
   }
