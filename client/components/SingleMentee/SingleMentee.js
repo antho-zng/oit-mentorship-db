@@ -525,6 +525,7 @@ function SingleMentee(props) {
               boxShadow: "none",
               backgroundColor: "aliceblue",
               borderRadius: "30px",
+              minWidth: "260px",
             }}
             disabled={!reviewStatus.reviewerAdded && !reviewsPending}
           >
