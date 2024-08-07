@@ -1,23 +1,23 @@
-const Sequelize = require("sequelize");
 const router = require("express").Router();
 const Review = require("../db/models/Review");
-const User = require("../db/models/User");
 const Mentee = require("../db/models/Mentee");
 
-const requireUserToken = async (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
+const { requireUserToken } = require("./middleware/auth-middleware");
 
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      const token = authHeader.split(" ")[1];
-      const user = await User.findByToken(token);
-      req.user = user;
-      next();
-    }
-  } catch (error) {
-    next(error);
-  }
-};
+// const requireUserToken = async (req, res, next) => {
+//   try {
+//     const authHeader = req.headers.authorization;
+
+//     if (authHeader && authHeader.startsWith("Bearer ")) {
+//       const token = authHeader.split(" ")[1];
+//       const user = await User.findByToken(token);
+//       req.user = user;
+//       next();
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 const updateMenteeAcceptStatus = async (req, res, next) => {
   const scoreKey = {
@@ -36,8 +36,6 @@ const updateMenteeAcceptStatus = async (req, res, next) => {
     if (score !== 4) {
       mentee.acceptedStatus = scoreKey[score];
       mentee.save();
-      console.log(`mentee updated!`);
-      console.log(mentee);
     } else if (score === 4) {
       const reviews = await Review.findAll({
         where: {
@@ -48,14 +46,9 @@ const updateMenteeAcceptStatus = async (req, res, next) => {
       for (const rev of reviews) {
         if (rev.reviewerScore === 4 && rev.userId !== review.userId) {
           mentee.acceptedStatus = scoreKey[score];
-          mentee.save();
-          console.log(`two 4s`);
-          console.log(mentee);
+          await mentee.save();
         }
       }
-
-      console.log(`mentee updated with score of 4`);
-      console.log(mentee);
     }
     next();
   } catch (error) {
