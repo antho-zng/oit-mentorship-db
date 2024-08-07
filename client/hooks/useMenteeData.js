@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getMentee } from "../services/mentee-service";
+import { getMentee, getAllMentees } from "../services/mentee-service";
 
 const initialMenteeData = {
   id: "",
@@ -32,4 +32,23 @@ export const useMenteeData = (menteeId) => {
     placeholderData: initialMenteeData,
   });
   return { menteePending, menteeError, mentee, menteeFetching };
+};
+
+export const useAllMenteeData = ({ searchBy, payload }) => {
+  const {
+    isPending: allMenteesPending,
+    error: allMenteesError,
+    data: allMentees,
+    isFetching: allMenteesFetching,
+  } = useQuery({
+    queryKey: ["allMentees", payload],
+    queryFn: async () => {
+      const searchParams = new URLSearchParams(`${searchBy}=${payload}`);
+      const allMenteeData = await getAllMentees(searchParams);
+      return allMenteeData;
+    },
+    enabled: payload !== "",
+    placeholderData: [],
+  });
+  return { allMenteesPending, allMenteesError, allMentees, allMenteesFetching };
 };

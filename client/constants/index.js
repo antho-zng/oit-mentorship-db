@@ -41,6 +41,9 @@ export const REVIEW_ACCORDION_MESSAGES = {
     "Thank you for submitting your review for this application.",
 };
 
+// AllMentees.js
+export const REVIEW_DEADLINE = "SEPT 23, 2024";
+
 /**
  *   
   REVIEW_DELETED: "Your review has been successfully deleted.",
