@@ -1,95 +1,49 @@
-import React, { useEffect, useMemo } from 'react';
-import { connect, useSelector } from 'react-redux';
-import style from './UserProfile.module.css';
-import { getReviews } from '../../store/reviews';
-
-import { styled } from '@mui/material/styles';
-import Grid from '@mui/material/Unstable_Grid2';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
-import PropTypes from 'prop-types';
-import Typography from '@mui/material/Typography';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Skeleton from '@mui/material/Skeleton';
-import Stack from '@mui/material/Stack';
-import LoadingSkeleton from './LoadingSkeleton';
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role='tabpanel'
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: '#f0f8ff',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  color: theme.palette.text.primary,
-  boxShadow: `none`,
-  borderRadius: `30`,
-  fontFamily: 'IBM Plex Sans, sans-serif',
-  padding: '20px',
-}));
+import React, { useEffect, useMemo } from "react";
+import { connect, useSelector } from "react-redux";
+import style from "./UserProfile.module.css";
+// import { getReviews } from "../../store/reviews";
+import { useReviewsData } from "../../hooks/useReviewsData";
+import { styled } from "@mui/material/styles";
+import Grid from "@mui/material/Unstable_Grid2";
+import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
+import PropTypes from "prop-types";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Stack from "@mui/material/Stack";
+import LoadingSkeleton from "./LoadingSkeleton";
 
 function UserProfile(props) {
-  useEffect(() => {
-    if (userId === null) {
-      return;
-    } else {
-      const token = window.localStorage.getItem('token');
-      props.getReviews(`userId=${userId}`, token);
-    }
-  }, [props.userId]);
-
-  const [tabValue, setTabValue] = React.useState(0);
-  const [completeReviews, setCompleteReviews] = React.useState(null);
-  const [openReviews, setOpenReviews] = React.useState([]);
+  // useEffect(() => {
+  //   if (userId === null) {
+  //     return;
+  //   } else {
+  //     const token = window.localStorage.getItem("token");
+  //     props.getReviews(`userId=${userId}`, token);
+  //   }
+  // }, [props.userId]);
 
   const userId = useSelector((state) => state.auth.id || null);
-  const reviewerName = useSelector((state) => state.auth.firstName || '');
-  const reviews = useSelector((state) => state.reviews || []);
+  const reviewerName = useSelector((state) => state.auth.firstName || "");
 
-  const filterOpenReviews = useMemo(
-    () => setOpenReviews(filterReviews(reviews, 'open')),
-    [reviews]
+  const { reviewsPending, reviewsError, reviews } = useReviewsData({
+    searchBy: "userId",
+    payload: userId || "",
+  });
+
+  const [tabValue, setTabValue] = React.useState(0);
+
+  const openReviews = useMemo(
+    () => filterReviews(reviews, "open"),
+    [reviews, reviewsPending]
   );
-
-  const filterCompleteReviews = useMemo(
-    () => setCompleteReviews(filterReviews(reviews, 'complete')),
-    [reviews]
+  const completeReviews = useMemo(
+    () => filterReviews(reviews, "complete"),
+    [reviews, reviewsPending]
   );
 
   function filterReviews(reviews, filter) {
-    const submitStatus = filter === 'complete';
+    const submitStatus = filter === "complete";
 
     if (reviews === undefined) {
       return;
@@ -112,37 +66,37 @@ function UserProfile(props) {
   return (
     <div className={style.container}>
       <div className={style.body}>
-        <h2 className={style.header}>Hi {reviewerName ? reviewerName : ''}!</h2>
+        <h2 className={style.header}>Hi {reviewerName ? reviewerName : ""}!</h2>
         <p className={style.bodyText}>
           Welcome to your reviewer profile. You can view all the applications
           assigned to you below.
         </p>
       </div>
-      <Box className={style.tabBox} sx={{ width: '100%' }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+      <Box className={style.tabBox} sx={{ width: "100%" }}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
             value={tabValue}
             onChange={handleTabChange}
-            aria-label='user reviews'
+            aria-label="user reviews"
             className={style.tabLabel}
             TabIndicatorProps={{
-              sx: { backgroundColor: '#DC493A' },
+              sx: { backgroundColor: "#DC493A" },
             }}
           >
             <Tab
               className={style.tabLabel}
-              label='OPEN REVIEWS'
+              label="OPEN REVIEWS"
               {...a11yProps(0)}
             />
             <Tab
               className={style.tabLabel}
-              label='COMPLETED REVIEWS'
+              label="COMPLETED REVIEWS"
               {...a11yProps(1)}
             />
           </Tabs>
         </Box>
         <TabPanel value={tabValue} index={0}>
-          <Box sx={{ width: '100%' }}>
+          <Box sx={{ width: "100%" }}>
             <Grid
               container
               rowSpacing={3}
@@ -152,13 +106,13 @@ function UserProfile(props) {
                 openReviews.length === 0 ? (
                   <p className={style.bodyText}>
                     You currently have no open reviews to display. Applications
-                    pending review can be found on the{' '}
-                    <a href='/applications' className={style.linkText}>
+                    pending review can be found on the{" "}
+                    <a href="/applications" className={style.linkText}>
                       mentee application dashboard.
                     </a>
                   </p>
                 ) : (
-                  openReviews.map((review) => {
+                  openReviews.map((review, index) => {
                     return (
                       <Grid
                         xs={4}
@@ -166,6 +120,7 @@ function UserProfile(props) {
                           handleMenteeClick(event, review.mentee.id)
                         }
                         className={style.gridItemContainer}
+                        key={index}
                       >
                         <Item className={style.gridItem}>
                           <div>
@@ -206,7 +161,7 @@ function UserProfile(props) {
           </Box>
         </TabPanel>
         <TabPanel value={tabValue} index={1}>
-          <Box sx={{ width: '100%' }}>
+          <Box sx={{ width: "100%" }}>
             <Grid
               container
               rowSpacing={3}
@@ -216,13 +171,13 @@ function UserProfile(props) {
                 completeReviews.length === 0 ? (
                   <p className={style.bodyText}>
                     You currently have no submitted reviews to display.
-                    Applications pending review can be found on the{' '}
-                    <a href='/applications' className={style.linkText}>
+                    Applications pending review can be found on the{" "}
+                    <a href="/applications" className={style.linkText}>
                       mentee application dashboard.
                     </a>
                   </p>
                 ) : completeReviews[0].mentee !== undefined ? (
-                  completeReviews.map((review) => {
+                  completeReviews.map((review, index) => {
                     return (
                       <Grid
                         xs={4}
@@ -230,6 +185,7 @@ function UserProfile(props) {
                           handleMenteeClick(event, review.mentee.id)
                         }
                         className={style.gridItemContainer}
+                        key={index}
                       >
                         <Item className={style.gridItem}>
                           <div>
@@ -278,12 +234,45 @@ function UserProfile(props) {
   );
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getReviews: (searchParams, token) => {
-      dispatch(getReviews(searchParams, token));
-    },
-  };
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
 };
 
-export default connect(null, mapDispatchToProps)(UserProfile);
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
+}
+
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: "#f0f8ff",
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: "center",
+  color: theme.palette.text.primary,
+  boxShadow: `none`,
+  borderRadius: `30`,
+  fontFamily: "IBM Plex Sans, sans-serif",
+  padding: "20px",
+}));
+
+export default UserProfile;

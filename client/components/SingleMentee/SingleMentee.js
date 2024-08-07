@@ -40,11 +40,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CircularProgress from "@mui/material/CircularProgress";
 
-//CONSTANTS
-const questionCutoff = 8;
-const generalInfoQuestionsCutoff = 15;
-const essayResponseCutoff = 29;
-
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -105,7 +100,11 @@ function SingleMentee(props) {
 
   const { menteePending, menteeFetching, menteeError, mentee } =
     useMenteeData(menteeId);
-  const { reviewsPending, reviewsError, reviews } = useReviewsData(menteeId);
+  const { reviewsPending, reviewsFetching, reviewsError, reviews } =
+    useReviewsData({
+      searchBy: "menteeId",
+      payload: menteeId,
+    });
 
   const { mutate: addReviewMutate } = addReviewMutation();
   const { mutate: editReviewMutate } = editReviewMutation();
@@ -124,7 +123,7 @@ function SingleMentee(props) {
     GENERAL_INFO_QUESTIONS_CUTOFF,
     ESSAY_RESPONSE_CUTOFF
   );
-  const miscQA = allQuestionsAndAnswers.slice(essayResponseCutoff);
+  const miscQA = allQuestionsAndAnswers.slice(ESSAY_RESPONSE_CUTOFF);
 
   const handleTabChange = (event, newTabValue) => {
     setTabValue(newTabValue);
@@ -212,6 +211,8 @@ function SingleMentee(props) {
     };
 
     const onSuccess = async () => {
+      queryClient.invalidateQueries({ queryKey: ["mentee", menteeId] });
+      queryClient.invalidateQueries({ queryKey: ["reviews", menteeId] });
       setReviewStatus((prev) => ({
         ...prev,
         reviewDisabled: true,
@@ -228,7 +229,6 @@ function SingleMentee(props) {
       setTextFieldInput(reviewerComments);
       setScore(reviewerScore);
       setExpanded(false);
-      queryClient.invalidateQueries({ queryKey: ["reviews", menteeId] });
     };
 
     const onError = async () => {
@@ -248,6 +248,8 @@ function SingleMentee(props) {
   const handleDeleteReview = (event) => {
     event.preventDefault();
     const onSuccess = async () => {
+      queryClient.invalidateQueries({ queryKey: ["reviews", menteeId] });
+      queryClient.invalidateQueries({ queryKey: ["mentee", menteeId] });
       setReviewStatus((prev) => ({
         ...prev,
         reviewSubmitted: false,
@@ -258,8 +260,6 @@ function SingleMentee(props) {
       setExpanded(false);
       setTextFieldInput("");
       setScore(3);
-      queryClient.invalidateQueries({ queryKey: ["reviews", menteeId] });
-      queryClient.invalidateQueries({ queryKey: ["mentee", menteeId] });
       setSnackbarState((prev) => ({
         ...prev,
         open: true,
@@ -278,7 +278,12 @@ function SingleMentee(props) {
   };
 
   function reviewCheck(reviews) {
-    if (reviews === undefined || reviewsPending || reviewsError) {
+    if (
+      reviewsPending ||
+      reviewsFetching ||
+      reviewsError ||
+      reviews === undefined
+    ) {
       return;
     } else if (Array.isArray(reviews) && !reviewStatus.editingMode) {
       maxReviewCheck(reviews);
@@ -367,15 +372,14 @@ function SingleMentee(props) {
   }, [menteeError, reviewsError]);
 
   useEffect(() => {
-    if (reviewsPending || menteePending || menteeFetching) {
+    if (reviewsPending || reviewsPending || menteePending || menteeFetching) {
       return;
     }
     reviewCheck(reviews);
-
     return () => {
-      console.log("Cleaning up...");
+      console.log("Cleaning up...", { reviews });
     };
-  }, [reviews, reviewsPending, menteePending, menteeFetching]);
+  }, [reviews, reviewsPending, reviewsPending, menteePending, menteeFetching]);
 
   return (
     <div className={style.menteeProfile}>

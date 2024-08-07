@@ -1,7 +1,6 @@
 import axiosInstance from "../AxiosWrapper";
 
-const getReviews = async (menteeId) => {
-  const searchParams = new URLSearchParams(`menteeId=${menteeId}`);
+const getReviews = async (searchParams) => {
   try {
     const { data: reviews } = await axiosInstance.get(`/reviews`, {
       params: searchParams,
