@@ -13,8 +13,12 @@
   border:none;
   box-shadow: none;
 }
-.sidearSubhead{
+.sidebarSubhead{
   font-weight:bold;
+}
+.sidebarText {
+  font-size: 14px;
+  margin-top: 5px;
 }
 .MuiPaper-root-MuiCard-root{
   box-shadow: none;
@@ -75,6 +79,7 @@
   font-style: italic;
 }
 .menteeName{
+  display: grid;
   text-transform: uppercase;
   padding-bottom:60px
 }
@@ -181,4 +186,39 @@ p{
 .tabIndicator{
   background-color: #DC493A;
   color: #DC493A;
+}
+
+@media screen and (max-width: 1200px) {
+  .sidebarText{
+    font-size: smaller;
+    margin-top: 5px;
+  }
+}
+@media screen and (max-width: 992px) {
+  .menteeProfile {
+    grid-template-columns: 1fr;
+    grid-template-areas: 
+      "sidebar"
+      "questions"
+      "ratings";
+  }
+  .sidebarCard{
+    margin-left: 15px;
+    flex-direction: row;
+    grid-column-start: sidebar;
+    height:fit-content;
+    width: 80vw;
+    margin-top:60px;
+    border:none;
+    box-shadow: none;
+  }
+  .leftSidebar{
+    display: flex;
+    position: static;
+    top: 50px;
+    height: auto;
+    width: 80vw;
+    overflow-y:auto;
+    justify-content: center;
+  }
 }

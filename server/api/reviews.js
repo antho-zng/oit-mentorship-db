@@ -1,15 +1,19 @@
-const Sequelize = require('sequelize');
-const router = require('express').Router();
-const Review = require('../db/models/Review');
-const User = require('../db/models/User');
-const Mentee = require('../db/models/Mentee');
+const Sequelize = require("sequelize");
+const router = require("express").Router();
+const Review = require("../db/models/Review");
+const User = require("../db/models/User");
+const Mentee = require("../db/models/Mentee");
 
 const requireUserToken = async (req, res, next) => {
   try {
-    const token = req.headers.authorization || req.body.headers.authorization;
-    const user = await User.findByToken(token);
-    req.user = user;
-    next();
+    const authHeader = req.headers.authorization;
+
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      const user = await User.findByToken(token);
+      req.user = user;
+      next();
+    }
   } catch (error) {
     next(error);
   }
@@ -17,11 +21,11 @@ const requireUserToken = async (req, res, next) => {
 
 const updateMenteeAcceptStatus = async (req, res, next) => {
   const scoreKey = {
-    1: 'NOT ACCEPTED',
-    2: 'WAITLIST',
-    3: 'LOW PRIORITY ACCEPT',
-    4: 'ACCEPTED',
-    5: 'STRONG ACCEPT',
+    1: "NOT ACCEPTED",
+    2: "WAITLIST",
+    3: "LOW PRIORITY ACCEPT",
+    4: "ACCEPTED",
+    5: "STRONG ACCEPT",
   };
 
   try {
@@ -61,11 +65,11 @@ const updateMenteeAcceptStatus = async (req, res, next) => {
 
 const resetMenteeAcceptStatus = async (req, res, next) => {
   const scoreKey = {
-    1: 'NOT ACCEPTED',
-    2: 'WAITLIST',
-    3: 'LOW PRIORITY ACCEPT',
-    4: 'ACCEPTED',
-    5: 'STRONG ACCEPT',
+    1: "NOT ACCEPTED",
+    2: "WAITLIST",
+    3: "LOW PRIORITY ACCEPT",
+    4: "ACCEPTED",
+    5: "STRONG ACCEPT",
   };
 
   try {
@@ -78,10 +82,8 @@ const resetMenteeAcceptStatus = async (req, res, next) => {
 
     for (const rev of reviews) {
       if (rev.reviewerScore !== 4 && rev.userId === req.body.userId) {
-        mentee.acceptedStatus = 'PENDING';
+        mentee.acceptedStatus = "PENDING";
         mentee.save();
-        console.log(`reset to pending`);
-        console.log(mentee);
       }
     }
 
@@ -92,9 +94,8 @@ const resetMenteeAcceptStatus = async (req, res, next) => {
 };
 
 // GET /api/reviews
-router.get('/', requireUserToken, async (req, res, next) => {
+router.get("/", requireUserToken, async (req, res, next) => {
   try {
-    console.log(req.query);
     const reviews = await Review.findAll({
       where: req.query,
       include: [Mentee],
@@ -107,7 +108,7 @@ router.get('/', requireUserToken, async (req, res, next) => {
 });
 
 // GET /api/reviews/:id
-router.get('/:id', async (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
   try {
     const reviews = await Review.findAll({
       where: {
@@ -122,7 +123,7 @@ router.get('/:id', async (req, res, next) => {
 });
 
 // POST (creating new review)
-router.post('/', requireUserToken, async (req, res, next) => {
+router.post("/", requireUserToken, async (req, res, next) => {
   try {
     const review = await Review.create(req.body.review);
     res.send(review);
@@ -134,7 +135,7 @@ router.post('/', requireUserToken, async (req, res, next) => {
 
 // PUT (editing review)
 router.put(
-  '/:id',
+  "/:id",
   requireUserToken,
   updateMenteeAcceptStatus,
   async (req, res, next) => {
@@ -160,7 +161,7 @@ router.put(
 
 // DELETE
 router.delete(
-  '/:id',
+  "/:id",
   requireUserToken,
   resetMenteeAcceptStatus,
   async (req, res, next) => {
@@ -171,7 +172,7 @@ router.delete(
           userId: req.body.userId,
         },
       });
-      await review.destroy();
+      await review?.destroy();
       res.sendStatus(200);
     } catch (error) {
       console.error(error);
