@@ -345,14 +345,6 @@ function SingleMentee(props) {
       setScore(myReviews[0].reviewerScore);
     }
   }
-  /**
-   * 1 Do Not Accept -> Reject
-1 Strong Accept -> Questionnaire
-2 Accept -> Interview (allow 2)
-1 Borderline -> Waitlist (allow 2)
-1 Accept with low priority -> Interview (Low Priority)(allow 2)
-
-   */
   useEffect(() => {
     if (menteeError) {
       setSnackbarState({

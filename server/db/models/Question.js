@@ -1,7 +1,7 @@
-const Sequelize = require('sequelize');
-const db = require('../db');
+const Sequelize = require("sequelize");
+const db = require("../db");
 module.exports = db.define(
-  'question',
+  "question",
   {
     text: {
       type: Sequelize.STRING,
@@ -15,8 +15,9 @@ module.exports = db.define(
     indexes: [
       {
         unique: true,
-        fields: ['text'],
+        fields: ["text"],
       },
     ],
-  }
+  },
+  { tableName: "questions" }
 );
