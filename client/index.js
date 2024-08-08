@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const queryClient = new QueryClient();
+const APP_ENV = process.env.REACT_APP_ENV;
 
 const root = createRoot(document.getElementById("app"));
 root.render(
@@ -16,7 +17,7 @@ root.render(
     <QueryClientProvider client={queryClient}>
       <Router history={history}>
         <React.StrictMode>
-          <ReactQueryDevtools />
+          {APP_ENV === "DEV" && <ReactQueryDevtools />}
           <App />
         </React.StrictMode>
       </Router>

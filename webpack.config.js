@@ -1,42 +1,52 @@
-'use strict';
-const path = require('path');
-const webpack = require('webpack');
-require('dotenv').config();
+"use strict";
+const path = require("path");
+const webpack = require("webpack");
+require("dotenv").config();
 
 module.exports = {
-  entry: ['./client/index.js'],
+  entry: ["./client/index.js"],
   output: {
-    path: path.resolve(__dirname, 'public'),
-    filename: 'bundle.js',
-    publicPath: '/',
+    path: path.resolve(__dirname, "public"),
+    filename: "bundle.js",
+    publicPath: "/",
   },
-  mode: 'development',
+  mode: "development",
   plugins: [
     new webpack.ProvidePlugin({
-      Buffer: ['buffer', 'Buffer'],
+      Buffer: ["buffer", "Buffer"],
     }),
     new webpack.ProvidePlugin({
-      process: 'process/browser.js',
+      process: "process/browser.js",
+    }),
+    new webpack.DefinePlugin({
+      "process.env.REACT_APP_ENV": JSON.stringify(process.env.REACT_APP_ENV),
     }),
   ],
-  devtool: 'source-map',
+  devtool: "source-map",
+  resolve: {
+    fallback: {
+      fs: false,
+      path: require.resolve("path-browserify"),
+      os: false,
+    },
+  },
   module: {
     rules: [
       {
         test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
-        loader: 'babel-loader',
+        loader: "babel-loader",
         options: {
-          presets: ['@babel/preset-env', '@babel/preset-react'],
+          presets: ["@babel/preset-env", "@babel/preset-react"],
         },
       },
       {
         test: /\.css$/i,
         exclude: /node_modules/,
         use: [
-          'style-loader',
+          "style-loader",
           {
-            loader: 'css-loader',
+            loader: "css-loader",
             options: {
               importLoaders: 1,
               modules: true,
@@ -47,17 +57,17 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        use: ["style-loader", "css-loader"],
         exclude: /\.module\.css$/,
       },
       {
         test: /\.(jpe?g|png|gif|woff|woff2|otf|eot|ttf|svg)(\?[a-z0-9=.]+)?$/,
         use: [
           {
-            loader: 'url-loader',
+            loader: "url-loader",
             options: {
               limit: 1000,
-              name: 'assets/img/[name].[ext]',
+              name: "assets/img/[name].[ext]",
             },
           },
         ],
