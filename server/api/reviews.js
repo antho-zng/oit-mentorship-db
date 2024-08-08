@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const Review = require("../db/models/Review");
 const Mentee = require("../db/models/Mentee");
+const { db } = require("../db");
+
 const {
   updateMenteeAcceptStatus,
   resetMenteeAcceptStatus,
@@ -53,6 +55,7 @@ router.put(
   requireUserToken,
   updateMenteeAcceptStatus,
   async (req, res, next) => {
+    const trx = req.trx;
     try {
       const review = await Review.findOne({
         where: {
@@ -64,10 +67,12 @@ router.put(
       review.reviewerScore = req.body.review.reviewerScore;
       review.submitStatus = req.body.review.submitStatus;
 
-      review.save();
+      await review.save({ transaction: trx });
+      await trx.commit();
       res.send(review);
     } catch (error) {
       console.error(error);
+      await trx.rollback();
       next(error);
     }
   }
@@ -79,6 +84,7 @@ router.delete(
   requireUserToken,
   resetMenteeAcceptStatus,
   async (req, res, next) => {
+    const trx = req.trx;
     try {
       const review = await Review.findOne({
         where: {
@@ -86,10 +92,14 @@ router.delete(
           userId: req.body.userId,
         },
       });
-      await review?.destroy();
+      if (review) {
+        await review.destroy({ transaction: trx });
+      }
+      await trx.commit();
       res.sendStatus(200);
     } catch (error) {
       console.error(error);
+      await trx.rollback();
       next(error);
     }
   }
