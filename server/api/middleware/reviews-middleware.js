@@ -1,14 +1,7 @@
 const Review = require("../../db/models/Review");
 const Mentee = require("../../db/models/Mentee");
 const { db } = require("../../db");
-
-const scoreKey = {
-  1: "NOT ACCEPTED",
-  2: "WAITLIST",
-  3: "LOW PRIORITY ACCEPT",
-  4: "ACCEPTED",
-  5: "STRONG ACCEPT",
-};
+const { SCORE_KEY } = require("../../constants");
 
 // For breakdown of scoring logic, see bottom of file :)
 const updateMenteeAcceptStatus = async (req, res, next) => {
@@ -28,9 +21,9 @@ const updateMenteeAcceptStatus = async (req, res, next) => {
 
     if (existingReviews.length === 0) {
       if (score === 1) {
-        mentee.acceptedStatus = scoreKey[1];
+        mentee.acceptedStatus = SCORE_KEY[1];
       } else if (score === 5) {
-        mentee.acceptedStatus = scoreKey[5];
+        mentee.acceptedStatus = SCORE_KEY[5];
       }
       await mentee.save({ transaction: trx });
     } else if (existingReviews.length === 1) {
@@ -38,51 +31,51 @@ const updateMenteeAcceptStatus = async (req, res, next) => {
 
       if (score === 1) {
         if (firstReviewScore === 5) {
-          mentee.acceptedStatus = scoreKey[3];
+          mentee.acceptedStatus = SCORE_KEY[3];
         } else {
-          mentee.acceptedStatus = scoreKey[1];
+          mentee.acceptedStatus = SCORE_KEY[1];
         }
       } else if (score === 2) {
         if (firstReviewScore === 1) {
-          mentee.acceptedStatus = scoreKey[1];
+          mentee.acceptedStatus = SCORE_KEY[1];
         } else if (firstReviewScore === 2 || firstReviewScore === 3) {
-          mentee.acceptedStatus = scoreKey[2];
+          mentee.acceptedStatus = SCORE_KEY[2];
         } else if (firstReviewScore === 4) {
-          mentee.acceptedStatus = scoreKey[3];
+          mentee.acceptedStatus = SCORE_KEY[3];
         } else if (firstReviewScore === 5) {
-          mentee.acceptedStatus = scoreKey[4];
+          mentee.acceptedStatus = SCORE_KEY[4];
         }
       } else if (score === 3) {
         if (firstReviewScore === 1) {
-          mentee.acceptedStatus = scoreKey[1];
+          mentee.acceptedStatus = SCORE_KEY[1];
         } else if (firstReviewScore === 2) {
-          mentee.acceptedStatus = scoreKey[2];
+          mentee.acceptedStatus = SCORE_KEY[2];
         } else if (firstReviewScore === 3 || firstReviewScore === 4) {
-          mentee.acceptedStatus = scoreKey[3];
+          mentee.acceptedStatus = SCORE_KEY[3];
         } else if (firstReviewScore === 5) {
-          mentee.acceptedStatus = scoreKey[5];
+          mentee.acceptedStatus = SCORE_KEY[5];
         }
       } else if (score === 4) {
         if (firstReviewScore === 1) {
-          mentee.acceptedStatus = scoreKey[1];
+          mentee.acceptedStatus = SCORE_KEY[1];
         } else if (firstReviewScore === 2 || firstReviewScore === 3) {
-          mentee.acceptedStatus = scoreKey[3];
+          mentee.acceptedStatus = SCORE_KEY[3];
         } else if (firstReviewScore === 4) {
-          mentee.acceptedStatus = scoreKey[4];
+          mentee.acceptedStatus = SCORE_KEY[4];
         } else if (firstReviewScore === 5) {
-          mentee.acceptedStatus = scoreKey[5];
+          mentee.acceptedStatus = SCORE_KEY[5];
         }
       } else if (score === 5) {
         if (firstReviewScore === 1) {
-          mentee.acceptedStatus = scoreKey[3];
+          mentee.acceptedStatus = SCORE_KEY[3];
         } else if (firstReviewScore === 2) {
-          mentee.acceptedStatus = scoreKey[4];
+          mentee.acceptedStatus = SCORE_KEY[4];
         } else if (
           firstReviewScore === 3 ||
           firstReviewScore === 4 ||
           firstReviewScore === 5
         ) {
-          mentee.acceptedStatus = scoreKey[5];
+          mentee.acceptedStatus = SCORE_KEY[5];
         }
       }
       await mentee.save({ transaction: trx });
@@ -113,9 +106,9 @@ const resetMenteeAcceptStatus = async (req, res, next) => {
 
     if (otherReviews.length > 0) {
       if (otherReviews[0].reviewerScore === 1) {
-        mentee.acceptedStatus = scoreKey[1];
+        mentee.acceptedStatus = SCORE_KEY[1];
       } else if (otherReviews[0].reviewerScore === 5) {
-        mentee.acceptedStatus = scoreKey[5];
+        mentee.acceptedStatus = SCORE_KEY[5];
       } else {
         mentee.acceptedStatus = "PENDING";
       }
