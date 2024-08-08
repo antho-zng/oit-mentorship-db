@@ -10,4 +10,16 @@ const getMentee = async (menteeId) => {
   }
 };
 
-export { getMentee };
+const getAllMentees = async (searchParams) => {
+  try {
+    const { data: allMentees } = await axiosInstance.get(`/mentees`, {
+      params: searchParams,
+    });
+    return allMentees;
+  } catch (error) {
+    const { status } = error;
+    throw new Error(`${status}: Error getting mentees`);
+  }
+};
+
+export { getMentee, getAllMentees };

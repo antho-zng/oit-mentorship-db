@@ -302,12 +302,10 @@ function SingleMentee(props) {
         reviewDisabled: true,
       }));
       return;
-    } else if (reviews.length === 0) {
+    } else {
       setReviewAccordionMessage(
         REVIEW_ACCORDION_MESSAGES.ADD_YOURSELF_AS_REVIEWER
       );
-    } else {
-      return;
     }
   }
 
