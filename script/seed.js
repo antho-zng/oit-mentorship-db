@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
 const {
   db,
-  models: { User, Mentee, Focus, Cohort },
-} = require('../server/db');
+  models: { User, Cohort },
+} = require("../server/db");
 
 /**
  * seed - this function clears the database, updates tables to
@@ -11,56 +11,56 @@ const {
  */
 async function seed() {
   await db.sync({ force: true }); // clears db and matches models to tables
-  console.log('db synced!');
+  console.log("db synced!");
 
   const users = await Promise.all([
     User.create({
-      username: 'testAcc1',
-      firstName: 'Orange',
-      lastName: 'Apple',
-      password: 'test123',
-      email: 'testaccount1@gmail.com',
+      username: "testAcc1",
+      firstName: "Orange",
+      lastName: "Apple",
+      password: "test123",
+      email: "testaccount1@gmail.com",
     }),
     User.create({
-      username: 'testAcc2',
-      firstName: 'Green',
-      lastName: 'Banana',
-      password: 'test123',
-      email: 'testaccount2@gmail.com',
+      username: "testAcc2",
+      firstName: "Green",
+      lastName: "Banana",
+      password: "test123",
+      email: "testaccount2@gmail.com",
     }),
     User.create({
-      username: 'testAcc3',
-      firstName: 'Yellow',
-      lastName: 'Grapefruit',
-      password: 'test123',
-      email: 'testaccount3@gmail.com',
+      username: "testAcc3",
+      firstName: "Yellow",
+      lastName: "Grapefruit",
+      password: "test123",
+      email: "testaccount3@gmail.com",
     }),
     User.create({
-      username: 'testAcc4',
-      firstName: 'Red',
-      lastName: 'Persimmon',
-      password: 'test123',
-      email: 'testaccount4@gmail.com',
+      username: "testAcc4",
+      firstName: "Red",
+      lastName: "Persimmon",
+      password: "test123",
+      email: "testaccount4@gmail.com",
     }),
   ]);
 
   const cohorts = await Promise.all([
     Cohort.create({
-      cohortId: 'SPRING2023',
-      name: 'Spring 2023',
-      menteeApplicationFormID: '1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII',
+      cohortId: "SPRING2023",
+      name: "Spring 2023",
+      menteeApplicationFormID: "1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII",
       isCurrent: true,
     }),
     Cohort.create({
-      cohortId: 'FALL2022',
-      name: 'Fall 2022',
-      menteeApplicationFormID: '1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII',
+      cohortId: "FALL2022",
+      name: "Fall 2022",
+      menteeApplicationFormID: "1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII",
       isCurrent: false,
     }),
     Cohort.create({
-      cohortId: 'SPRING2022',
-      name: 'Spring 2022',
-      menteeApplicationFormID: '1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII',
+      cohortId: "SPRING2022",
+      name: "Spring 2022",
+      menteeApplicationFormID: "1TZtuj7JbPp4OGFem9Ha1EmnckFT9g-pAHVsl4mrNfII",
       isCurrent: false,
     }),
   ]);
@@ -81,16 +81,16 @@ async function seed() {
  The `seed` function is concerned only with modifying the database.
 */
 async function runSeed() {
-  console.log('seeding...');
+  console.log("seeding...");
   try {
     await seed();
   } catch (err) {
     console.error(err);
     process.exitCode = 1;
   } finally {
-    console.log('closing db connection');
+    console.log("closing db connection");
     await db.close();
-    console.log('db connection closed');
+    console.log("db connection closed");
   }
 }
 
