@@ -78,7 +78,6 @@ function MenteeTable({ menteeData: mentees, menteesLoading, allMenteesError }) {
         .slice()
         .sort(getComparator(order, orderBy))
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-      // setMenteesFetched(true);
       return visibleRowsInput;
     } else {
       return [];

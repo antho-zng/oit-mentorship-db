@@ -35,13 +35,7 @@ function AllMentees(props) {
 
   const findCurrentCohort = (cohorts) => {
     if (Array.isArray(cohorts)) {
-      let returnCohort;
-
-      if (selectedCohort !== "") {
-        returnCohort = cohorts.find((cohort) => cohort.name === selectedCohort);
-      } else {
-        returnCohort = cohorts.find((cohort) => cohort.isCurrent === true);
-      }
+      let returnCohort = cohorts.find((cohort) => cohort.isCurrent === true);
       return returnCohort;
     } else {
       return null;
@@ -50,13 +44,19 @@ function AllMentees(props) {
 
   const currentCohort = useMemo(
     () => findCurrentCohort(cohorts, selectedCohort),
-    [cohorts, selectedCohort]
+    [cohorts]
   );
+
+  const cohortIdToQuery = useMemo(() => {
+    return selectedCohort !== "" && selectedCohort !== currentCohort
+      ? selectedCohort.cohortId
+      : currentCohort?.cohortId;
+  }, [selectedCohort, currentCohort]);
 
   const { allMenteesPending, allMenteesError, allMentees, allMenteesFetching } =
     useAllMenteeData({
       searchBy: "cohortId",
-      payload: currentCohort?.cohortId ?? "",
+      payload: cohortIdToQuery ?? "",
     });
 
   const calculateAppBreakdown = (allMentees) => {
@@ -73,6 +73,7 @@ function AllMentees(props) {
       }
       return appStatusSummary;
     } else {
+      setTotalMenteeApps(0);
       return initialScoreBreakdown;
     }
   };
@@ -83,12 +84,10 @@ function AllMentees(props) {
   );
 
   const handleDropdownChange = (event) => {
-    for (const cohort of cohorts) {
-      if (cohort.name === event.target.value) {
-        setSelectedCohort(cohort);
-        return;
-      }
-    }
+    event.preventDefault();
+    const newCohort =
+      cohorts.find((cohort) => cohort.name === event.target.value) || "";
+    setSelectedCohort(newCohort);
   };
 
   return (
