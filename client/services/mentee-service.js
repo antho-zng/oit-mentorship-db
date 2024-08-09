@@ -1,4 +1,4 @@
-import axiosInstance from "../AxiosWrapper";
+import axiosInstance from "../axiosWrapper";
 
 const getMentee = async (menteeId) => {
   try {
