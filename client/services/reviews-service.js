@@ -1,4 +1,4 @@
-import axiosInstance from "../AxiosWrapper";
+import axiosInstance from "../axiosWrapper";
 
 const getReviews = async (searchParams) => {
   try {

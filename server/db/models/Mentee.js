@@ -1,7 +1,8 @@
-const Sequelize = require('sequelize');
-const db = require('../db');
+const Sequelize = require("sequelize");
+const db = require("../db");
+
 module.exports = db.define(
-  'mentees',
+  "mentees",
   {
     id: {
       type: Sequelize.STRING,
@@ -49,6 +50,11 @@ module.exports = db.define(
       validate: {
         notEmpty: true,
       },
+      set(value) {
+        const date = new Date(value);
+        const isoDateString = date.toISOString();
+        this.setDataValue("dateOfBirth", isoDateString);
+      },
     },
     location: {
       type: Sequelize.STRING,
@@ -77,14 +83,14 @@ module.exports = db.define(
       validate: {
         notEmpty: true,
       },
-      defaultValue: 'PENDING',
+      defaultValue: "PENDING",
     },
   },
   {
     indexes: [
       {
         unique: true,
-        fields: ['email', 'cohortId'],
+        fields: ["email", "cohortId"],
       },
     ],
   }

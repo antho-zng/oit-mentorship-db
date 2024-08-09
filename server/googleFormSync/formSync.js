@@ -1,105 +1,68 @@
 // Import dependencies
-const fs = require('fs');
-const { google } = require('googleapis');
-const service = google.sheets('v4');
-const Sequelize = require('sequelize');
+const fs = require("fs");
 const {
   db,
   models: { Mentee, Question, Answer, Cohort },
-} = require('../db');
-require('dotenv').config();
+} = require("../db");
+const {
+  MENTEE_INFO_INDEXES,
+  QUESTIONS_ROW_INDEX_FOR_RESPONSES,
+} = require("../constants");
+require("dotenv").config();
+const { fetchGoogleSheetsRows } = require("../services/google-sheets-service");
 
-const menteeInfoIndexes = {
-  firstNameIndex: 2,
-  lastNameIndex: 3,
-  pronounsIndex: 6,
-  emailIndex: 1,
-  phoneNumIndex: 5,
-  dobIndex: 4,
-  locationIndex: 7,
-  gendersAndSexualitiesIndex: 8,
-  raceEthnicityIndex: 9,
-};
-
-// Configure auth client
-const authClient = new google.auth.JWT(
-  process.env.CLIENT_EMAIL,
-  null,
-  process.env.PRIVATE_KEY.replace(/\\n/g, '\n'),
-  ['https://www.googleapis.com/auth/spreadsheets']
-);
-
-async function googleAuth() {
-  // Authorize the client
-  const token = await authClient.authorize();
-
-  // Set the client credentials
-  authClient.setCredentials(token);
+async function createMenteeFromRow(row, cohortId) {
+  return {
+    id: `MENTEE-${cohortId}-${crypto.randomUUID()}`,
+    firstName: row[MENTEE_INFO_INDEXES[`firstNameIndex`]],
+    lastName: row[MENTEE_INFO_INDEXES["lastNameIndex"]],
+    pronouns: row[MENTEE_INFO_INDEXES["pronounsIndex"]].split(","),
+    email: row[MENTEE_INFO_INDEXES["emailIndex"]],
+    phoneNum: row[MENTEE_INFO_INDEXES["phoneNumIndex"]],
+    dateOfBirth: row[MENTEE_INFO_INDEXES["dobIndex"]],
+    location: row[MENTEE_INFO_INDEXES["locationIndex"]],
+    gendersAndSexualities:
+      row[MENTEE_INFO_INDEXES["gendersAndSexualitiesIndex"]].split(","),
+    raceEthnicity: row[MENTEE_INFO_INDEXES["raceEthnicityIndex"]].split(","),
+  };
 }
 
-// take data from Google Forms and push to Mentees array
 async function getMenteeData(rows, cohortId) {
-  const mentees = [];
-
-  for (const rowIdx in rows) {
-    const row = rows[rowIdx];
-
-    mentees.push({
-      id: `MENTEE-${cohortId}-${+rowIdx + 1}`,
-      firstName: row[menteeInfoIndexes[`firstNameIndex`]],
-      lastName: row[menteeInfoIndexes['lastNameIndex']],
-      pronouns: row[menteeInfoIndexes['pronounsIndex']].split(','),
-      email: row[menteeInfoIndexes['emailIndex']],
-      phoneNum: row[menteeInfoIndexes['phoneNumIndex']],
-      dateOfBirth: row[menteeInfoIndexes['dobIndex']],
-      location: row[menteeInfoIndexes['locationIndex']],
-      gendersAndSexualities:
-        row[menteeInfoIndexes['gendersAndSexualitiesIndex']].split(','),
-      raceEthnicity: row[menteeInfoIndexes['raceEthnicityIndex']].split(','),
-    });
-  }
-  console.log(`${mentees.length} mentees found... writing to database!`);
+  console.log(`${rows.length} mentees found... writing to database!`);
+  const mentees = await Promise.all(
+    rows.map((row) => createMenteeFromRow(row, cohortId))
+  );
   return mentees;
 }
 
 async function getResponseData(rows) {
-  const answers = [];
-
-  const questions = rows[0];
+  const questions = rows[QUESTIONS_ROW_INDEX_FOR_RESPONSES];
   rows.shift();
 
-  for (const row of rows) {
-    const menteeResponses = {};
+  const formResponses = rows.map((row) => {
+    return questions.reduce((responses, question, idx) => {
+      responses[question] = row[idx] !== "" ? row[idx] : "n/a";
+      return responses;
+    }, {});
+  });
 
-    for (const responseNum in row) {
-      if (row[responseNum] === '') {
-        row[responseNum] = 'n/a';
-      }
-      menteeResponses[questions[responseNum]] = row[responseNum];
-    }
-
-    answers.push(menteeResponses);
-  }
-  return answers;
+  return formResponses;
 }
 
 async function bulkCreateQuestions(rows) {
-  // save headers as questions
-  const questionsRow = rows[0];
-  const questions = [];
-
-  for (const question of questionsRow) {
-    questions.push({ text: question.toString() });
-  }
-
+  const questionsRow = rows[QUESTIONS_ROW_INDEX_FOR_RESPONSES];
+  const questions = questionsRow.map((question) => {
+    return {
+      text: question.toString(),
+    };
+  });
   await Question.bulkCreate(questions, { ignoreDuplicates: true }).then(() =>
     console.log(`${questions.length} questions have been written into DB!`)
   );
-
-  // console.log(questions)
 }
 
-async function createQuestionsMap(rows) {
+// We use this to map questions to the corresponding answers
+async function createQuestionsMap() {
   const questionsMap = {};
   const allQuestions = await Question.findAll();
 
@@ -107,39 +70,20 @@ async function createQuestionsMap(rows) {
     (question) =>
       (questionsMap[question.dataValues.text] = question.dataValues.id)
   );
-
-  // console.log(`questionsMap -------------------------------------------`);
-  // console.log(questionsMap);
   return questionsMap;
 }
 
 async function createMenteeQATransactions(cohort) {
-  let rows = {};
-  const spreadsheetID = cohort.menteeApplicationFormID;
-  const cohortId = cohort.cohortId;
+  const { menteeApplicationFormID: spreadsheetID, cohortId } = cohort;
 
-  try {
-    const res = await service.spreadsheets.values.get({
-      auth: authClient,
-      spreadsheetId: spreadsheetID,
-      range: 'A:AK', // TO-DO : fix magic number here
-    });
-
-    // Set rows to equal the rows
-    rows = res?.data?.values;
-
-    if (!rows || rows.length === 0) {
-      console.log('No data returned from Google Sheets! :(');
-      return;
-    }
-  } catch (error) {
-    console.log(error);
-    process.exit(1);
+  const rows = await fetchGoogleSheetsRows(spreadsheetID);
+  if (!rows || rows.length === 0) {
+    console.log("No data returned from Google Sheets! :(");
+    return;
   }
 
   await bulkCreateQuestions(rows);
   const questionsMap = await createQuestionsMap(rows);
-
   const answers = await getResponseData(rows);
   const mentees = await getMenteeData(rows, cohortId);
 
@@ -159,7 +103,6 @@ async function createMenteeQATransactions(cohort) {
       const currentMentee = mentees[menteeIndex];
       currentMentee[`cohortId`] = cohortId;
 
-      // TO-DO : create or update
       const mentee = await Mentee.create(
         currentMentee,
         { transaction: trx },
@@ -167,33 +110,30 @@ async function createMenteeQATransactions(cohort) {
       );
 
       // CREATE ANSWERS
-      // TO-DO : This loop will run one too many loops at the end and return a Sequelize validation error
-      for (const answerIndex in currentQuestionSet) {
-        const currentQuestion = currentQuestionSet[answerIndex];
-        const questionId = questionsMap[currentQuestion];
-
-        // console.log(`_________________________________________________`);
-        // console.log(`questionId and currentQuestion`);
-        // console.log(questionId);
-        // console.log(currentQuestion);
-        // console.log(`_________________________________________________`);
-
-        const answer = await Answer.create(
-          {
-            text: `${currentAnswerSet[currentQuestion]}`,
-            menteeId: `${mentee.dataValues.id}`,
-            questionId: questionId,
-          },
-          { transaction: trx },
-          { ignoreDuplicates: true }
-        );
-      }
+      await Promise.all(
+        currentQuestionSet.map(async (question) => {
+          const questionId = questionsMap[question];
+          await Answer.create(
+            {
+              text: currentAnswerSet[question],
+              menteeId: mentee.id,
+              questionId,
+            },
+            { transaction: trx },
+            { ignoreDuplicates: true }
+          );
+        })
+      );
       console.log(
         `Transaction successful! Tables for Mentee #${mentee.dataValues.id} created.`
       );
       await trx.commit();
     } catch (error) {
-      console.log(`Error: ${error}`);
+      if (error.code === "23505") {
+        console.log("Duplicate entry found! Skipping this mentee...");
+      } else {
+        console.log(`Error: ${error}`);
+      }
       await trx.rollback();
     }
   }
@@ -207,7 +147,7 @@ async function runFormSync() {
   });
 
   if (currentCohort === null) {
-    console.log('Current cohort not found!');
+    console.log("Current cohort not found!");
     return;
   }
 
@@ -220,11 +160,8 @@ async function runFormSync() {
     currentCohort = currentCohort[0];
   }
 
-  console.log('currentcohort is');
-  console.log(currentCohort);
   console.log(
-    `Syncing with Google Forms for the ${currentCohort.name} mentee cohort!
-    Spreadsheet ID is ${currentCohort.menteeApplicationFormID}`
+    `Syncing with Google Forms for the ${currentCohort.name} mentee cohort! Spreadsheet ID is ${currentCohort.menteeApplicationFormID}`
   );
   await createMenteeQATransactions(currentCohort);
   console.log(`Finished syncing ${currentCohort.name} mentee applications!`);
