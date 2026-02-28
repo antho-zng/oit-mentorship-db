@@ -86,7 +86,7 @@ function MenteeTable({ menteeData: mentees, menteesLoading, allMenteesError }) {
 
   const visibleRows = useMemo(
     () => getVisibleRows(mentees),
-    [order, orderBy, page, rowsPerPage, mentees]
+    [order, orderBy, page, rowsPerPage, mentees],
   );
 
   return (
@@ -219,7 +219,7 @@ const headCells = [
     label: "COHORT",
   },
   {
-    id: "status",
+    id: "acceptedStatus",
     numeric: false,
     disablePadding: false,
     label: "STATUS",
@@ -261,6 +261,7 @@ function EnhancedTableHead(props) {
                 </Box>
               ) : null}
             </TableSortLabel>
+            {headCell.id === "status" ? "test" : ""}
           </TableCell>
         ))}
       </TableRow>
@@ -289,7 +290,7 @@ function EnhancedTableToolbar(props) {
           bgcolor: (theme) =>
             alpha(
               theme.palette.primary.main,
-              theme.palette.action.activatedOpacity
+              theme.palette.action.activatedOpacity,
             ),
         }),
       }}
