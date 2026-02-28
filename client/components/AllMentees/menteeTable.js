@@ -23,6 +23,10 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import { visuallyHidden } from "@mui/utils";
 import CircularProgress from "@mui/material/CircularProgress";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import InputLabel from "@mui/material/InputLabel";
 
 function MenteeTable({ menteeData: mentees, menteesLoading, allMenteesError }) {
   const [order, setOrder] = React.useState("asc");
@@ -30,7 +34,8 @@ function MenteeTable({ menteeData: mentees, menteesLoading, allMenteesError }) {
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [statusFilter, setStatusFilter] = React.useState("");
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -64,35 +69,50 @@ function MenteeTable({ menteeData: mentees, menteesLoading, allMenteesError }) {
     setDense(event.target.checked);
   };
 
-  const isSelected = (name) => selected.indexOf(name) !== -1;
+  const filteredMentees = useMemo(() => {
+    if (!Array.isArray(mentees)) return [];
+    if (statusFilter === "") return mentees;
+    return mentees.filter((m) => m.acceptedStatus === statusFilter);
+  }, [mentees, statusFilter]);
+
+  const sortedMentees = useMemo(
+    () => filteredMentees.slice().sort(getComparator(order, orderBy)),
+    [filteredMentees, order, orderBy],
+  );
+
+  const visibleRows = useMemo(
+    () =>
+      menteesLoading || allMenteesError
+        ? []
+        : sortedMentees.slice(
+            page * rowsPerPage,
+            page * rowsPerPage + rowsPerPage,
+          ),
+    [sortedMentees, page, rowsPerPage, menteesLoading, allMenteesError],
+  );
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - mentees.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - sortedMentees.length) : 0;
 
-  const getVisibleRows = (mentees) => {
-    if (menteesLoading || allMenteesError) {
-      return [];
-    } else if (Array.isArray(mentees)) {
-      const visibleRowsInput = mentees
-        .slice()
-        .sort(getComparator(order, orderBy))
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-      return visibleRowsInput;
-    } else {
-      return [];
-    }
-  };
+  React.useEffect(() => setPage(0), [statusFilter]);
 
-  const visibleRows = useMemo(
-    () => getVisibleRows(mentees),
-    [order, orderBy, page, rowsPerPage, mentees]
+  const maxPage = Math.max(
+    0,
+    Math.ceil(sortedMentees.length / rowsPerPage) - 1,
   );
+  React.useEffect(() => {
+    if (page > maxPage) setPage(maxPage);
+  }, [maxPage, page]);
 
   return (
     <Box sx={{ width: "90%" }}>
       <Paper sx={{ width: "100%", mb: 2, boxShadow: "none" }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+        />
         <TableContainer sx={{ width: "100%" }}>
           <Table
             aria-labelledby="tableTitle"
@@ -105,7 +125,7 @@ function MenteeTable({ menteeData: mentees, menteesLoading, allMenteesError }) {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={mentees.length}
+              rowCount={sortedMentees.length}
             />
             <TableBody>
               {menteesLoading || allMenteesError ? (
@@ -123,7 +143,6 @@ function MenteeTable({ menteeData: mentees, menteesLoading, allMenteesError }) {
               ) : (
                 <>
                   {visibleRows.map((row, index) => {
-                    const isItemSelected = isSelected(row.name);
                     const labelId = `enhanced-table-checkbox-${index}`;
 
                     return (
@@ -140,7 +159,7 @@ function MenteeTable({ menteeData: mentees, menteesLoading, allMenteesError }) {
                         <TableCell align="left">{row.lastName}</TableCell>
                         <TableCell align="left">{row.email}</TableCell>
                         <TableCell align="left">
-                          {row.cohort.cohortId}
+                          {row.cohort?.cohortId ?? "—"}
                         </TableCell>
                         <TableCell align="left">{row.acceptedStatus}</TableCell>
                       </TableRow>
@@ -163,7 +182,7 @@ function MenteeTable({ menteeData: mentees, menteesLoading, allMenteesError }) {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={mentees.length}
+          count={sortedMentees.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -219,7 +238,7 @@ const headCells = [
     label: "COHORT",
   },
   {
-    id: "status",
+    id: "acceptedStatus",
     numeric: false,
     disablePadding: false,
     label: "STATUS",
@@ -234,6 +253,8 @@ function EnhancedTableHead(props) {
     numSelected,
     rowCount,
     onRequestSort,
+    statusFilter,
+    setStatusFilter,
   } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
@@ -275,10 +296,12 @@ EnhancedTableHead.propTypes = {
   order: PropTypes.oneOf(["asc", "desc"]).isRequired,
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
+  statusFilter: PropTypes.string.isRequired,
+  setStatusFilter: PropTypes.func.isRequired,
 };
 
 function EnhancedTableToolbar(props) {
-  const { numSelected } = props;
+  const { numSelected, setStatusFilter, statusFilter } = props;
 
   return (
     <Toolbar
@@ -289,7 +312,7 @@ function EnhancedTableToolbar(props) {
           bgcolor: (theme) =>
             alpha(
               theme.palette.primary.main,
-              theme.palette.action.activatedOpacity
+              theme.palette.action.activatedOpacity,
             ),
         }),
       }}
@@ -304,14 +327,41 @@ function EnhancedTableToolbar(props) {
           {numSelected} selected
         </Typography>
       ) : (
-        <Typography
-          sx={{ flex: "1 1 100%" }}
-          variant="h6"
-          id="tableTitle"
-          component="div"
-        >
-          MENTEE APPLICATIONS
-        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
+          <Typography
+            sx={{ flex: "1 1 100%" }}
+            variant="h6"
+            id="tableTitle"
+            component="div"
+          >
+            MENTEE APPLICATIONS
+          </Typography>
+          <FormControl size="small" sx={{ minWidth: 200, ml: "auto" }}>
+            <InputLabel id="demo-simple-select-label" sx={{ pr: 4 }}>
+              Filter by status
+            </InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              size="small"
+              value={statusFilter ?? ""}
+              label="Filter by status"
+              onChange={(event) => {
+                setStatusFilter(event.target.value);
+              }}
+            >
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="PENDING">PENDING</MenuItem>
+              <MenuItem value="ACCEPTED">ACCEPTED</MenuItem>
+              <MenuItem value="NOT ACCEPTED">NOT ACCEPTED</MenuItem>
+              <MenuItem value="STRONG ACCEPT">STRONG ACCEPT</MenuItem>
+              <MenuItem value="LOW PRIORITY ACCEPT">
+                LOW PRIORITY ACCEPT
+              </MenuItem>
+              <MenuItem value="WAITLIST">WAITLIST</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       )}
     </Toolbar>
   );
@@ -319,6 +369,8 @@ function EnhancedTableToolbar(props) {
 
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
+  setStatusFilter: PropTypes.func.isRequired,
+  statusFilter: PropTypes.string.isRequired,
 };
 
 const mapDispatch = {
